@@ -281,6 +281,59 @@ th{background:var(--solid)}
 .cont{position:relative}
 .drawer[role=button]{cursor:pointer}
 .drawer .gear2{grid-column:2;grid-row:1;justify-self:end}
+/* raccoglitore chiuso in Archivio */
+.bnd{position:relative;height:250px;max-width:200px;width:100%;margin:0 auto;cursor:pointer;border-radius:6px 14px 14px 6px;transition:transform .25s ease,box-shadow .25s ease;box-shadow:0 14px 28px rgba(0,0,0,.35),0 2px 4px rgba(0,0,0,.3)}
+.bnd:hover,.bnd:focus-visible{transform:translateY(-4px) rotate(-.6deg);box-shadow:0 20px 36px rgba(0,0,0,.42)}
+.bnd-spine{position:absolute;left:0;top:0;bottom:0;width:26px;border-radius:6px 0 0 6px;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,.1) 60%,rgba(255,255,255,.08)),var(--c2);display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+.bnd-spine i{width:8px;height:26px;border-radius:4px;background:linear-gradient(90deg,#b8994f,#f1dc9c,#a8873e);box-shadow:0 1px 2px rgba(0,0,0,.5)}
+.bnd-cover{position:absolute;left:24px;right:0;top:0;bottom:0;border-radius:3px 14px 14px 3px;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.12),rgba(255,255,255,0) 55%),repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,rgba(0,0,0,.03) 2px 4px),linear-gradient(160deg,var(--c1),var(--c2));display:flex;align-items:center;justify-content:center;padding:16px}
+.bnd-cover::before{content:"";position:absolute;inset:9px;border:1.5px dashed rgba(241,220,156,.45);border-radius:2px 9px 9px 2px;pointer-events:none}
+.bnd-label{position:relative;background:linear-gradient(#f6efdc,#e6dcc3);color:#2a2236;font-family:Spectral,Georgia,serif;font-weight:600;font-size:17px;line-height:1.2;text-align:center;padding:10px 12px;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,.35),inset 0 0 0 1px rgba(120,95,40,.35);max-width:100%;overflow-wrap:anywhere}
+/* apertura */
+#bopen{position:fixed;inset:0;z-index:58;display:flex;align-items:center;justify-content:center;background:rgba(8,8,18,0);transition:background .5s ease;perspective:2400px;overflow:hidden}
+#bopen[hidden]{display:none}#bopen.on{background:rgba(8,8,18,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.bo-book{position:relative;width:calc(var(--P)*2);height:var(--H);transform-style:preserve-3d}
+.bo-in-left{position:absolute;left:0;top:0;width:var(--P);height:100%;border-radius:12px 4px 4px 12px;background:linear-gradient(160deg,var(--c1),var(--c2));opacity:0}
+.bo-page{position:absolute;left:var(--P);top:0;width:var(--P);height:100%;box-sizing:border-box;border-radius:4px 12px 12px 4px;background:linear-gradient(#f7f1e1,#ece3cc);color:#2a2236;padding:26px 24px 20px 30px;overflow:auto;box-shadow:inset 14px 0 18px -14px rgba(0,0,0,.45),0 18px 40px rgba(0,0,0,.45)}
+.bo-page h2{font-size:26px;line-height:1.15;margin:4px 0 6px;color:#2a2236}
+.bo-k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8a6a2a}
+.bo-dest{font-style:italic;color:#4d4558;margin:0 0 14px}
+.bo-stats{display:flex;gap:22px;margin:6px 0 12px}.bo-stats b{display:block;font-family:Spectral,Georgia,serif;font-size:24px;color:#7a5a1c}.bo-stats span{font-size:12.5px;color:#6a6274}
+.bo-line{font-size:14px;color:#4d4558;margin:6px 0}
+.bo-page .cap{background:rgba(0,0,0,.12)}
+.bo-page .warn{color:#2a2236}
+.bo-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.bo-cover{position:absolute;left:var(--P);top:0;width:var(--P);height:100%;transform-origin:left center;transform-style:preserve-3d;z-index:3}
+.bo-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:4px 14px 14px 4px}
+.bo-front{background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.12),rgba(255,255,255,0) 55%),repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,rgba(0,0,0,.03) 2px 4px),linear-gradient(160deg,var(--c1),var(--c2));display:flex;align-items:center;justify-content:center;padding:20px 20px 20px 46px;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.bo-front::before{content:"";position:absolute;inset:12px 12px 12px 40px;border:1.5px dashed rgba(241,220,156,.45);border-radius:2px 10px 10px 2px}
+.bo-front .bnd-spine{width:32px}
+.bo-front .bnd-label{font-size:21px;padding:12px 16px}
+.bo-back{transform:rotateY(180deg);border-radius:14px 4px 4px 14px;background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 6px,rgba(0,0,0,.05) 6px 12px),linear-gradient(200deg,var(--c1),var(--c2));box-shadow:inset -16px 0 20px -14px rgba(0,0,0,.6)}
+/* visualizzatore: atmosfera scura */
+#viewer{background:radial-gradient(ellipse at 50% 35%,#2b2450 0%,#17132e 50%,#0a0916 100%);color:#efe7d3;-webkit-backdrop-filter:none;backdrop-filter:none}
+#viewer::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 18% 12%,rgba(255,255,255,.5) 0 1px,transparent 1.5px),radial-gradient(circle at 72% 8%,rgba(255,255,255,.4) 0 1px,transparent 1.5px),radial-gradient(circle at 88% 30%,rgba(255,255,255,.35) 0 1px,transparent 1.5px),radial-gradient(circle at 8% 60%,rgba(255,255,255,.3) 0 1px,transparent 1.5px);opacity:.6}
+#viewer .v-title h2{color:#f3ead4;font-size:26px;letter-spacing:.01em;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+#viewer #vKind{color:#d9b866;letter-spacing:.14em;text-transform:uppercase;font-size:11.5px;font-weight:600}
+#viewer #vSub,#viewer .k,#viewer .v-nav{color:#c2b9da}
+#viewer .btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#f1e9d6}
+#viewer .btn:hover:not(:disabled){background:rgba(255,255,255,.16)}
+#viewer .btn:disabled{opacity:.35}
+#viewer .v-search input{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:#f3ead4;border-radius:20px;padding:8px 14px}
+#viewer .v-search input::placeholder{color:#a79fc2}
+#viewer input[type=range]{accent-color:#d9b866}
+#viewer .v-info{background:rgba(25,20,45,.94);border-color:rgba(255,255,255,.16);color:#efe7d3;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#viewer .v-info .cset,#viewer .v-info .muted{color:#b9b1d2}
+#viewer .v-info a{color:#e3c77f}
+#viewer .bk{background:linear-gradient(135deg,#3b2a55,#160f26);box-shadow:0 24px 60px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.06)}
+#viewer .bk::before{content:"";position:absolute;inset:5px;border:1.5px dashed rgba(241,220,156,.3);border-radius:9px;pointer-events:none}
+#viewer .bk .pg{background:linear-gradient(180deg,#24213a,#1b1930)}
+#viewer .bk .pg.void{background:rgba(255,255,255,.03)}
+#viewer .pk{background:#2c2945;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+#viewer .pk.empty{background:linear-gradient(160deg,#2f2b4a,#262340);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+#viewer .pk::after{background:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,0) 38%)}
+#viewer .sf .pg{background:linear-gradient(180deg,#24213a,#1b1930)}
+#viewer .loupe{border-color:rgba(241,220,156,.85)}
 </style>
 </head>
 <body>
@@ -423,6 +476,7 @@ th{background:var(--solid)}
 </main>
 
 <dialog id="dlg"><div id="dlgBody"></div></dialog>
+<div id="bopen" hidden role="dialog" aria-modal="true" aria-label="Raccoglitore"><div class="bo-book" id="boBook"><div class="bo-in-left"></div><div class="bo-page" id="boPage"></div><div class="bo-cover" id="boCover"><div class="bo-face bo-front"><div class="bnd-spine"><i></i><i></i><i></i></div><div class="bnd-label" id="boLabel"></div></div><div class="bo-face bo-back"></div></div></div></div>
 <div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Sfoglia contenitore">
   <div class="v-top">
     <div class="v-title"><div class="k" id="vKind"></div><h2 id="vName"></h2><div class="k" id="vSub"></div></div>
@@ -499,6 +553,8 @@ const KINDS = {binder:'Raccoglitore', chest:'Cassettiera', box:'Scatola', deckbo
 const TIERS = [['value','Di valore'],['bulk','Bulk'],['theme','Tematico (nessun controllo)'],['','Da classificare']];
 const ORDERS = [['color','Colore, poi nome'],['name','Solo nome'],['type','Tipo, poi nome'],['set','Set e numero'],['value','Valore (più alto)']];
 const locById = id => S.locs.find(l=>l.id===id);
+const COVERS = [['Viola notte','#4b3468','#1d1330'],['Bordeaux','#6b2738','#2a0e17'],['Blu notte','#25466e','#0d1a2e'],['Verde bosco','#2f5a3e','#11241a'],['Cuoio','#7a5530','#2e1d0e'],['Antracite','#3a3b44','#121318']];
+function coverColor(l){ let i = l.color; if(i==null){ let h = 0; for(const ch of l.id) h = (h*31 + ch.charCodeAt(0))>>>0; i = h % COVERS.length; } const c = COVERS[i] || COVERS[0]; return [c[1], c[2]]; }
 const locName = id => { const l = locById(id); if(!l) return ''; if(l.parent){ const p = locById(l.parent); return (p ? p.name + ' · ' : '') + l.name; } return l.name; };
 function slots(){
   const top = S.locs.filter(l=>!l.parent).sort((a,b)=>a.name.localeCompare(b.name));
@@ -1029,16 +1085,15 @@ function renderArchive(){
         dr.map(d => { const ds = contStats(d.id); return `<div class="drawer" role="button" tabindex="0" data-view="${d.id}" aria-label="Apri ${esc(d.name)}"><b>${esc(d.name)}${tierBadge(d, l.tier)}${ds.mis?`<span class="badge red">${ds.mis}</span>`:''}</b><span class="v">${ds.n.toLocaleString('it-IT')} · ${eur(ds.v)}</span><span class="dest">${esc(d.dest||'Nessuna destinazione indicata')} · <button class="thr" data-open="${d.id}">Imposta</button></span></div>`; }).join('') + '</div>';
     }
     if(l.kind==='binder'){
-      const capN = (l.sheets||0)*18, pct = capN ? Math.min(100, st.n/capN*100) : 0;
-      return `<div class="cont binder-c" role="button" tabindex="0" data-view="${l.id}" aria-label="Sfoglia ${esc(l.name)}"><button class="btn small tile-gear" data-open="${l.id}">Imposta</button><div class="k">Raccoglitore${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div>
-        <div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div><div class="k" style="margin-top:4px">Ordine: ${esc(orderLbl(l.order))}</div>
-        ${capN ? `<div class="cap ${pct>=100?'full':pct>=90?'warn':''}"><i style="width:${pct}%"></i></div><div class="k">${l.sheets} fogli · ${Math.max(0,capN-st.n)} tasche libere su ${capN}</div>` : '<div class="k" style="margin-top:6px">Indica i fogli per vedere le tasche libere</div>'}<div class="k" style="margin-top:8px"><b>Tocca per sfogliare</b></div></div>`;
+      const [c1, c2] = coverColor(l);
+      return `<div class="bnd" role="button" tabindex="0" data-bind="${l.id}" aria-label="Apri ${esc(l.name)}" style="--c1:${c1};--c2:${c2}"><div class="bnd-spine"><i></i><i></i><i></i></div><div class="bnd-cover"><div class="bnd-label">${esc(l.name)}</div></div></div>`;
     }
     return `<div class="cont" role="button" tabindex="0" data-view="${l.id}" aria-label="Sfoglia ${esc(l.name)}"><button class="btn small tile-gear" data-open="${l.id}">Imposta</button><div class="k">${esc(KINDS[l.kind]||'Altro')}${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div><div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div><div class="k" style="margin-top:4px">Ordine: ${esc(orderLbl(l.order))}</div><div class="k" style="margin-top:8px"><b>Tocca per sfogliare</b></div></div>`;
   }).join('');
   const un = groupStats('loc','');
   if(un.n) el.insertAdjacentHTML('beforeend', `<button class="cont" data-show-none="1"><div class="k">Da sistemare</div><h3>Carte senza luogo</h3><div class="st">${un.n.toLocaleString('it-IT')} carte · <b>${eur(un.v)}</b></div><div class="k" style="margin-top:4px">Clicca per vederle e assegnarle</div></button>`);
   el.querySelectorAll('[data-open]').forEach(b => b.onclick = e => { e.stopPropagation(); openCont(b.dataset.open); });
+  el.querySelectorAll('[data-bind]').forEach(b => { b.onclick = () => openBinderCard(b.dataset.bind); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openBinderCard(b.dataset.bind); } }; });
   el.querySelectorAll('[data-view]').forEach(b => { b.onclick = () => openViewer(b.dataset.view); b.onkeydown = e => { if(e.target===b && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); openViewer(b.dataset.view); } }; });
   const sn = el.querySelector('[data-show-none]'); if(sn) sn.onclick = () => { fillSelects(); $('#fDeck').value=''; $('#fLoc').value='__none'; ui.onlyMis=false; showTab('coll'); };
 }
@@ -1065,6 +1120,7 @@ function openCont(id){
       <label class="f" data-for="nochest">Tipo di carte<select name="tier">${opts(isDrawer?[['','Come la cassettiera ('+esc(tierLbl(parent&&parent.tier))+')'],...TIERS.slice(0,3)]:TIERS, L?L.tier||'':'')}</select></label>
       <label class="f" data-for="nochest">Organizzazione<select name="order">${opts(ORDERS, L?L.order:'color')}</select></label>
       <label class="f" data-for="binder">Fogli (18 tasche ciascuno)<span class="row" style="gap:6px;flex-wrap:nowrap"><input type="number" name="sheets" min="0" value="${L&&L.sheets||0}" style="width:90px"><button type="button" class="btn small" id="addSheet">+ Aggiungi fogli</button></span></label>
+      <label class="f" data-for="binder">Colore della copertina<select name="color">${opts([['','Automatico'], ...COVERS.map((c,i)=>[String(i), c[0]])], L && L.color!=null ? String(L.color) : '')}</select></label>
       <label class="f" data-for="chest">Numero di cassetti<input type="number" name="drawers" min="1" max="30" value="${drawers}"></label>
       <label class="f" data-for="chest">Tipo di carte (predefinito per i cassetti)<select name="ctier">${opts(TIERS, L?L.tier||'':'')}</select></label>
     </div>
@@ -1108,7 +1164,7 @@ function openCont(id){
       for(let i=cur.length;i<want;i++) S.locs.push({id:uid(), kind:'drawer', parent:x.id, pos:i, name:'Cassetto '+(i+1), dest:'', tier:'', order:'color'});
     } else {
       x.tier = F('tier').value; x.order = F('order').value;
-      if(k==='binder') x.sheets = Math.max(0, parseInt(F('sheets').value)||0);
+      if(k==='binder'){ x.sheets = Math.max(0, parseInt(F('sheets').value)||0); const cv = F('color').value; if(cv==='') delete x.color; else x.color = +cv; }
     }
     if(isNew) S.locs.push(x);
     save(); dlg.close(); renderArchive(); fillSelects(); toast(isNew?'Contenitore creato':'Modifiche salvate');
@@ -1263,6 +1319,52 @@ async function mbImport(){
   $('#mbFile').value=''; toast('Carte importate');
 }
 
+// ---------- raccoglitore che si apre ----------
+function boLayout(){
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const P = Math.min(380, vw*0.88), H = Math.min(540, vh*0.74, P*1.38);
+  const wide = 2*P <= vw - 24;
+  return {P, H, closed: -P/2, open: wide ? 0 : -P/2};
+}
+function openBinderCard(id){
+  const l = locById(id); if(!l) return;
+  const st = contStats(l.id), capN = (l.sheets||0)*18, full = Math.floor(st.n/18), free = Math.max(0, capN - st.n), pct = capN ? Math.min(100, st.n/capN*100) : 0;
+  const [c1, c2] = coverColor(l), box = $('#bopen'), book = $('#boBook'), cover = $('#boCover');
+  book.style.setProperty('--c1', c1); book.style.setProperty('--c2', c2);
+  $('#boLabel').textContent = l.name;
+  $('#boPage').innerHTML = `<div class="bo-k">Raccoglitore${tierBadge(l)}</div><h2>${esc(l.name)}</h2>
+    ${l.dest?`<p class="bo-dest">${esc(l.dest)}</p>`:'<p class="bo-dest muted">Nessuna destinazione indicata</p>'}
+    <div class="bo-stats"><div><b>${st.n.toLocaleString('it-IT')}</b><span>carte</span></div><div><b>${eur(st.v)}</b><span>valore</span></div></div>
+    ${capN ? `<div class="cap ${pct>=100?'full':pct>=90?'warn':''}"><i style="width:${pct}%"></i></div>
+      <p class="bo-line">${l.sheets} fogli · ${Math.min(full, l.sheets)} pieni · ${free} tasche libere su ${capN}</p>` : `<p class="bo-line">${full} fogli pieni (18 carte ciascuno). Indica quanti fogli ha il raccoglitore per vedere le tasche libere.</p>`}
+    <p class="bo-line">Organizzazione: ${esc(orderLbl(l.order))}</p>
+    ${st.mis?`<p class="warn">${st.mis} ${st.mis===1?'carta è':'carte sono'} fuori posto rispetto alla soglia di ${eur(thr())}.</p>`:''}
+    <div class="bo-act"><button class="btn primary" id="boGo">Sfoglia</button><button class="btn" id="boEdit">Modifica</button><button class="btn" id="boX">Chiudi</button></div>`;
+  const g = boLayout();
+  book.style.setProperty('--P', g.P + 'px'); book.style.setProperty('--H', g.H + 'px');
+  book.style.transition = 'none'; cover.style.transition = 'none';
+  book.style.transform = `translateX(${g.closed}px) scale(.92)`; cover.style.transform = 'rotateY(0deg)';
+  box.hidden = false; box.classList.remove('on'); document.body.style.overflow = 'hidden';
+  book.getBoundingClientRect();
+  const slow = reduced() ? 0 : 1;
+  requestAnimationFrame(() => {
+    box.classList.add('on');
+    book.style.transition = `transform ${0.9*slow}s cubic-bezier(.3,.7,.2,1)`; cover.style.transition = `transform ${1.05*slow}s cubic-bezier(.45,.05,.25,1) ${0.12*slow}s`;
+    book.style.transform = `translateX(${g.open}px) scale(1)`; cover.style.transform = 'rotateY(-178deg)';
+  });
+  const close = then => {
+    cover.style.transition = `transform ${0.7*slow}s cubic-bezier(.5,0,.3,1)`; book.style.transition = `transform ${0.7*slow}s cubic-bezier(.5,0,.3,1) ${0.15*slow}s`;
+    cover.style.transform = 'rotateY(0deg)'; book.style.transform = `translateX(${g.closed}px) scale(.92)`; box.classList.remove('on');
+    setTimeout(() => { box.hidden = true; document.body.style.overflow = ''; if(then) then(); }, 880*slow);
+  };
+  $('#boX').onclick = () => close();
+  $('#boGo').onclick = () => { box.hidden = true; box.classList.remove('on'); openViewer(l.id); };
+  $('#boEdit').onclick = () => { box.hidden = true; box.classList.remove('on'); document.body.style.overflow = ''; openCont(l.id); };
+  box.onclick = e => { if(e.target === box) close(); };
+  box.onkeydown = e => { if(e.key === 'Escape') close(); };
+  setTimeout(() => $('#boGo').focus({preventScroll:true}), 300);
+}
+
 // ---------- sfoglia contenitore ----------
 const V = {id:null, kind:'', items:[], pos:0, busy:false, hits:[], hitI:-1, dw:null};
 const reduced = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -1304,7 +1406,8 @@ function pageW(){
   const st = $('#vStage'); const W = st.clientWidth - 24, H = st.clientHeight - 12;
   const byW = (W - 2*14 - 22) / 2;          // due pagine, bordo e dorso
   const byH = (H - 2*14) * (488/680);
-  return Math.max(110, Math.floor(Math.min(byW, byH, 560)));
+  const w = Math.max(110, Math.floor(Math.min(byW, byH, 560)));
+  return w - (w % 4);
 }
 function updateNav(){
   const steps = vSteps(); V.pos = Math.max(0, Math.min(V.pos, steps-1));
@@ -1339,7 +1442,7 @@ function applyCam(animate){
 }
 function camScale(){ const bk = $('#vStage .bk'); const m = bk && bk.style.transform.match(/scale\(([\d.]+)\)/); return m ? +m[1] : 1; }
 function sliceFace(html, side, W, H, offset, cls){
-  return `<div class="sf ${cls}"><div class="pg ${side}" style="width:${W}px;height:${H}px;left:${offset.toFixed(2)}px">${html}</div><i class="sh"></i></div>`;
+  return `<div class="sf ${cls}"><div class="pg ${side}" style="width:${W.toFixed(3)}px;height:${H.toFixed(3)}px;left:${offset.toFixed(3)}px">${html}</div><i class="sh"></i></div>`;
 }
 function startFlip(fwd){
   if(V.busy) return null;
@@ -1347,15 +1450,16 @@ function startFlip(fwd){
   const bk = $('#vStage .bk'); if(!bk) return null;
   V.busy = true; $('#vInfo').hidden = true; $('#preview').style.display = 'none';
   const L = bk.querySelector('.pg.left'), R = bk.querySelector('.pg.right'), na = to*2, src = fwd ? R : L;
-  const W = src.offsetWidth, H = src.offsetHeight, sw = W / NS;
+  const k = camScale(), rr = src.getBoundingClientRect(), br = bk.getBoundingClientRect();
+  const W = rr.width / k, H = rr.height / k, sw = W / NS, X = (rr.left - br.left) / k, Y = (rr.top - br.top) / k;
   const frontHTML = src.innerHTML, backPage = pageEl(fwd ? na : na+1, fwd ? 'left' : 'right'), backHTML = backPage.innerHTML;
   const fSide = fwd ? 'right' : 'left', bSide = fwd ? 'left' : 'right';
   const leaf = document.createElement('div'); leaf.className = 'leaf ' + (fwd ? 'fwd' : 'bwd');
-  Object.assign(leaf.style, {left: src.offsetLeft + 'px', top: src.offsetTop + 'px', width: W + 'px', height: H + 'px'});
+  Object.assign(leaf.style, {left: X.toFixed(3) + 'px', top: Y.toFixed(3) + 'px', width: W.toFixed(3) + 'px', height: H.toFixed(3) + 'px'});
   let parent = leaf; const strips = [];
   for(let i=0;i<NS;i++){
     const el = document.createElement('div'); el.className = 'strip';
-    el.style.width = (sw + 0.75) + 'px'; el.style.height = H + 'px';
+    el.style.width = (sw + (i < NS-1 ? 0.6 : 0)).toFixed(3) + 'px'; el.style.height = H.toFixed(3) + 'px';
     if(fwd){ el.style.left = (i===0 ? 0 : sw) + 'px'; el.style.transformOrigin = 'left center'; }
     else { el.style.left = (i===0 ? W - sw : -sw) + 'px'; el.style.transformOrigin = (sw) + 'px 50%'; }
     const fOff = fwd ? -i*sw : -(W - (i+1)*sw);
@@ -1410,10 +1514,16 @@ function loupeShow(x, y){
     cl.querySelectorAll('img[data-big]').forEach(im => im.src = im.dataset.big);
     lp.innerHTML = ''; lp.appendChild(cl); lp.hidden = false; V.loupe = true;
   }
-  const r = bk.getBoundingClientRect(), k = camScale(), Z = 2.3, s = k * Z, D = lp.offsetWidth || 180, sr = st.getBoundingClientRect();
+  const r = bk.getBoundingClientRect(), k = camScale(), sr = st.getBoundingClientRect();
+  const pkH = (bk.querySelector('.pk') || bk).getBoundingClientRect().height || 80;
+  const maxD = Math.min(window.innerWidth, window.innerHeight) * 0.82;
+  let D = Math.min(maxD, Math.max(240, pkH * 3.0 * 1.32)); const Z = Math.max(1.4, D / (pkH * 1.32)), s = k * Z;
+  lp.style.width = lp.style.height = D + 'px';
   const u = (x - r.left) / k, v = (y - r.top) / k;
   const cl = lp.firstChild; cl.style.transformOrigin = '0 0'; cl.style.transform = `translate(${(D/2 - u*s).toFixed(1)}px,${(D/2 - v*s).toFixed(1)}px) scale(${s.toFixed(3)})`;
-  lp.style.left = (x - sr.left - D/2) + 'px'; lp.style.top = Math.max(-D*0.2, y - sr.top - D/2 - (touch ? D*0.75 : 0)) + 'px';
+  const lx = Math.max(-D*0.15, Math.min(sr.width - D*0.85, x - sr.left - D/2));
+  const ly = Math.max(-D*0.1, Math.min(sr.height - D*0.9, y - sr.top - D/2 - (touch ? D*0.6 : 0)));
+  lp.style.left = lx + 'px'; lp.style.top = ly + 'px';
 }
 function loupeHide(){ const lp = $('#vStage .loupe'); if(lp){ lp.hidden = true; lp.innerHTML = ''; } V.loupe = false; }
 function sideAt(x){ const bk = $('#vStage .bk'); if(!bk) return 0; const r = bk.getBoundingClientRect(); return x < r.left + r.width/2 ? 0 : 1; }
@@ -1514,7 +1624,7 @@ document.addEventListener('keydown', e => {
     if(e.target.closest && e.target.closest('.v-info')) return;
     tgt = e.target; x0 = lastX = e.clientX; y0 = lastY = e.clientY; lastT = performance.now(); vel = 0; f = null; moved = false; V.dragged = false;
     clearTimeout(hold);
-    if(isBinder()) hold = setTimeout(() => { if(x0 != null && !moved){ V.dragged = true; loupeShow(lastX, lastY); } }, 3000);
+    if(isBinder()) hold = setTimeout(() => { if(x0 != null && !moved){ V.dragged = true; loupeShow(lastX, lastY); } }, 450);
   });
   window.addEventListener('pointermove', e => {
     if(x0 == null || !V.id) return;
