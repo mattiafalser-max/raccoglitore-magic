@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Raccoglitore Magic</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Cinzel:wght@600;700&family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Uncial+Antiqua&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 <link rel="apple-touch-icon" sizes="180x180" href="https://mattiafalser-max.github.io/raccoglitore-magic/apple-touch-icon.png?v=4">
 <link rel="icon" type="image/png" href="https://mattiafalser-max.github.io/raccoglitore-magic/favicon.png?v=4">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -345,12 +345,71 @@ th{background:var(--solid)}
 .ip-s{display:flex;gap:1.4em;margin-bottom:.6em}.ip-s b{display:block;font-family:Spectral,Georgia,serif;font-size:1.45em;color:#7a5a1c;line-height:1.1}.ip-s span{font-size:.8em;color:#6a6274}
 .ip-bar{height:.42em;border-radius:.21em;background:rgba(0,0,0,.12);overflow:hidden;margin:.2em 0 .35em}.ip-bar i{display:block;height:100%;background:#2e6b45}
 .ip-l{color:#4d4558;font-size:.9em;margin:.2em 0}.ip-w{color:#a33a3a;font-weight:600}
-.ip-b{margin-top:.8em;font:inherit;font-size:.9em;font-weight:600;padding:.45em 1em;border-radius:999px;border:1px solid rgba(90,70,30,.45);background:#fff8e6;color:#2a2236;cursor:pointer}
+.ip-bs{display:flex;gap:.5em;flex-wrap:wrap;margin-top:.8em}.ip-b{margin-top:0;font:inherit;font-size:.9em;font-weight:600;padding:.45em 1em;border-radius:999px;border:1px solid rgba(90,70,30,.45);background:#fff8e6;color:#2a2236;cursor:pointer}
 .sf .ip-b{pointer-events:none}
 .pg.coverpg{background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.12),rgba(255,255,255,0) 55%),repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,rgba(0,0,0,.03) 2px 4px),linear-gradient(160deg,var(--c1,#3b2a55),var(--c2,#160f26)) !important;display:flex !important;align-items:center;justify-content:center}
 .pg.coverpg::before{content:"";position:absolute;inset:calc(var(--pw)*.035);border:1.5px dashed rgba(241,220,156,.45);border-radius:3px}
 .cv-spine{display:none}
 .cv-label{position:relative;max-width:78%;background:linear-gradient(#f6efdc,#e6dcc3);color:#2a2236;font-family:Spectral,Georgia,serif;font-weight:600;font-size:calc(var(--pw)*.07);line-height:1.2;text-align:center;padding:.5em .7em;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,.35),inset 0 0 0 1px rgba(120,95,40,.35);overflow-wrap:anywhere}
+/* --- aspetto copertina: materiali, finiture, caratteri --- */
+.mat-pelle{--tex:radial-gradient(circle at 30% 20%,rgba(255,255,255,.13),rgba(255,255,255,0) 55%),radial-gradient(rgba(0,0,0,.09) 1px,transparent 1.4px) 0 0/4px 4px,radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.4px) 2px 2px/5px 5px}
+.mat-tela{--tex:radial-gradient(circle at 30% 20%,rgba(255,255,255,.08),rgba(255,255,255,0) 60%),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,rgba(0,0,0,.05) 1px 3px),repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,rgba(0,0,0,.05) 1px 3px)}
+.mat-opaco{--tex:radial-gradient(circle at 35% 25%,rgba(255,255,255,.06),rgba(255,255,255,0) 60%)}
+.mat-lucido{--tex:linear-gradient(115deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.22) 42%,rgba(255,255,255,0) 52%),radial-gradient(circle at 30% 15%,rgba(255,255,255,.22),rgba(255,255,255,0) 50%)}
+.mat-vinile{--tex:radial-gradient(circle at 30% 20%,rgba(255,255,255,.1),rgba(255,255,255,0) 55%),radial-gradient(circle,rgba(0,0,0,.16) 1.2px,transparent 1.8px) 0 0/7px 7px,radial-gradient(circle,rgba(255,255,255,.07) 1.2px,transparent 1.8px) 3.5px 3.5px/7px 7px}
+.foil-oro{--metal:linear-gradient(180deg,#f6e3a1 0%,#d4ad55 38%,#9c7428 52%,#e8cd84 70%,#b38a3a 100%);--metalc:#d9b866;--stitch:rgba(241,220,156,.42)}
+.foil-argento{--metal:linear-gradient(180deg,#ffffff 0%,#cfd6dd 38%,#8e98a3 52%,#e9eef2 70%,#a8b1ba 100%);--metalc:#cfd6dd;--stitch:rgba(225,230,236,.42)}
+.foil-secco{--metal:linear-gradient(180deg,#b8994f,#f1dc9c,#a8873e);--metalc:#d9b866;--stitch:rgba(255,255,255,.18)}
+.foil-bianco{--metal:linear-gradient(180deg,#cfd6dd,#ffffff,#9aa3ad);--metalc:#e6e9ee;--stitch:rgba(255,255,255,.35)}
+.tf-cinzel{--tfw:700;--tfs:normal;--tft:uppercase;--tfl:.08em}.tf-cormorant{--tfw:600;--tfs:italic;--tft:none;--tfl:.01em}.tf-playfair{--tfw:600;--tfs:italic;--tft:none;--tfl:0}.tf-uncial{--tfw:400;--tfs:normal;--tft:none;--tfl:.02em}.tf-spectral{--tfw:600;--tfs:normal;--tft:none;--tfl:.01em}
+.bnd-title{font-family:var(--tf),Georgia,serif;font-weight:var(--tfw,700);font-style:var(--tfs,normal);text-transform:var(--tft,none);letter-spacing:var(--tfl,0);line-height:1.15;text-align:center;overflow-wrap:anywhere;max-width:88%;position:relative}
+.foil-oro .bnd-title,.foil-argento .bnd-title{background:var(--metal);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 1px 0 rgba(0,0,0,.55)) drop-shadow(0 -1px 0 rgba(255,255,255,.12))}
+.foil-secco .bnd-title{color:rgba(0,0,0,.28);text-shadow:0 1px 0 rgba(255,255,255,.16),0 -1px 0 rgba(0,0,0,.35)}
+.foil-bianco .bnd-title{color:#f4f1ea;text-shadow:0 1px 1px rgba(0,0,0,.45)}
+/* riquadro in Archivio */
+.bnd{height:260px;max-width:205px}
+.bnd-cover{background:var(--tex),linear-gradient(160deg,var(--c1),var(--c2)) !important;padding:18px 14px}
+.bnd-cover::before{border-color:var(--stitch,rgba(241,220,156,.42)) !important}
+.bnd-cover .bnd-title{font-size:21px;margin-top:-18%}
+.bnd-spine{background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,.12) 60%,rgba(255,255,255,.08)),var(--c2) !important}
+.bnd-spine i{background:var(--metal) !important}
+.bnd.mini{height:150px;max-width:118px;margin:0;cursor:default;pointer-events:none}
+.bnd.mini .bnd-cover .bnd-title{font-size:13px}
+.bnd.mini .bnd-spine{width:16px}.bnd.mini .bnd-cover{left:15px}.bnd.mini .bnd-spine i{width:5px;height:16px}
+.look{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.look-h{font-weight:600;font-size:14px}
+.look-row{display:flex;gap:16px;align-items:flex-start;margin-top:8px;flex-wrap:wrap}
+.look-prev{flex:0 0 120px;display:flex;justify-content:center;padding:6px 0}
+.look-f{flex:1 1 260px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.look-f input[type=color]{width:100%;height:36px;padding:2px;border-radius:6px}
+/* copertina nel visualizzatore */
+.pg.coverpg{background:var(--tex),linear-gradient(160deg,var(--c1),var(--c2)) !important}
+.pg.coverpg::before{border-color:var(--stitch,rgba(241,220,156,.42)) !important}
+.pg.coverpg .bnd-title{font-size:calc(var(--pw)*.095);margin-top:-22%}
+.cv-label,.cv-spine{display:none}
+.bk{background:none !important}
+.bk-bg{position:absolute;inset:0;border-radius:inherit;background:var(--tex),linear-gradient(135deg,var(--c1,#3b2a55),var(--c2,#160f26));box-shadow:0 24px 60px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.06);z-index:0}
+.bk-bg::before{content:"";position:absolute;inset:5px;border:1.5px dashed var(--stitch,rgba(241,220,156,.3));border-radius:9px}
+#viewer .bk::before{display:none}
+.bk > .pg{position:relative;z-index:1}
+.bk .rings i{border-color:var(--metalc,#e7cf8f) !important}
+.pg.info,.sf .pg.info{background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 6px,rgba(0,0,0,.05) 6px 12px),linear-gradient(200deg,var(--c1,#3b2a55),var(--c2,#160f26)) !important}
+.ip-n{font-family:var(--tf),Spectral,Georgia,serif;font-weight:var(--tfw,600);font-style:var(--tfs,normal);text-transform:var(--tft,none);letter-spacing:var(--tfl,0)}
+#viewer .v-title h2{font-family:var(--tf),Spectral,Georgia,serif;font-weight:var(--tfw,600);font-style:var(--tfs,normal);text-transform:var(--tft,none);letter-spacing:var(--tfl,0)}
+/* apertura dal riquadro: lo sfondo appare gradualmente */
+#viewer.intro{background:transparent !important}
+#viewer.intro::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 35%,#2b2450 0%,#17132e 50%,#0a0916 100%);opacity:var(--fade,0)}
+#viewer.intro::before{opacity:calc(var(--fade,0)*.6)}
+#viewer.intro .v-top,#viewer.intro .v-nav{opacity:var(--fade,0)}
+#viewer{isolation:isolate}
+.addto{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;background:var(--surface);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line);border-left:4px solid var(--brass);border-radius:10px;padding:10px 14px;margin:8px 0 12px}
+.addto .f{flex:1 1 180px;margin:0}
+.addto .addq{flex:1 1 100%;font-size:14px}
+.addlast{flex:1 1 100%;font-size:14px;color:var(--ink-2)}
+.addlast b{color:var(--ink)}
+.pcard{position:relative}
+.pc-more{position:absolute;top:6px;right:6px;z-index:2;font-size:12px;font-weight:600;padding:2px 8px;border-radius:9px;background:rgba(10,14,20,.72);color:#fff;border:0;cursor:pointer}
+#viewer #vAdd{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -418,7 +477,14 @@ th{background:var(--solid)}
   <!-- AGGIUNGI -->
   <section class="panel" id="p-add">
     <h2 style="font-size:24px;margin-bottom:6px">Aggiungi carte</h2>
-    <p class="hint">Scrivi il nome della carta in qualsiasi lingua: mentre scrivi ti suggerisco le carte, riconoscendo da solo la lingua (accanto ai nomi stranieri vedi quello inglese). Tocca la carta, poi l’edizione che possiedi: la lingua nella scheda è già impostata su quella del nome che hai scritto. Con Cerca vedi tutte le carte che contengono quelle parole.</p>
+    <div class="addto" id="addToBar">
+      <label class="f">Sto inserendo in<select id="addTo"></select></label>
+      <label class="f">Mazzo<select id="addDeck"></select></label>
+      <label class="f">Condizione<select id="addCond"></select></label>
+      <label class="chk addq"><input type="checkbox" id="addQuick"> Aggiunta rapida: un tocco sull’edizione e la carta è inserita</label>
+      <div class="addlast" id="addLast" hidden></div>
+    </div>
+    <p class="hint">Scegli una volta dove stai inserendo le carte, poi scrivi il nome in qualsiasi lingua e tocca l’edizione che possiedi. Con l’aggiunta rapida la carta entra subito con le impostazioni scelte qui sopra; per cambiare quantità, foil o lingua di una singola carta usa “Scheda”.</p>
     <div class="addrow">
       <div class="searchbox">
         <input type="text" id="addQ" placeholder="es. Lightning Bolt oppure Fulmine" autocomplete="off" aria-label="Nome carta" enterkeyhint="search">
@@ -497,6 +563,7 @@ th{background:var(--solid)}
   <div class="v-top">
     <div class="v-title"><div class="k" id="vKind"></div><h2 id="vName"></h2><div class="k" id="vSub"></div></div>
     <div class="v-search"><input type="search" id="vQ" placeholder="Cerca qui dentro…" aria-label="Cerca nel contenitore"><span id="vHits" class="k"></span><button class="btn small" id="vHp" aria-label="Risultato precedente" hidden>‹</button><button class="btn small" id="vHn" aria-label="Risultato successivo" hidden>›</button></div>
+    <button class="btn" id="vAdd" title="Aggiungi carte in questo contenitore">+ Aggiungi qui</button>
     <button class="btn" id="vClose">Chiudi</button>
   </div>
   <div class="v-stage" id="vStage"></div>
@@ -569,8 +636,20 @@ const KINDS = {binder:'Raccoglitore', chest:'Cassettiera', box:'Scatola', deckbo
 const TIERS = [['value','Di valore'],['bulk','Bulk'],['theme','Tematico (nessun controllo)'],['','Da classificare']];
 const ORDERS = [['color','Colore, poi nome'],['name','Solo nome'],['type','Tipo, poi nome'],['set','Set e numero'],['value','Valore (più alto)']];
 const locById = id => S.locs.find(l=>l.id===id);
-const COVERS = [['Viola notte','#4b3468','#1d1330'],['Bordeaux','#6b2738','#2a0e17'],['Blu notte','#25466e','#0d1a2e'],['Verde bosco','#2f5a3e','#11241a'],['Cuoio','#7a5530','#2e1d0e'],['Antracite','#3a3b44','#121318']];
-function coverColor(l){ let i = l.color; if(i==null){ let h = 0; for(const ch of l.id) h = (h*31 + ch.charCodeAt(0))>>>0; i = h % COVERS.length; } const c = COVERS[i] || COVERS[0]; return [c[1], c[2]]; }
+const COVERS = [['Viola notte','#4b3468','#1d1330'],['Bordeaux','#6b2738','#2a0e17'],['Blu notte','#25466e','#0d1a2e'],['Verde bosco','#2f5a3e','#11241a'],['Cuoio','#7a5530','#2e1d0e'],['Antracite','#3a3b44','#121318'],['Rosso carminio','#8a2a2a','#360f0f'],['Petrolio','#1f5a60','#0b2326'],['Senape','#9a7a2a','#3a2c0c'],['Avorio','#d9ceb4','#8c7f63']];
+const MATS = [['pelle','Pelle'],['tela','Tela'],['opaco','Opaco'],['lucido','Lucido'],['vinile','Vinile goffrato']];
+const TFONTS = [['cinzel','Classico inciso','Cinzel'],['cormorant','Elegante','Cormorant Garamond'],['playfair','Raffinato corsivo','Playfair Display'],['uncial','Antico','Uncial Antiqua'],['spectral','Libro','Spectral']];
+const FOILS = [['oro','Lamina oro'],['argento','Lamina argento'],['secco','Impresso a secco'],['bianco','Stampa bianca']];
+function hexMix(hex, f){ const n = parseInt(hex.slice(1),16); let r=n>>16, g=(n>>8)&255, b=n&255; const m = x => Math.max(0, Math.min(255, Math.round(f<0 ? x*(1+f) : x + (255-x)*f))); return '#' + [m(r),m(g),m(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+function coverColor(l){
+  if(l.hex && /^#[0-9a-f]{6}$/i.test(l.hex)) return [l.hex, hexMix(l.hex, -0.62)];
+  let i = l.color; if(i==null){ let h = 0; for(const ch of l.id) h = (h*31 + ch.charCodeAt(0))>>>0; i = h % 6; }
+  const c = COVERS[i] || COVERS[0]; return [c[1], c[2]];
+}
+function coverLook(l){
+  const [c1, c2] = coverColor(l), f = TFONTS.find(x=>x[0]===l.font) || TFONTS[0];
+  return {cls: `mat-${l.mat||'pelle'} foil-${l.foil||'oro'} tf-${f[0]}`, style: `--c1:${c1};--c2:${c2};--tf:'${f[2]}'`};
+}
 const locName = id => { const l = locById(id); if(!l) return ''; if(l.parent){ const p = locById(l.parent); return (p ? p.name + ' · ' : '') + l.name; } return l.name; };
 function slots(){
   const top = S.locs.filter(l=>!l.parent).sort((a,b)=>a.name.localeCompare(b.name));
@@ -603,7 +682,7 @@ function showTab(t){
   if(t==='coll') renderColl();
   if(t==='decks') renderDecks();
   if(t==='locs') renderLocs();
-  if(t==='add') setTimeout(()=>$('#addQ').focus(),0);
+  if(t==='add'){ fillAddBar(); showLast(); setTimeout(()=>$('#addQ').focus(),0); }
   window.scrollTo(0,0);
 }
 
@@ -851,7 +930,8 @@ const dlg = $('#dlg');
 function opts(arr, cur){ return arr.map(([v,l])=>`<option value="${v}" ${v===cur?'selected':''}>${esc(l)}</option>`).join(''); }
 function cardForm(base, entry){
   const canFoil = (base.finishes||[]).some(f=>f!=='nonfoil'), canNon = (base.finishes||['nonfoil']).includes('nonfoil');
-  const e = entry || {qty:1, foil: !canNon && canFoil, cond:'NM', lang: base.srcLang || 'en', loc:'', deck:'', note:''};
+  const ap = S.addPrefs || {};
+  const e = entry || {qty:1, foil: !canNon && canFoil, cond: ap.cond || 'NM', lang: base.srcLang || 'en', loc: ap.loc || '', deck: ap.deck || '', note:''};
   const locO = [['','Nessun luogo'], ...slots().map(l=>[l.id,locName(l.id)])];
   const deckO = [['','Nessun mazzo'], ...S.decks.map(d=>[d.id,d.name])];
   return `<form method="dialog" class="dlg" id="cardF">
@@ -877,7 +957,48 @@ function cardForm(base, entry){
     </div></form>`;
 }
 function readForm(f){
-  return { qty: Math.max(1, parseInt(f.qty.value)||1), cond: f.cond.value, lang: f.lang.value, foil: f.foil.checked, loc: f.loc.value, deck: f.deck.value, note: f.note.value.trim() };
+  const E = n => f.elements[n];
+  return { qty: Math.max(1, parseInt(E('qty').value)||1), cond: E('cond').value, lang: E('lang').value, foil: E('foil').checked, loc: E('loc').value, deck: E('deck').value, note: E('note').value.trim() };
+}
+function addPrefs(){ return S.addPrefs || (S.addPrefs = {loc:'', deck:'', cond:'NM', quick:false}); }
+function fillAddBar(){
+  const p = addPrefs();
+  if(p.loc && !locById(p.loc)) p.loc = '';
+  if(p.deck && !S.decks.some(d=>d.id===p.deck)) p.deck = '';
+  $('#addTo').innerHTML = '<option value="">Nessun luogo (lo scelgo per ogni carta)</option>' + slots().map(l=>`<option value="${l.id}">${esc(locName(l.id))}</option>`).join('');
+  $('#addDeck').innerHTML = '<option value="">Nessun mazzo</option>' + S.decks.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
+  $('#addCond').innerHTML = CONDS.map(c=>`<option value="${c[0]}">${esc(c[0])} · ${esc(c[1])}</option>`).join('');
+  $('#addTo').value = p.loc; $('#addDeck').value = p.deck; $('#addCond').value = p.cond || 'NM'; $('#addQuick').checked = !!p.quick;
+}
+['#addTo','#addDeck','#addCond','#addQuick'].forEach(x => $(x).addEventListener('change', () => {
+  const p = addPrefs(); p.loc = $('#addTo').value; p.deck = $('#addDeck').value; p.cond = $('#addCond').value; p.quick = $('#addQuick').checked; save();
+  toast(p.loc ? 'Le nuove carte andranno in ' + locName(p.loc) : 'Nessun luogo predefinito');
+}));
+let lastAdd = null, sessionN = 0;
+function showLast(){
+  const el = $('#addLast'); if(!lastAdd){ el.hidden = true; return; }
+  el.hidden = false;
+  el.innerHTML = `Ultima: <b>${esc(lastAdd.name)}</b>${lastAdd.where?' in '+esc(lastAdd.where):''} · in questa sessione ${sessionN} ${sessionN===1?'carta':'carte'} · <button class="thr" id="addUndo">Annulla l’ultima</button>`;
+  $('#addUndo').onclick = () => {
+    if(!lastAdd) return; const c = S.cards.find(x=>x.id===lastAdd.id);
+    if(c){ if(lastAdd.merged) c.qty -= lastAdd.qty; if(!lastAdd.merged || c.qty<=0) S.cards = S.cards.filter(x=>x.id!==c.id); }
+    sessionN = Math.max(0, sessionN - lastAdd.qty); lastAdd = null; save(); renderHeader(); showLast(); toast('Ultima aggiunta annullata');
+  };
+}
+function commitAdd(base, v){
+  const same = S.cards.find(c => c.sid===base.sid && c.foil===v.foil && c.cond===v.cond && c.lang===v.lang && c.loc===v.loc && c.deck===v.deck);
+  let id, merged = false;
+  if(same){ same.qty += v.qty; if(v.note) same.note = v.note; id = same.id; merged = true; }
+  else { const c = Object.assign({id:uid(), added:Date.now()}, base, v); delete c.srcLang; S.cards.push(c); id = c.id; }
+  sessionN += v.qty;
+  lastAdd = {id, merged, qty:v.qty, name: base.name + (base.printed && base.printed!==base.name ? ' · ' + base.printed : ''), where: v.deck ? 'mazzo ' + deckName(v.deck) : (v.loc ? locName(v.loc) : '')};
+  save(); renderHeader(); showLast();
+  toast(`${v.qty}× ${base.name} aggiunta${v.qty>1?'e':''}${lastAdd.where?' in '+lastAdd.where:''}`);
+}
+function quickAdd(base){
+  const p = addPrefs();
+  const canFoil = (base.finishes||[]).some(f=>f!=='nonfoil'), canNon = (base.finishes||['nonfoil']).includes('nonfoil');
+  commitAdd(base, {qty:1, foil: !canNon && canFoil, cond: p.cond || 'NM', lang: base.srcLang || 'en', loc: p.loc || '', deck: p.deck || '', note:''});
 }
 function openAdd(base){
   $('#dlgBody').innerHTML = cardForm(base, null); dlg.showModal();
@@ -886,11 +1007,7 @@ function openAdd(base){
   f.onsubmit = ev => {
     ev.preventDefault();
     const v = readForm(f);
-    const same = S.cards.find(c => c.sid===base.sid && c.foil===v.foil && c.cond===v.cond && c.lang===v.lang && c.loc===v.loc && c.deck===v.deck);
-    if(same){ same.qty += v.qty; if(v.note) same.note = v.note; }
-    else S.cards.push(Object.assign({id:uid(), added:Date.now()}, base, v));
-    save(); renderHeader(); dlg.close();
-    toast(`${v.qty}× ${base.name} aggiunta${v.qty>1?'e':''}`);
+    dlg.close(); commitAdd(base, v);
     $('#addQ').select();
   };
 }
@@ -997,7 +1114,11 @@ async function loadPrints(query, label, lang){
         <div class="meta"><b>${esc(p.setName)}</b> <span class="muted">#${esc(p.num)}</span>${names.length>1?'<br>'+esc(p.name):''}<br>
         <span class="p">${eur(p.eur)}</span>${p.eurFoil!=null?` <span class="muted">· foil ${eur(p.eurFoil)}</span>`:''}${ownBy[p.sid]?`<br><span class="own">Ne hai ${ownBy[p.sid]}</span>`:''}</div>
       </button>`).join('') + '</div>';
-    box.querySelectorAll('.pcard').forEach(b => b.onclick = () => openAdd(prints[b.dataset.i]));
+    box.querySelectorAll('.pcard').forEach(b => {
+      b.insertAdjacentHTML('afterbegin', '<span class="pc-more" role="button" tabindex="0" title="Apri la scheda per scegliere quantità, foil, lingua…">Scheda</span>');
+      b.querySelector('.pc-more').onclick = e => { e.stopPropagation(); openAdd(prints[b.dataset.i]); };
+      b.onclick = () => { if(addPrefs().quick) quickAdd(prints[b.dataset.i]); else openAdd(prints[b.dataset.i]); };
+    });
   }catch(e){ box.innerHTML=''; showNet(e); }
 }
 function showNet(e){ toast('Non riesco a contattare Scryfall: controlla la connessione. (' + (e.message||e) + ')', 5000); }
@@ -1101,15 +1222,15 @@ function renderArchive(){
         dr.map(d => { const ds = contStats(d.id); return `<div class="drawer" role="button" tabindex="0" data-view="${d.id}" aria-label="Apri ${esc(d.name)}"><b>${esc(d.name)}${tierBadge(d, l.tier)}${ds.mis?`<span class="badge red">${ds.mis}</span>`:''}</b><span class="v">${ds.n.toLocaleString('it-IT')} · ${eur(ds.v)}</span><span class="dest">${esc(d.dest||'Nessuna destinazione indicata')} · <button class="thr" data-open="${d.id}">Imposta</button></span></div>`; }).join('') + '</div>';
     }
     if(l.kind==='binder'){
-      const [c1, c2] = coverColor(l);
-      return `<div class="bnd" role="button" tabindex="0" data-bind="${l.id}" aria-label="Apri ${esc(l.name)}" style="--c1:${c1};--c2:${c2}"><div class="bnd-spine"><i></i><i></i><i></i></div><div class="bnd-cover"><div class="bnd-label">${esc(l.name)}</div></div></div>`;
+      const lk = coverLook(l);
+      return `<div class="bnd ${lk.cls}" role="button" tabindex="0" data-bind="${l.id}" aria-label="Apri ${esc(l.name)}" style="${lk.style}"><div class="bnd-spine"><i></i><i></i><i></i></div><div class="bnd-cover"><div class="bnd-title">${esc(l.name)}</div></div></div>`;
     }
     return `<div class="cont" role="button" tabindex="0" data-view="${l.id}" aria-label="Sfoglia ${esc(l.name)}"><button class="btn small tile-gear" data-open="${l.id}">Imposta</button><div class="k">${esc(KINDS[l.kind]||'Altro')}${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div><div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div><div class="k" style="margin-top:4px">Ordine: ${esc(orderLbl(l.order))}</div><div class="k" style="margin-top:8px"><b>Tocca per sfogliare</b></div></div>`;
   }).join('');
   const un = groupStats('loc','');
   if(un.n) el.insertAdjacentHTML('beforeend', `<button class="cont" data-show-none="1"><div class="k">Da sistemare</div><h3>Carte senza luogo</h3><div class="st">${un.n.toLocaleString('it-IT')} carte · <b>${eur(un.v)}</b></div><div class="k" style="margin-top:4px">Clicca per vederle e assegnarle</div></button>`);
   el.querySelectorAll('[data-open]').forEach(b => b.onclick = e => { e.stopPropagation(); openCont(b.dataset.open); });
-  el.querySelectorAll('[data-bind]').forEach(b => { b.onclick = () => openViewer(b.dataset.bind); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openViewer(b.dataset.bind); } }; });
+  el.querySelectorAll('[data-bind]').forEach(b => { b.onclick = () => openViewer(b.dataset.bind, b); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openViewer(b.dataset.bind, b); } }; });
   el.querySelectorAll('[data-view]').forEach(b => { b.onclick = () => openViewer(b.dataset.view); b.onkeydown = e => { if(e.target===b && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); openViewer(b.dataset.view); } }; });
   const sn = el.querySelector('[data-show-none]'); if(sn) sn.onclick = () => { fillSelects(); $('#fDeck').value=''; $('#fLoc').value='__none'; ui.onlyMis=false; showTab('coll'); };
 }
@@ -1136,7 +1257,18 @@ function openCont(id){
       <label class="f" data-for="nochest">Tipo di carte<select name="tier">${opts(isDrawer?[['','Come la cassettiera ('+esc(tierLbl(parent&&parent.tier))+')'],...TIERS.slice(0,3)]:TIERS, L?L.tier||'':'')}</select></label>
       <label class="f" data-for="nochest">Organizzazione<select name="order">${opts(ORDERS, L?L.order:'color')}</select></label>
       <label class="f" data-for="binder">Fogli (18 tasche ciascuno)<span class="row" style="gap:6px;flex-wrap:nowrap"><input type="number" name="sheets" min="0" value="${L&&L.sheets||0}" style="width:90px"><button type="button" class="btn small" id="addSheet">+ Aggiungi fogli</button></span></label>
-      <label class="f" data-for="binder">Colore della copertina<select name="color">${opts([['','Automatico'], ...COVERS.map((c,i)=>[String(i), c[0]])], L && L.color!=null ? String(L.color) : '')}</select></label>
+      <div class="f full look" data-for="binder"><span class="look-h">Aspetto della copertina</span>
+        <div class="look-row">
+          <div class="look-prev" id="lookPrev"></div>
+          <div class="look-f">
+            <label class="f">Colore<select name="color">${opts([['','Automatico'], ...COVERS.map((c,i)=>[String(i), c[0]]), ['custom','Personalizzato…']], L && L.hex ? 'custom' : (L && L.color!=null ? String(L.color) : ''))}</select></label>
+            <label class="f" id="hexWrap">Scegli il colore<input type="color" name="hex" value="${esc(L && L.hex || '#4b3468')}"></label>
+            <label class="f">Materiale<select name="mat">${opts(MATS, L && L.mat || 'pelle')}</select></label>
+            <label class="f">Carattere del titolo<select name="font">${opts(TFONTS.map(x=>[x[0],x[1]]), L && L.font || 'cinzel')}</select></label>
+            <label class="f">Finitura del titolo<select name="foil">${opts(FOILS, L && L.foil || 'oro')}</select></label>
+          </div>
+        </div>
+      </div>
       <label class="f" data-for="chest">Numero di cassetti<input type="number" name="drawers" min="1" max="30" value="${drawers}"></label>
       <label class="f" data-for="chest">Tipo di carte (predefinito per i cassetti)<select name="ctier">${opts(TIERS, L?L.tier||'':'')}</select></label>
     </div>
@@ -1145,7 +1277,7 @@ function openCont(id){
       ${L&&!isDrawer?'<button type="button" class="btn danger" id="cDel" style="margin-right:auto">Elimina</button>':''}
       ${L&&kind!=='chest'?`<button type="button" class="btn" id="cShow">Vedi carte</button>`:''}
       ${L&&kind==='chest'?`<button type="button" class="btn" id="cShow">Vedi tutte le carte</button>`:''}
-      ${L&&kind!=='chest'?`<button type="button" class="btn" id="cBrowse">Sfoglia</button>`:''}
+      ${L&&kind!=='chest'?`<button type="button" class="btn" id="cBrowse">Sfoglia</button><button type="button" class="btn" id="cAddHere">Aggiungi carte qui</button>`:''}
       <button type="button" class="btn" id="cCancel">Annulla</button>
       <button type="submit" class="btn primary">${isNew?'Crea':'Salva'}</button>
     </div></form>`;
@@ -1153,10 +1285,17 @@ function openCont(id){
   const sync = () => { const k = isDrawer ? 'drawer' : F('kind').value;
     f.querySelectorAll('[data-for]').forEach(x => { const w = x.dataset.for; x.style.display = (w==='binder' && k==='binder') || (w==='chest' && k==='chest') || (w==='nochest' && k!=='chest') ? '' : 'none'; }); };
   if(F('kind')) F('kind').onchange = sync; sync();
+  const lookUpd = () => { if(!F('color')) return; const t = {id: L ? L.id : 'nuovo', name: F('name').value || 'Raccoglitore', mat: F('mat').value, font: F('font').value, foil: F('foil').value};
+    if(F('color').value === 'custom') t.hex = F('hex').value; else if(F('color').value !== '') t.color = +F('color').value;
+    $('#hexWrap').style.display = F('color').value === 'custom' ? '' : 'none';
+    const lk = coverLook(t); $('#lookPrev').innerHTML = `<div class="bnd mini ${lk.cls}" style="${lk.style}"><div class="bnd-spine"><i></i><i></i><i></i></div><div class="bnd-cover"><div class="bnd-title">${esc(t.name)}</div></div></div>`; };
+  ['color','hex','mat','font','foil','name'].forEach(n => { if(F(n)) F(n).addEventListener('input', lookUpd); });
+  lookUpd();
   $('#addSheet').onclick = () => { const n = prompt('Quanti fogli hai aggiunto?', '1'); const v = parseInt(n); if(v>0) F('sheets').value = (parseInt(F('sheets').value)||0) + v; };
   $('#cCancel').onclick = () => dlg.close();
   if($('#cShow')) $('#cShow').onclick = () => showCont(L.id, false);
   if($('#cBrowse')) $('#cBrowse').onclick = () => { dlg.close(); openViewer(L.id); };
+  if($('#cAddHere')) $('#cAddHere').onclick = () => { dlg.close(); addHere(L.id); };
   if($('#cDel')) $('#cDel').onclick = () => {
     const ids = kind==='chest' ? [L.id, ...S.locs.filter(d=>d.parent===L.id).map(d=>d.id)] : [L.id];
     if(!confirm(`Eliminare “${L.name}”${kind==='chest'?' e i suoi cassetti':''}? Le ${st.n} carte restano in collezione, senza luogo.`)) return;
@@ -1180,7 +1319,8 @@ function openCont(id){
       for(let i=cur.length;i<want;i++) S.locs.push({id:uid(), kind:'drawer', parent:x.id, pos:i, name:'Cassetto '+(i+1), dest:'', tier:'', order:'color'});
     } else {
       x.tier = F('tier').value; x.order = F('order').value;
-      if(k==='binder'){ x.sheets = Math.max(0, parseInt(F('sheets').value)||0); const cv = F('color').value; if(cv==='') delete x.color; else x.color = +cv; }
+      if(k==='binder'){ x.sheets = Math.max(0, parseInt(F('sheets').value)||0); const cv = F('color').value; delete x.hex; if(cv==='') delete x.color; else if(cv==='custom'){ delete x.color; x.hex = F('hex').value; } else x.color = +cv;
+        x.mat = F('mat').value; x.font = F('font').value; x.foil = F('foil').value; }
     }
     if(isNew) S.locs.push(x);
     save(); dlg.close(); renderArchive(); fillSelects(); toast(isNew?'Contenitore creato':'Modifiche salvate');
@@ -1349,8 +1489,9 @@ function vPages(){ const L = locById(V.id); const byCards = Math.max(1, Math.cei
 function vSteps(){ return isBinder() ? Math.ceil((vPages()+1)/2) : Math.max(1, V.items.length); }
 const leftOf = s => s*2 - 1;
 const pageLbl = p => p < 0 ? 'Interno copertina' : 'Pagina ' + (p+1);
-function openViewer(id){
+function openViewer(id, fromEl){
   const L = locById(id); if(!L) return;
+  V.gen = (V.gen||0) + 1;
   V.id = id; V.kind = L.kind==='binder' ? 'binder' : 'drawer'; V.items = vItems(id); V.pos = 0; V.hits = []; V.hitI = -1; V.busy = false; V.single = false; V.side = 0; V.loupe = false;
   $('#vKind').textContent = L.kind==='drawer' ? 'Cassetto' : (KINDS[L.kind]||'Contenitore');
   $('#vName').textContent = locName(id);
@@ -1358,10 +1499,13 @@ function openViewer(id){
   $('#vSub').textContent = `${V.items.length.toLocaleString('it-IT')} carte · ${eur(v)} · ${orderLbl(L.order)}${L.dest?' · '+L.dest:''}`;
   $('#vQ').value = ''; $('#vHits').textContent = ''; $('#vHp').hidden = $('#vHn').hidden = true; $('#vInfo').hidden = true;
   $('#viewer').hidden = false; $('#viewer').classList.toggle('is-binder', isBinder()); document.body.style.overflow = 'hidden';
-  const [c1, c2] = coverColor(L); $('#viewer').style.setProperty('--c1', c1); $('#viewer').style.setProperty('--c2', c2);
+  const lk = coverLook(L); const vw = $('#viewer');
+  vw.className = vw.className.replace(/\b(mat|foil|tf)-\S+/g, '').trim() + ' ' + lk.cls; lk.style.split(';').forEach(p => { const [k, v] = p.split(':'); if(k) vw.style.setProperty(k, v); });
+  V.from = fromEl || null;
+  if(isBinder() && V.from && !reduced()){ vw.classList.add('intro'); }
   requestAnimationFrame(() => requestAnimationFrame(() => { vRender(); if(isBinder()) introOpen(); }));
 }
-function closeViewer(){ $('#viewer').hidden = true; document.body.style.overflow = ''; $('#preview').style.display='none'; V.id = null; V.busy = false; }
+function closeViewer(){ V.gen = (V.gen||0) + 1; $('#viewer').style.removeProperty('--fade'); $('#viewer').classList.remove('intro','outro'); if(V.from) V.from.style.visibility = ''; $('#viewer').hidden = true; document.body.style.overflow = ''; $('#preview').style.display='none'; V.id = null; V.busy = false; }
 const imgSeen = new Set();
 function preload(u){ if(!u || imgSeen.has(u)) return; imgSeen.add(u); const im = new Image(); im.decoding = 'async'; im.src = u; }
 function pocketHtml(c, idx){
@@ -1384,10 +1528,13 @@ function infoHtml(){
     ${capN ? `<div class="ip-bar"><i style="width:${pct}%"></i></div><div class="ip-l">${l.sheets} fogli · ${Math.min(full, l.sheets)} pieni · ${free} tasche libere</div>` : `<div class="ip-l">${full} fogli pieni · numero di fogli non indicato</div>`}
     <div class="ip-l">${esc(tierLbl(l.tier).replace(' (nessun controllo)',''))} · ${esc(orderLbl(l.order))}</div>
     ${st.mis ? `<div class="ip-l ip-w">${st.mis} ${st.mis===1?'carta fuori posto':'carte fuori posto'}</div>` : ''}
-    <button class="ip-b" type="button" data-act="edit">Modifica</button></div>`;
+    <div class="ip-bs"><button class="ip-b" type="button" data-act="add">+ Aggiungi carte qui</button><button class="ip-b" type="button" data-act="edit">Modifica</button></div></div>`;
 }
-function bindInfo(root){ const b = root.querySelector('[data-act=edit]'); if(b) b.onclick = e => { e.stopPropagation(); const id = V.id; closeViewer(); openCont(id); }; }
-function coverHtml(){ const l = locById(V.id); return `<div class="cv-spine"><i></i><i></i><i></i></div><div class="cv-label">${esc(l ? l.name : '')}</div>`; }
+function bindInfo(root){
+  const b = root.querySelector('[data-act=edit]'); if(b) b.onclick = e => { e.stopPropagation(); const id = V.id; closeViewer(); openCont(id); };
+  const a = root.querySelector('[data-act=add]'); if(a) a.onclick = e => { e.stopPropagation(); addHere(V.id); };
+}
+function coverHtml(){ const l = locById(V.id); return `<div class="bnd-title">${esc(l ? l.name : '')}</div>`; }
 function preloadAround(a){ for(let p=a-2;p<=a+3;p++) for(let k=0;k<9;k++){ const c = V.items[p*9+k]; if(c) preload(c.img||c.imgL); } }
 function pageW(){
   const st = $('#vStage'); const W = st.clientWidth - 24, H = st.clientHeight - 12;
@@ -1411,9 +1558,9 @@ function vRender(){ if(!V.id) return; if(isBinder()) bkRender(); else dwRender(t
 const NS = 12;                                   // strisce verticali che formano il foglio
 function bkRender(){
   const st = $('#vStage'); V.pos = Math.max(0, Math.min(V.pos, vSteps()-1));
-  st.innerHTML = `<div class="bk ${V.hits.length?'hitmode':''}" style="--pw:${pageW()}px"><div class="rings"><i></i><i></i><i></i><i></i></div></div><div class="loupe" hidden></div>`;
+  st.innerHTML = `<div class="bk ${V.hits.length?'hitmode':''}" style="--pw:${pageW()}px"><div class="bk-bg"></div><div class="rings"><i></i><i></i><i></i><i></i></div></div><div class="loupe" hidden></div>`;
   const bk = st.firstChild, a = leftOf(V.pos);
-  bk.prepend(pageEl(a,'left'), pageEl(a+1,'right'));
+  bk.querySelector('.bk-bg').after(pageEl(a,'left'), pageEl(a+1,'right'));
   bindPockets(bk); preloadAround(a); applyCam(false);
 }
 function applyCam(animate){
@@ -1547,24 +1694,67 @@ function coverLeaf(open){
     el.style.width = (sw + (i < NS-1 ? 0.6 : 0)).toFixed(3) + 'px'; el.style.height = H.toFixed(3) + 'px';
     el.style.left = (i===0 ? 0 : sw) + 'px'; el.style.transformOrigin = 'left center';
     el.innerHTML = sliceFace(coverHtml(), 'right coverpg', W, H, -i*sw, 'front') + sliceFace(infoHtml(), 'left info', W, H, -(W - (i+1)*sw), 'back');
+    el.classList.add('rigid');
     parent.appendChild(el); strips.push(el); parent = el;
   }
   bk.appendChild(leaf);
   return {fwd:true, to:V.pos, bk, leaf, strips, back:info, blank, cast:null, t: open ? 0 : 1, bend:0};
 }
+function flyGeom(bk){
+  // trasformazione che porta il raccoglitore aperto a coincidere con il riquadro chiuso in Archivio
+  const tile = V.from && V.from.isConnected ? V.from.getBoundingClientRect() : null; if(!tile || !tile.width) return null;
+  const R = bk.querySelector('.pg.right').getBoundingClientRect(), B = bk.getBoundingClientRect();
+  const cover = {left: R.left, top: R.top, w: R.width, h: R.height};
+  const s = tile.height / cover.h;
+  const ox = (R.left + R.width/2) - B.left, oy = (R.top + R.height/2) - B.top;      // centro della pagina destra nel raccoglitore
+  const dx = (tile.left + tile.width/2 + tile.width*0.06) - (R.left + R.width/2), dy = (tile.top + tile.height/2) - (R.top + R.height/2);
+  return {s, ox, oy, dx, dy};
+}
 function introOpen(){
-  const f = coverLeaf(true); if(!f) return; const bk = f.bk;
+  const vw = $('#viewer'), f = coverLeaf(true); if(!f){ vw.classList.remove('intro'); return; } const bk = f.bk;
   const cast = document.createElement('i'); cast.className = 'cast'; bk.querySelector('.pg.right').appendChild(cast); f.cast = cast;
   setFlip(f, 0);
-  if(reduced()){ f.blank.replaceWith(f.back); f.leaf.remove(); cast.remove(); V.busy = false; return; }
-  bk.animate([{transform:'scale(.94)', opacity:.0},{transform:'scale(1)', opacity:1}], {duration:380, easing:'ease-out'});
-  setTimeout(() => animateFlip(f, 1, 1000, easeIO, () => { f.blank.replaceWith(f.back); bindInfo(bk); cast.remove(); requestAnimationFrame(() => { f.leaf.remove(); V.busy = false; updateNav(); }); }), 300);
+  const done = () => { f.blank.replaceWith(f.back); bindInfo(bk); cast.remove(); requestAnimationFrame(() => { f.leaf.remove(); V.busy = false; updateNav(); }); };
+  if(reduced()){ vw.classList.remove('intro'); setFlip(f, 1); done(); return; }
+  const g = flyGeom(bk), bg = bk.querySelector('.bk-bg'), rings = bk.querySelector('.rings');
+  if(V.from) V.from.style.visibility = 'hidden';
+  const T = 1500, t0 = performance.now(), gen = V.gen;
+  bk.style.transformOrigin = g ? `${g.ox}px ${g.oy}px` : '50% 50%';
+  const frame = now => {
+    if(gen !== V.gen) return;
+    const p = Math.min(1, (now - t0) / T);
+    const mv = easeIO(Math.min(1, p / 0.55));                    // il raccoglitore arriva al centro
+    const op = easeIO(Math.max(0, Math.min(1, (p - 0.28) / 0.72))); // intanto la copertina si apre
+    if(g){ const sc = g.s + (1 - g.s) * mv; bk.style.transform = `translate(${(g.dx*(1-mv)).toFixed(2)}px,${(g.dy*(1-mv)).toFixed(2)}px) scale(${sc.toFixed(4)})`; }
+    else bk.style.transform = `scale(${(0.9 + 0.1*mv).toFixed(4)})`;
+    vw.style.setProperty('--fade', Math.min(1, p / 0.45).toFixed(3));
+    bg.style.opacity = rings.style.opacity = Math.min(1, op * 1.6).toFixed(3);
+    setFlip(f, op);
+    if(p < 1) requestAnimationFrame(frame);
+    else { bk.style.transform = ''; bk.style.transformOrigin = ''; bg.style.opacity = rings.style.opacity = ''; vw.classList.remove('intro'); vw.style.removeProperty('--fade'); done(); }
+  };
+  frame(t0);
 }
 function closeAnimated(){
+  const vw = $('#viewer');
   if(!isBinder() || V.single || V.pos !== 0 || V.busy || reduced()){ closeViewer(); return; }
-  const f = coverLeaf(false); if(!f) { closeViewer(); return; }
-  setFlip(f, 1); f.back.replaceWith(f.blank);
-  animateFlip(f, 0, 750, easeIO, () => { f.bk.animate([{opacity:1},{opacity:0}], {duration:220, easing:'ease-in'}).onfinish = () => { V.busy = false; closeViewer(); }; });
+  const f = coverLeaf(false); if(!f){ closeViewer(); return; }
+  const bk = f.bk; setFlip(f, 1); f.back.replaceWith(f.blank);
+  const g = flyGeom(bk), bg = bk.querySelector('.bk-bg'), rings = bk.querySelector('.rings');
+  vw.classList.add('intro'); bk.style.transformOrigin = g ? `${g.ox}px ${g.oy}px` : '50% 50%';
+  const T = 1200, t0 = performance.now(), gen = V.gen;
+  const frame = now => {
+    if(gen !== V.gen) return;
+    const p = Math.min(1, (now - t0) / T);
+    const cl = easeIO(Math.min(1, p / 0.62)), mv = easeIO(Math.max(0, (p - 0.45) / 0.55));
+    setFlip(f, 1 - cl);
+    bg.style.opacity = rings.style.opacity = Math.max(0, 1 - cl * 1.4).toFixed(3);
+    if(g){ const sc = 1 + (g.s - 1) * mv; bk.style.transform = `translate(${(g.dx*mv).toFixed(2)}px,${(g.dy*mv).toFixed(2)}px) scale(${sc.toFixed(4)})`; }
+    else bk.style.opacity = (1 - mv).toFixed(3);
+    vw.style.setProperty('--fade', (1 - Math.max(0, (p - 0.35) / 0.65)).toFixed(3));
+    if(p < 1) requestAnimationFrame(frame); else { V.busy = false; closeViewer(); vw.style.removeProperty('--fade'); }
+  };
+  requestAnimationFrame(frame);
 }
 
 // --- cassetto: le carte scorrono in prospettiva, i nodi restano e si spostano
@@ -1640,6 +1830,8 @@ $('#vPrev').onclick = () => vStep(-1);
 $('#vNext').onclick = () => vStep(1);
 $('#vRange').oninput = () => { if(V.busy) return; V.pos = +$('#vRange').value; vRender(); };
 $('#vClose').onclick = () => closeAnimated();
+function addHere(id){ const p = addPrefs(); p.loc = id; save(); closeViewer(); showTab('add'); toast('Le nuove carte andranno in ' + locName(id)); }
+$('#vAdd').onclick = () => { if(V.id) addHere(V.id); };
 $('#vStage').addEventListener('click', e => { if(e.target === $('#vStage')) $('#vInfo').hidden = true; });
 document.addEventListener('keydown', e => {
   if($('#viewer').hidden || $('#dlg').open || e.target === $('#vQ')) return;
