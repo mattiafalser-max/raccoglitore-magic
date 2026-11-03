@@ -224,6 +224,9 @@ th{background:var(--solid)}
 .ownbar{margin-bottom:12px}
 .chartbox svg{width:100%;height:auto;display:block}
 .chartbox .axis{font-size:11px;fill:var(--ink-2)}
+.addrow{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-top:6px}
+.addrow .searchbox{flex:1 1 260px;margin:0}
+.addrow select{flex:0 0 auto}
 </style>
 </head>
 <body>
@@ -292,10 +295,13 @@ th{background:var(--solid)}
   <!-- AGGIUNGI -->
   <section class="panel" id="p-add">
     <h2 style="font-size:24px;margin-bottom:6px">Aggiungi carte</h2>
-    <p class="hint">Scrivi il nome della carta in inglese e scegli dai suggerimenti, poi seleziona l’edizione che possiedi. Se conosci solo il nome italiano, scrivilo e premi Invio: cercherò tra le stampe in italiano.</p>
-    <div class="searchbox">
-      <input type="text" id="addQ" placeholder="es. Lightning Bolt" autocomplete="off" aria-label="Nome carta">
-      <div class="ac" id="ac"></div>
+    <p class="hint">Scrivi il nome della carta in qualsiasi lingua: mentre scrivi ti suggerisco le carte, riconoscendo da solo la lingua (accanto ai nomi stranieri vedi quello inglese). Tocca la carta, poi l’edizione che possiedi: la lingua nella scheda è già impostata su quella del nome che hai scritto. Con Cerca vedi tutte le carte che contengono quelle parole.</p>
+    <div class="addrow">
+      <div class="searchbox">
+        <input type="text" id="addQ" placeholder="es. Lightning Bolt oppure Fulmine" autocomplete="off" aria-label="Nome carta" enterkeyhint="search">
+        <div class="ac" id="ac"></div>
+      </div>
+      <button class="btn primary" id="addGo" type="button">Cerca</button>
     </div>
     <div class="prints" id="prints"></div>
   </section>
@@ -495,7 +501,7 @@ $('#fText').addEventListener('input', () => {
   itTimer = setTimeout(async () => {
     if(!itCache[q]){
       try{
-        const {status, data} = await api('/cards/search?unique=cards&q=' + encodeURIComponent(`lang:it "${q.replace(/"/g,'')}"`));
+        const {status, data} = await api('/cards/search?unique=cards&include_multilingual=true&q=' + encodeURIComponent(`lang:it ${q.replace(/["()]/g,' ')}`));
         itCache[q] = new Set(status===200 ? (data.data||[]).map(c=>c.name) : []);
       }catch(e){ return; }
     }
@@ -704,7 +710,7 @@ const dlg = $('#dlg');
 function opts(arr, cur){ return arr.map(([v,l])=>`<option value="${v}" ${v===cur?'selected':''}>${esc(l)}</option>`).join(''); }
 function cardForm(base, entry){
   const canFoil = (base.finishes||[]).some(f=>f!=='nonfoil'), canNon = (base.finishes||['nonfoil']).includes('nonfoil');
-  const e = entry || {qty:1, foil: !canNon && canFoil, cond:'NM', lang:'it', loc:'', deck:'', note:''};
+  const e = entry || {qty:1, foil: !canNon && canFoil, cond:'NM', lang: base.srcLang || 'en', loc:'', deck:'', note:''};
   const locO = [['','Nessun luogo'], ...slots().map(l=>[l.id,locName(l.id)])];
   const deckO = [['','Nessun mazzo'], ...S.decks.map(d=>[d.id,d.name])];
   return `<form method="dialog" class="dlg" id="cardF">
@@ -761,39 +767,56 @@ function refreshLists(){ if($('#p-decks').classList.contains('on')) renderDecks(
 // ---------- add: autocomplete + prints ----------
 let acTimer, acIdx=-1, acItems=[];
 const addQ = $('#addQ'), ac = $('#ac');
+let acSeq = 0;
+$('#addGo').onclick = () => { const q = addQ.value.trim(); if(!q) return; if(acIdx>=0 && ac.classList.contains('on')) pickSug(acItems[acIdx]); else freeSearch(q); };
 addQ.addEventListener('input', () => {
   clearTimeout(acTimer);
-  const q = addQ.value.trim();
+  const q = addQ.value.trim(), seq = ++acSeq;
   if(q.length<2){ ac.classList.remove('on'); return; }
   acTimer = setTimeout(async () => {
-    try{
-      const {data} = await api('/cards/autocomplete?q=' + encodeURIComponent(q));
-      acItems = (data.data||[]).slice(0,12); acIdx = -1;
-      ac.innerHTML = acItems.map((n,i)=>`<button type="button" data-i="${i}">${esc(n)}</button>`).join('');
-      ac.classList.toggle('on', acItems.length>0);
-      ac.querySelectorAll('button').forEach(b => b.onclick = () => pickName(acItems[b.dataset.i]));
-    }catch(e){ showNet(e); }
-  }, 220);
+    const words = q.replace(/["()]/g,' ').trim();
+    const pEn = api('/cards/autocomplete?q=' + encodeURIComponent(q)).then(r => (r.data.data||[]).map(n => ({pn:n, en:n, lang:'en'}))).catch(() => []);
+    const pFor = q.length < 3 ? Promise.resolve([]) : api('/cards/search?unique=cards&order=name&include_multilingual=true&q=' + encodeURIComponent(`-lang:en ${words}`))
+      .then(r => r.status===200 ? (r.data.data||[]).map(c => ({pn: c.printed_name || (c.card_faces && c.card_faces[0] && c.card_faces[0].printed_name) || c.name, en:c.name, lang:c.lang})) : []).catch(() => []);
+    const [en, fo] = await Promise.all([pEn, pFor]);
+    if(seq !== acSeq) return;
+    const seen = new Set(), list = [];
+    [...en, ...fo].forEach(x => { const k = x.en + '|' + x.lang; if(!seen.has(k) && !(x.lang!=='en' && x.pn===x.en)){ seen.add(k); list.push(x); } });
+    acItems = list.slice(0,14); acIdx = -1;
+    const LN = Object.fromEntries(LANGS);
+    ac.innerHTML = acItems.map((x,i)=>`<button type="button" data-i="${i}">${esc(x.pn)}${x.lang!=='en'?` <span class="muted">· ${esc(x.en)} · ${esc(LN[x.lang]||x.lang.toUpperCase())}</span>`:''}</button>`).join('');
+    ac.classList.toggle('on', acItems.length>0);
+    ac.querySelectorAll('button').forEach(b => b.onclick = () => pickSug(acItems[b.dataset.i]));
+  }, 300);
 });
 addQ.addEventListener('keydown', e => {
   const bs = ac.querySelectorAll('button');
   if(e.key==='ArrowDown'&&bs.length){ e.preventDefault(); acIdx=(acIdx+1)%bs.length; }
   else if(e.key==='ArrowUp'&&bs.length){ e.preventDefault(); acIdx=(acIdx-1+bs.length)%bs.length; }
-  else if(e.key==='Enter'){ e.preventDefault(); if(acIdx>=0 && ac.classList.contains('on')) pickName(acItems[acIdx]); else freeSearch(addQ.value.trim()); return; }
+  else if(e.key==='Enter'){ e.preventDefault(); if(acIdx>=0 && ac.classList.contains('on')) pickSug(acItems[acIdx]); else freeSearch(addQ.value.trim()); return; }
   else if(e.key==='Escape'){ ac.classList.remove('on'); return; }
   else return;
   bs.forEach((b,i)=>b.classList.toggle('sel', i===acIdx));
 });
 document.addEventListener('click', e => { if(!e.target.closest('.searchbox')) ac.classList.remove('on'); });
 
-function pickName(name){ addQ.value = name; ac.classList.remove('on'); loadPrints(`!"${name}"`, name); }
-function freeSearch(q){ if(!q) return; ac.classList.remove('on'); loadPrints(`lang:it "${q.replace(/"/g,'')}"`, q, true); }
+function pickSug(x){
+  addQ.value = x.pn; ac.classList.remove('on');
+  if(x.lang==='en') loadPrints(`!"${x.en}"`, x.pn, 'en');
+  else loadPrints(`lang:${x.lang} !"${x.en}"`, x.pn, x.lang);
+}
+function pickName(name){ pickSug({pn:name, en:name, lang:'en'}); }
+function freeSearch(q){
+  if(!q) return; ac.classList.remove('on');
+  loadPrints(q.replace(/["()]/g,' ').trim(), q, 'any');
+}
 
-async function loadPrints(query, label, italian){
+async function loadPrints(query, label, lang){
+  const italian = !!lang && lang !== 'en';
   const box = $('#prints');
   box.innerHTML = `<p class="muted">Cerco le edizioni di ${esc(label)}…</p>`;
   try{
-    let url = '/cards/search?unique=prints&order=released&dir=desc&include_extras=true&q=' + encodeURIComponent(query);
+    let url = '/cards/search?unique=prints&order=released&dir=desc&include_extras=true' + (italian ? '&include_multilingual=true' : '') + '&q=' + encodeURIComponent(query);
     let all = [];
     for(let page=0; page<4 && url; page++){
       const {status, data} = await api(url.replace(API,''));
@@ -804,16 +827,16 @@ async function loadPrints(query, label, italian){
     }
     if(!all.length){
       box.innerHTML = italian
-        ? `<p class="muted">Nessuna stampa italiana trovata per “${esc(label)}”. Prova con il nome inglese: i suggerimenti compaiono mentre scrivi.</p>`
+        ? `<p class="muted">Nessuna stampa trovata in questa lingua per “${esc(label)}”. Controlla l’ortografia o prova con una parte del nome; in alternativa cerca il nome inglese e imposta poi la lingua nella scheda della carta.</p>`
         : `<p class="muted">Nessuna carta trovata.</p>`;
       return;
     }
     // Per le stampe non inglesi i prezzi Scryfall sono spesso vuoti: recupero la stampa inglese dello stesso set/numero.
     const prints = [];
     for(const card of all){
-      let base = fromScry(card);
+      let base = fromScry(card); base.srcLang = card.lang || 'en';
       if(card.lang!=='en'){
-        try{ await sleep(100); const r = await api(`/cards/${card.set}/${encodeURIComponent(card.collector_number)}`); if(r.status===200){ const en = fromScry(r.data); en.printed = card.printed_name || card.name; base = en; } }catch(_){}
+        try{ await sleep(100); const r = await api(`/cards/${card.set}/${encodeURIComponent(card.collector_number)}`); if(r.status===200){ const en = fromScry(r.data); en.printed = card.printed_name || card.name; en.srcLang = card.lang; base = en; } }catch(_){}
       }
       prints.push(base);
     }
