@@ -251,17 +251,21 @@ th{background:var(--solid)}
 .pk.empty{cursor:default;background:#d3d7e6}
 .pk .fl{position:absolute;left:3px;top:3px;background:var(--brass);color:#fff;font-size:10px;font-weight:600;padding:0 5px;border-radius:6px;z-index:2}
 .pk.hit{outline:3px solid var(--brass);outline-offset:-1px}.hitmode .pk:not(.hit):not(.empty) img{opacity:.35}
-.leaf{position:absolute;transform-style:preserve-3d;will-change:transform;z-index:6;pointer-events:none}
-.leaf.fwd{transform-origin:left center}.leaf.bwd{transform-origin:right center}
-.leaf .face{position:absolute;inset:0;width:auto !important;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 0 calc(var(--sh,0)*70px) rgba(0,0,0,calc(var(--sh,0)*1.1))}
-.leaf .face.back{transform:rotateY(180deg)}
-.shade,.cast{position:absolute;inset:0;pointer-events:none;opacity:0;border-radius:inherit;z-index:3}
-.leaf.fwd .front .shade{background:linear-gradient(to right,rgba(0,0,0,.65),rgba(0,0,0,.12) 55%,rgba(255,255,255,.1))}
-.leaf.fwd .back .shade{background:linear-gradient(to left,rgba(0,0,0,.6),rgba(0,0,0,0) 60%)}
-.leaf.bwd .front .shade{background:linear-gradient(to left,rgba(0,0,0,.65),rgba(0,0,0,.12) 55%,rgba(255,255,255,.1))}
-.leaf.bwd .back .shade{background:linear-gradient(to right,rgba(0,0,0,.6),rgba(0,0,0,0) 60%)}
-.pg.right .cast{background:linear-gradient(to right,rgba(0,0,0,.5),rgba(0,0,0,0) 50%)}
-.pg.left .cast{background:linear-gradient(to left,rgba(0,0,0,.5),rgba(0,0,0,0) 50%)}
+.bk{transform-origin:50% 50%}
+.bk .pg{box-sizing:border-box}
+.leaf{position:absolute;transform-style:preserve-3d;z-index:6;pointer-events:none}
+.strip{position:absolute;top:0;transform-style:preserve-3d;will-change:transform}
+.sf{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.sf.back{transform:rotateY(180deg)}
+.sf .pg{position:absolute !important;top:0;box-sizing:border-box;border-radius:0 !important}
+.sf .sh{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+.cast{position:absolute;inset:0;pointer-events:none;opacity:0;border-radius:inherit;z-index:3}
+.pg.right .cast{background:linear-gradient(to right,rgba(0,0,0,.55),rgba(0,0,0,.15) 35%,rgba(0,0,0,0) 70%)}
+.pg.left .cast{background:linear-gradient(to left,rgba(0,0,0,.55),rgba(0,0,0,.15) 35%,rgba(0,0,0,0) 70%)}
+.loupe{position:absolute;width:190px;height:190px;border-radius:50%;overflow:hidden;z-index:20;pointer-events:none;border:3px solid rgba(255,255,255,.85);box-shadow:0 12px 34px rgba(0,0,0,.55),inset 0 0 20px rgba(0,0,0,.25);background:#1b1430}
+.loupe[hidden]{display:none}
+.lclone{position:absolute;left:0;top:0;margin:0}
+.v-stage{position:relative;-webkit-touch-callout:none}
 #viewer.is-binder .v-stage{touch-action:none;cursor:grab}
 @media (max-height:540px){.v-top{padding:6px 12px 2px;gap:6px 12px}.v-title h2{font-size:16px}#vSub,#vKind{display:none}.v-nav{padding:4px 10px 6px;gap:8px}.v-nav input[type=range]{display:none}.bk{padding:10px;gap:18px}.v-info{bottom:46px}}
 /* cassetto */
@@ -296,10 +300,10 @@ th{background:var(--solid)}
       <button class="thr" id="btnThr" title="Le carte che superano questo prezzo vengono segnalate dopo l’aggiornamento"></button>
     </div>
     <nav class="tabs" role="tablist">
-      <button role="tab" data-tab="coll" aria-selected="true">Collezione</button>
+      <button role="tab" data-tab="locs" aria-selected="true">Archivio</button>
+      <button role="tab" data-tab="coll" aria-selected="false">Collezione</button>
       <button role="tab" data-tab="add" aria-selected="false">Aggiungi carte</button>
       <button role="tab" data-tab="decks" aria-selected="false">Mazzi</button>
-      <button role="tab" data-tab="locs" aria-selected="false">Archivio</button>
       <button role="tab" data-tab="backup" aria-selected="false">Backup</button>
     </nav>
   </div>
@@ -308,8 +312,7 @@ th{background:var(--solid)}
 
 <main>
   <!-- COLLEZIONE -->
-  <section class="panel on" id="p-coll">
-    <div id="bkRemind"></div>
+  <section class="panel" id="p-coll">
     <div class="filters">
       <input type="search" id="fText" placeholder="Cerca per nome, tipo, set, nota…" aria-label="Cerca">
       <select id="fDeck" aria-label="Mazzo"></select>
@@ -373,7 +376,8 @@ th{background:var(--solid)}
   </section>
 
   <!-- LUOGHI -->
-  <section class="panel" id="p-locs">
+  <section class="panel on" id="p-locs">
+    <div id="bkRemind"></div>
     <div class="arch-head">
       <div><h2 style="font-size:24px">Archivio</h2><p class="hint">I tuoi contenitori fisici. Clicca su un raccoglitore, un cassetto o una scatola per impostarne destinazione, tipo e organizzazione.</p></div>
       <button class="btn primary" id="newCont">Nuovo contenitore</button>
@@ -1003,6 +1007,7 @@ const tierLbl = t => (TIERS.find(x=>x[0]===(t||''))||TIERS[3])[1];
 const orderLbl = o => (ORDERS.find(x=>x[0]===o)||ORDERS[0])[1];
 function tierBadge(l, inherit){ const t = l.tier || inherit || ''; if(!t) return '<span class="badge">Da classificare</span>'; return `<span class="badge">${esc(tierLbl(t).replace(' (nessun controllo)',''))}</span>`; }
 function renderArchive(){
+  renderRemind();
   const el = $('#locList');
   const top = S.locs.filter(l=>!l.parent).sort((a,b)=>{ const o={binder:0,chest:1,box:2,deckbox:3,other:4}; return (o[a.kind]??9)-(o[b.kind]??9) || a.name.localeCompare(b.name); });
   const misUp = S.cards.filter(c=>misplaced(c)==='up').reduce((a,c)=>a+c.qty,0), misDown = S.cards.filter(c=>misplaced(c)==='down').reduce((a,c)=>a+c.qty,0);
@@ -1272,7 +1277,7 @@ function vPages(){ const L = locById(V.id); const byCards = Math.max(1, Math.cei
 function vSteps(){ return isBinder() ? Math.ceil(vPages()/2) : Math.max(1, V.items.length); }
 function openViewer(id){
   const L = locById(id); if(!L) return;
-  V.id = id; V.kind = L.kind==='binder' ? 'binder' : 'drawer'; V.items = vItems(id); V.pos = 0; V.hits = []; V.hitI = -1; V.busy = false;
+  V.id = id; V.kind = L.kind==='binder' ? 'binder' : 'drawer'; V.items = vItems(id); V.pos = 0; V.hits = []; V.hitI = -1; V.busy = false; V.single = false; V.side = 0; V.loupe = false;
   $('#vKind').textContent = L.kind==='drawer' ? 'Cassetto' : (KINDS[L.kind]||'Contenitore');
   $('#vName').textContent = locName(id);
   const v = V.items.reduce((a,c)=>a+(unitPrice(c)||0),0);
@@ -1304,20 +1309,37 @@ function pageW(){
 function updateNav(){
   const steps = vSteps(); V.pos = Math.max(0, Math.min(V.pos, steps-1));
   $('#vRange').max = steps-1; $('#vRange').value = V.pos;
-  if(isBinder()){ const pages = vPages(), a = V.pos*2; $('#vPos').textContent = `Pagine ${a+1}–${Math.min(a+2,pages)} di ${pages}`; }
+  if(isBinder()){ const pages = vPages(), a = V.pos*2; $('#vPos').textContent = V.single ? `Pagina ${a+1+V.side} di ${pages} · doppio tocco per due pagine` : `Pagine ${a+1}–${Math.min(a+2,pages)} di ${pages} · tocca una pagina per ingrandirla`; }
   else $('#vPos').textContent = V.items.length ? `Carta ${V.pos+1} di ${V.items.length}` : 'Contenitore vuoto';
-  $('#vPrev').disabled = V.pos<=0; $('#vNext').disabled = V.pos>=steps-1;
+  if(isBinder() && V.single){ const pg = V.pos*2 + V.side; $('#vPrev').disabled = pg <= 0; $('#vNext').disabled = pg >= vPages()-1; }
+  else { $('#vPrev').disabled = V.pos<=0; $('#vNext').disabled = V.pos>=steps-1; }
   $('#vRot').hidden = !(isBinder() && window.innerWidth < window.innerHeight && window.innerWidth < 760);
 }
 function vRender(){ if(!V.id) return; if(isBinder()) bkRender(); else dwRender(true); updateNav(); }
 
-// --- raccoglitore: due pagine affiancate, pagina che gira trascinandola
+// --- raccoglitore: due pagine affiancate, pagina che si curva mentre la giri
+const NS = 12;                                   // strisce verticali che formano il foglio
 function bkRender(){
   const st = $('#vStage'); V.pos = Math.max(0, Math.min(V.pos, vSteps()-1));
-  st.innerHTML = `<div class="bk ${V.hits.length?'hitmode':''}" style="--pw:${pageW()}px"><div class="rings"><i></i><i></i><i></i><i></i></div></div>`;
+  st.innerHTML = `<div class="bk ${V.hits.length?'hitmode':''}" style="--pw:${pageW()}px"><div class="rings"><i></i><i></i><i></i><i></i></div></div><div class="loupe" hidden></div>`;
   const bk = st.firstChild, a = V.pos*2;
   bk.prepend(pageEl(a,'left'), pageEl(a+1,'right'));
-  bindPockets(bk); preloadAround(a);
+  bindPockets(bk); preloadAround(a); applyCam(false);
+}
+function applyCam(animate){
+  const bk = $('#vStage .bk'); if(!bk) return;
+  bk.style.transition = animate && !reduced() ? 'transform .48s cubic-bezier(.25,.8,.25,1)' : 'none';
+  if(!V.single){ bk.style.transform = ''; return; }
+  const st = $('#vStage'), pg = bk.querySelector('.pg.left'); const pw = pg.offsetWidth, ph = pg.offsetHeight;
+  const k = Math.max(1, Math.min((st.clientWidth - 16) / (pw + 30), (st.clientHeight - 10) / (ph + 30)));
+  const x = (V.side === 0 ? 1 : -1) * (pw/2 + 11) * k;
+  bk.style.transform = `translateX(${x.toFixed(1)}px) scale(${k.toFixed(3)})`;
+  // immagini nitide sulla pagina in primo piano
+  bk.querySelectorAll(`.pg.${V.side===0?'left':'right'} .pk img`).forEach(im => { if(im.dataset.big && im.getAttribute('src') !== im.dataset.big) im.src = im.dataset.big; });
+}
+function camScale(){ const bk = $('#vStage .bk'); const m = bk && bk.style.transform.match(/scale\(([\d.]+)\)/); return m ? +m[1] : 1; }
+function sliceFace(html, side, W, H, offset, cls){
+  return `<div class="sf ${cls}"><div class="pg ${side}" style="width:${W}px;height:${H}px;left:${offset.toFixed(2)}px">${html}</div><i class="sh"></i></div>`;
 }
 function startFlip(fwd){
   if(V.busy) return null;
@@ -1325,30 +1347,44 @@ function startFlip(fwd){
   const bk = $('#vStage .bk'); if(!bk) return null;
   V.busy = true; $('#vInfo').hidden = true; $('#preview').style.display = 'none';
   const L = bk.querySelector('.pg.left'), R = bk.querySelector('.pg.right'), na = to*2, src = fwd ? R : L;
+  const W = src.offsetWidth, H = src.offsetHeight, sw = W / NS;
+  const frontHTML = src.innerHTML, backPage = pageEl(fwd ? na : na+1, fwd ? 'left' : 'right'), backHTML = backPage.innerHTML;
+  const fSide = fwd ? 'right' : 'left', bSide = fwd ? 'left' : 'right';
   const leaf = document.createElement('div'); leaf.className = 'leaf ' + (fwd ? 'fwd' : 'bwd');
-  leaf.style.left = src.offsetLeft + 'px'; leaf.style.top = src.offsetTop + 'px'; leaf.style.width = src.offsetWidth + 'px'; leaf.style.height = src.offsetHeight + 'px';
-  const front = src.cloneNode(true); front.classList.add('face','front');
-  const back = pageEl(fwd ? na : na+1, fwd ? 'left' : 'right'); back.classList.add('face','back');
-  const shF = document.createElement('i'), shB = document.createElement('i'); shF.className = shB.className = 'shade';
-  front.appendChild(shF); back.appendChild(shB); leaf.append(front, back);
+  Object.assign(leaf.style, {left: src.offsetLeft + 'px', top: src.offsetTop + 'px', width: W + 'px', height: H + 'px'});
+  let parent = leaf; const strips = [];
+  for(let i=0;i<NS;i++){
+    const el = document.createElement('div'); el.className = 'strip';
+    el.style.width = (sw + 0.75) + 'px'; el.style.height = H + 'px';
+    if(fwd){ el.style.left = (i===0 ? 0 : sw) + 'px'; el.style.transformOrigin = 'left center'; }
+    else { el.style.left = (i===0 ? W - sw : -sw) + 'px'; el.style.transformOrigin = (sw) + 'px 50%'; }
+    const fOff = fwd ? -i*sw : -(W - (i+1)*sw);
+    const bOff = fwd ? -(W - (i+1)*sw) : -i*sw;
+    el.innerHTML = sliceFace(frontHTML, fSide, W, H, fOff, 'front') + sliceFace(backHTML, bSide, W, H, bOff, 'back');
+    parent.appendChild(el); strips.push(el); parent = el;
+  }
   const under = pageEl(fwd ? na+1 : na, fwd ? 'right' : 'left');
   const cast = document.createElement('i'); cast.className = 'cast'; under.appendChild(cast);
   src.replaceWith(under); bk.appendChild(leaf);
-  return {fwd, to, bk, leaf, front, back, shF, shB, under, cast, t:0};
+  return {fwd, to, bk, leaf, strips, back: backPage, front: src, under, cast, t:0, bend: 1};
 }
 function setFlip(f, t){
-  f.t = t; const ang = (f.fwd ? -180 : 180) * t, lift = Math.sin(Math.PI * t);
-  f.leaf.style.transform = `translateZ(${(lift*18).toFixed(1)}px) rotateY(${ang.toFixed(2)}deg)`;
-  f.shF.style.opacity = (Math.min(1, t*2) * 0.55).toFixed(3);
-  f.shB.style.opacity = (Math.min(1, (1-t)*2) * 0.55).toFixed(3);
-  f.cast.style.opacity = ((1-t) * 0.7).toFixed(3);
-  f.leaf.style.setProperty('--sh', (lift*0.45).toFixed(3));
+  f.t = t; const sg = f.fwd ? -1 : 1, phi = 180 * t, beta = 75 * Math.sin(Math.PI * t) * f.bend;
+  let prev = 0;
+  f.strips.forEach((el, i) => {
+    const g = Math.pow(i/(NS-1), 1.7) - 0.38;          // il bordo libero anticipa, il dorso segue
+    const A = Math.max(0, Math.min(180, phi + beta * g));
+    el.style.transform = `rotateY(${(sg*(A - prev)).toFixed(2)}deg)`; prev = A;
+    const r = A * Math.PI / 180, dark = Math.sin(r);
+    el.children[0].lastChild.style.opacity = (dark * 0.5 + (A>90 ? 0.2 : 0)).toFixed(3);
+    el.children[1].lastChild.style.opacity = (dark * 0.45 + (A<90 ? 0.2 : 0)).toFixed(3);
+  });
+  f.cast.style.opacity = ((1 - t) * Math.min(1, t * 6) * 0.75).toFixed(3);
 }
 function endFlip(f, commit){
-  const clean = el => { el.classList.remove('face','front','back'); const sh = el.querySelector(':scope > .shade'); if(sh) sh.remove(); return el; };
-  f.cast.remove();
-  if(commit){ const side = f.fwd ? '.pg.left' : '.pg.right'; f.bk.querySelector(side).replaceWith(clean(f.back)); V.pos = f.to; }
-  else f.under.replaceWith(clean(f.front));
+  f.cast.remove(); const c = f.under.querySelector('.cast'); if(c) c.remove();
+  if(commit){ f.bk.querySelector(f.fwd ? '.pg.left' : '.pg.right').replaceWith(f.back); V.pos = f.to; }
+  else f.under.replaceWith(f.front);
   f.leaf.remove(); V.busy = false;
   bindPockets(f.bk); preloadAround(V.pos*2); updateNav();
 }
@@ -1359,12 +1395,38 @@ function animateFlip(f, to, ms, ease, done){
   const step = now => { const k = Math.min(1, (now - t0)/ms); setFlip(f, from + (to-from)*ease(k)); if(k < 1) requestAnimationFrame(step); else done(); };
   requestAnimationFrame(step);
 }
-function vFlip(fwd){ const f = startFlip(fwd); if(!f) return; setFlip(f, 0); animateFlip(f, 1, reduced() ? 1 : 720, easeIO, () => endFlip(f, true)); }
+function vFlip(fwd, after){ const f = startFlip(fwd); if(!f) return false; setFlip(f, 0); animateFlip(f, 1, reduced() ? 1 : 820, easeIO, () => { endFlip(f, true); if(after) after(); }); return true; }
 function bindOne(b){
-  const img = b.querySelector('img'); if(img && !touch && isBinder()) bindPreview(img);
-  b.onclick = e => { e.stopPropagation(); if(V.dragged) return; const i = +b.dataset.i; if(!isBinder() && i !== V.pos){ vGo(i); return; } vShowInfo(V.items[i]); };
+  const img = b.querySelector('img'); if(img && !touch && isBinder() && !V.single) bindPreview(img);
+  if(isBinder()) return;                           // nel raccoglitore i tocchi li gestisce lo stage
+  b.onclick = e => { e.stopPropagation(); if(V.dragged) return; const i = +b.dataset.i; if(i !== V.pos){ vGo(i); return; } vShowInfo(V.items[i]); };
 }
 function bindPockets(root){ root.querySelectorAll('[data-i]').forEach(bindOne); }
+// lente di ingrandimento
+function loupeShow(x, y){
+  const st = $('#vStage'), bk = st.querySelector('.bk'), lp = st.querySelector('.loupe'); if(!bk || !lp) return;
+  if(lp.hidden){
+    const cl = bk.cloneNode(true); cl.classList.add('lclone'); cl.style.transition = 'none'; cl.style.transform = 'none';
+    cl.querySelectorAll('img[data-big]').forEach(im => im.src = im.dataset.big);
+    lp.innerHTML = ''; lp.appendChild(cl); lp.hidden = false; V.loupe = true;
+  }
+  const r = bk.getBoundingClientRect(), k = camScale(), Z = 2.3, s = k * Z, D = lp.offsetWidth || 180, sr = st.getBoundingClientRect();
+  const u = (x - r.left) / k, v = (y - r.top) / k;
+  const cl = lp.firstChild; cl.style.transformOrigin = '0 0'; cl.style.transform = `translate(${(D/2 - u*s).toFixed(1)}px,${(D/2 - v*s).toFixed(1)}px) scale(${s.toFixed(3)})`;
+  lp.style.left = (x - sr.left - D/2) + 'px'; lp.style.top = Math.max(-D*0.2, y - sr.top - D/2 - (touch ? D*0.75 : 0)) + 'px';
+}
+function loupeHide(){ const lp = $('#vStage .loupe'); if(lp){ lp.hidden = true; lp.innerHTML = ''; } V.loupe = false; }
+function sideAt(x){ const bk = $('#vStage .bk'); if(!bk) return 0; const r = bk.getBoundingClientRect(); return x < r.left + r.width/2 ? 0 : 1; }
+function binderTap(tgt, x, y){
+  const now = performance.now();
+  const dbl = V.lastTap && now - V.lastTap.t < 320 && Math.hypot(x - V.lastTap.x, y - V.lastTap.y) < 40;
+  V.lastTap = {t: now, x, y};
+  if(dbl){ clearTimeout(V.tapT); V.lastTap = null; if(V.single){ V.single = false; applyCam(true); updateNav(); } return; }
+  if(!V.single){ V.single = true; V.side = sideAt(x); applyCam(true); updateNav(); return; }
+  const b = tgt && tgt.closest ? tgt.closest('.pk[data-i]') : null;
+  clearTimeout(V.tapT);
+  V.tapT = setTimeout(() => { if(b) vShowInfo(V.items[+b.dataset.i]); else $('#vInfo').hidden = true; }, 330);
+}
 
 // --- cassetto: le carte scorrono in prospettiva, i nodi restano e si spostano
 function dwRender(full){
@@ -1410,7 +1472,7 @@ function vGo(to){
   const steps = vSteps(); to = Math.max(0, Math.min(steps-1, to));
   if(to === V.pos || V.busy) return;
   $('#vInfo').hidden = true;
-  if(isBinder()){ if(Math.abs(to - V.pos) === 1 && !reduced()) vFlip(to > V.pos); else { V.pos = to; bkRender(); updateNav(); } }
+  if(isBinder()){ if(Math.abs(to - V.pos) === 1 && !reduced()) vFlip(to > V.pos, V.single ? () => { V.side = to > V.pos ? 0 : 1; } : null); else { V.pos = to; bkRender(); updateNav(); } }
   else { V.pos = to; dwRender(Math.abs(to - V.pos) > 10); updateNav(); }
 }
 function vSearch(){
@@ -1421,43 +1483,72 @@ function vSearch(){
   $('#vHp').hidden = $('#vHn').hidden = V.hits.length < 2;
   if(V.hits.length){ V.hitI = 0; vJumpHit(); } else vRender();
 }
-function vJumpHit(){ const i = V.hits[V.hitI]; V.pos = isBinder() ? Math.floor(Math.floor(i/9)/2) : i; vRender(); $('#vHits').textContent = `${V.hitI+1} di ${V.hits.length}`; }
+function vJumpHit(){ const i = V.hits[V.hitI]; V.pos = isBinder() ? Math.floor(Math.floor(i/9)/2) : i; if(isBinder()) V.side = Math.floor(i/9) % 2; vRender(); $('#vHits').textContent = `${V.hitI+1} di ${V.hits.length}`; }
 $('#vQ').addEventListener('input', () => { clearTimeout(V.qt); V.qt = setTimeout(vSearch, 200); });
 $('#vHn').onclick = () => { if(!V.hits.length) return; V.hitI = (V.hitI+1) % V.hits.length; vJumpHit(); };
 $('#vHp').onclick = () => { if(!V.hits.length) return; V.hitI = (V.hitI-1+V.hits.length) % V.hits.length; vJumpHit(); };
-$('#vPrev').onclick = () => vGo(V.pos-1);
-$('#vNext').onclick = () => vGo(V.pos+1);
+function vStep(dir){
+  if(V.busy) return;
+  if(isBinder() && V.single){
+    if(dir > 0 && V.side === 0){ if(V.pos*2+1 < vPages()){ V.side = 1; applyCam(true); updateNav(); } return; }
+    if(dir < 0 && V.side === 1){ V.side = 0; applyCam(true); updateNav(); return; }
+    const ok = vFlip(dir > 0, () => { V.side = dir > 0 ? 0 : 1; applyCam(true); updateNav(); });
+    return;
+  }
+  vGo(V.pos + dir);
+}
+$('#vPrev').onclick = () => vStep(-1);
+$('#vNext').onclick = () => vStep(1);
 $('#vRange').oninput = () => { if(V.busy) return; V.pos = +$('#vRange').value; vRender(); };
 $('#vClose').onclick = closeViewer;
 $('#vStage').addEventListener('click', e => { if(e.target === $('#vStage')) $('#vInfo').hidden = true; });
 document.addEventListener('keydown', e => {
   if($('#viewer').hidden || $('#dlg').open || e.target === $('#vQ')) return;
-  if(e.key==='ArrowRight') vGo(V.pos+1); else if(e.key==='ArrowLeft') vGo(V.pos-1); else if(e.key==='Escape') closeViewer();
+  if(e.key==='ArrowRight') vStep(1); else if(e.key==='ArrowLeft') vStep(-1); else if(e.key==='Escape'){ if(V.single){ V.single = false; applyCam(true); updateNav(); } else closeViewer(); }
 });
-// trascinamento: nel raccoglitore la pagina segue il dito o il mouse
+// tocchi e trascinamento: la pagina segue il dito, pressione lunga = lente, tocco = una pagina, doppio tocco = due pagine
 (() => {
-  const st = $('#vStage'); let x0 = null, y0 = 0, t0 = 0, f = null, lastX = 0, lastT = 0, vel = 0;
-  st.addEventListener('pointerdown', e => { if(e.button > 0 || V.busy) return; x0 = e.clientX; y0 = e.clientY; t0 = lastT = performance.now(); lastX = x0; vel = 0; f = null; V.dragged = false; });
+  const st = $('#vStage'); let tgt = null, x0 = null, y0 = 0, f = null, lastX = 0, lastY = 0, lastT = 0, vel = 0, hold = null, moved = false;
+  st.addEventListener('pointerdown', e => {
+    if(e.button > 0 || V.busy || !V.id) return;
+    if(e.target.closest && e.target.closest('.v-info')) return;
+    tgt = e.target; x0 = lastX = e.clientX; y0 = lastY = e.clientY; lastT = performance.now(); vel = 0; f = null; moved = false; V.dragged = false;
+    clearTimeout(hold);
+    if(isBinder()) hold = setTimeout(() => { if(x0 != null && !moved){ V.dragged = true; loupeShow(lastX, lastY); } }, 3000);
+  });
   window.addEventListener('pointermove', e => {
     if(x0 == null || !V.id) return;
     const dx = e.clientX - x0, dy = e.clientY - y0, now = performance.now();
-    if(now > lastT){ vel = (e.clientX - lastX) / (now - lastT); lastX = e.clientX; lastT = now; }
+    if(now > lastT){ vel = (e.clientX - lastX) / (now - lastT); lastT = now; }
+    lastX = e.clientX; lastY = e.clientY;
+    if(V.loupe){ loupeShow(lastX, lastY); return; }
+    if(Math.hypot(dx, dy) > 10){ moved = true; clearTimeout(hold); }
     if(!isBinder()){ if(Math.abs(dx) > 10) V.dragged = true; return; }
-    if(!f){ if(Math.abs(dx) < 10 || Math.abs(dx) < Math.abs(dy)) return; f = startFlip(dx < 0); if(!f){ x0 = null; return; } V.dragged = true; }
-    const pw = f.leaf.offsetWidth || 200;
-    setFlip(f, Math.max(0, Math.min(1, (f.fwd ? -dx : dx) / (pw * 1.5))));
+    if(!f){
+      if(Math.abs(dx) < 12 || Math.abs(dx) < Math.abs(dy)) return;
+      V.dragged = true;
+      if(V.single && ((dx < 0 && V.side === 0) || (dx > 0 && V.side === 1))) return;   // scorrimento tra le due facciate: al rilascio
+      f = startFlip(dx < 0); if(!f) return;
+      f.bend = 1.25;
+    }
+    const pw = f.leaf.offsetWidth * camScale() || 200;
+    setFlip(f, Math.max(0, Math.min(1, (f.fwd ? -dx : dx) / (pw * 1.45))));
   });
-  const up = () => {
-    if(x0 == null) return; const dx = lastX - x0; x0 = null;
+  const up = e => {
+    clearTimeout(hold);
+    if(x0 == null) return; const dx = lastX - x0, sx = x0, sy = y0; x0 = null;
+    if(V.loupe){ loupeHide(); setTimeout(() => V.dragged = false, 0); return; }
     if(!isBinder()){ if(V.dragged){ const n = Math.round(-dx/70) + Math.max(-6, Math.min(6, Math.round(-vel*4))); vGo(V.pos + (n || (dx<0?1:-1))); } setTimeout(() => V.dragged = false, 0); return; }
     if(f){ const g = f; f = null; const v = g.fwd ? -vel : vel;
       const commit = g.t > 0.4 || v > 0.45;
-      const ms = Math.max(160, Math.min(520, (commit ? 1-g.t : g.t) * 700 / Math.max(1, Math.abs(v)*2)));
-      animateFlip(g, commit ? 1 : 0, reduced() ? 1 : ms, easeOut, () => endFlip(g, commit));
-    }
+      const ms = Math.max(200, Math.min(560, (commit ? 1-g.t : g.t) * 800 / Math.max(1, Math.abs(v)*1.6)));
+      animateFlip(g, commit ? 1 : 0, reduced() ? 1 : ms, easeOut, () => { const fw = g.fwd; endFlip(g, commit); if(commit && V.single){ V.side = fw ? 0 : 1; applyCam(true); updateNav(); } });
+    } else if(V.dragged){ if(V.single && Math.abs(dx) > 40) vStep(dx < 0 ? 1 : -1); }
+    else if(!moved && e && e.type === 'pointerup') binderTap(tgt, sx, sy);
     setTimeout(() => V.dragged = false, 0);
   };
   window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+  st.addEventListener('contextmenu', e => { if(isBinder()) e.preventDefault(); });
   st.addEventListener('wheel', e => { if(isBinder() || Math.abs(e.deltaX)+Math.abs(e.deltaY) < 20) return; e.preventDefault(); vGo(V.pos + ((e.deltaX||e.deltaY) > 0 ? 1 : -1)); }, {passive:false});
 })();
 window.addEventListener('resize', () => { if(V.id && !V.busy) vRender(); });
@@ -1510,7 +1601,7 @@ window.RM = {
   toast,
   onSave: null
 };
-load(); renderHeader(); renderColl();
+load(); renderHeader(); renderColl(); renderArchive();
 $('#storageNote').textContent = storageOk ? 'Salvataggio automatico nel browser attivo.' : 'Attenzione: questo browser non permette il salvataggio automatico. Usa i backup per non perdere i dati.';
 if(!storageOk) toast('Il salvataggio automatico non è disponibile in questo browser: usa i backup.', 6000);
 })();
