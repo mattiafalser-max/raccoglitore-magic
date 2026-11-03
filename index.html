@@ -334,6 +334,23 @@ th{background:var(--solid)}
 #viewer .pk::after{background:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,0) 38%)}
 #viewer .sf .pg{background:linear-gradient(180deg,#24213a,#1b1930)}
 #viewer .loupe{border-color:rgba(241,220,156,.85)}
+#viewer{top:0;left:0;right:0;bottom:auto;height:100vh;height:100dvh;width:100%;box-sizing:border-box}
+.v-stage{min-height:0}
+#viewer .bk{background:linear-gradient(135deg,var(--c1,#3b2a55),var(--c2,#160f26))}
+.bk .pg.info,.sf .pg.info{background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 6px,rgba(0,0,0,.05) 6px 12px),linear-gradient(200deg,var(--c1,#3b2a55),var(--c2,#160f26)) !important;display:flex;align-items:center;justify-content:center;padding:calc(var(--pw)*.07)}
+.ip{width:100%;background:linear-gradient(#f6efdc,#e8dec5);color:#2a2236;border-radius:6px;padding:calc(var(--pw)*.06) calc(var(--pw)*.065);box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 0 0 1px rgba(120,95,40,.35);font-size:calc(var(--pw)*.043);line-height:1.35;box-sizing:border-box}
+.ip-k{font-size:.72em;letter-spacing:.14em;text-transform:uppercase;color:#8a6a2a;font-weight:600}
+.ip-n{font-family:Spectral,Georgia,serif;font-weight:600;font-size:1.55em;line-height:1.15;margin:.15em 0 .3em}
+.ip-d{font-style:italic;color:#4d4558;margin-bottom:.7em}
+.ip-s{display:flex;gap:1.4em;margin-bottom:.6em}.ip-s b{display:block;font-family:Spectral,Georgia,serif;font-size:1.45em;color:#7a5a1c;line-height:1.1}.ip-s span{font-size:.8em;color:#6a6274}
+.ip-bar{height:.42em;border-radius:.21em;background:rgba(0,0,0,.12);overflow:hidden;margin:.2em 0 .35em}.ip-bar i{display:block;height:100%;background:#2e6b45}
+.ip-l{color:#4d4558;font-size:.9em;margin:.2em 0}.ip-w{color:#a33a3a;font-weight:600}
+.ip-b{margin-top:.8em;font:inherit;font-size:.9em;font-weight:600;padding:.45em 1em;border-radius:999px;border:1px solid rgba(90,70,30,.45);background:#fff8e6;color:#2a2236;cursor:pointer}
+.sf .ip-b{pointer-events:none}
+.pg.coverpg{background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.12),rgba(255,255,255,0) 55%),repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,rgba(0,0,0,.03) 2px 4px),linear-gradient(160deg,var(--c1,#3b2a55),var(--c2,#160f26)) !important;display:flex !important;align-items:center;justify-content:center}
+.pg.coverpg::before{content:"";position:absolute;inset:calc(var(--pw)*.035);border:1.5px dashed rgba(241,220,156,.45);border-radius:3px}
+.cv-spine{display:none}
+.cv-label{position:relative;max-width:78%;background:linear-gradient(#f6efdc,#e6dcc3);color:#2a2236;font-family:Spectral,Georgia,serif;font-weight:600;font-size:calc(var(--pw)*.07);line-height:1.2;text-align:center;padding:.5em .7em;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,.35),inset 0 0 0 1px rgba(120,95,40,.35);overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -476,7 +493,6 @@ th{background:var(--solid)}
 </main>
 
 <dialog id="dlg"><div id="dlgBody"></div></dialog>
-<div id="bopen" hidden role="dialog" aria-modal="true" aria-label="Raccoglitore"><div class="bo-book" id="boBook"><div class="bo-in-left"></div><div class="bo-page" id="boPage"></div><div class="bo-cover" id="boCover"><div class="bo-face bo-front"><div class="bnd-spine"><i></i><i></i><i></i></div><div class="bnd-label" id="boLabel"></div></div><div class="bo-face bo-back"></div></div></div></div>
 <div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Sfoglia contenitore">
   <div class="v-top">
     <div class="v-title"><div class="k" id="vKind"></div><h2 id="vName"></h2><div class="k" id="vSub"></div></div>
@@ -1093,7 +1109,7 @@ function renderArchive(){
   const un = groupStats('loc','');
   if(un.n) el.insertAdjacentHTML('beforeend', `<button class="cont" data-show-none="1"><div class="k">Da sistemare</div><h3>Carte senza luogo</h3><div class="st">${un.n.toLocaleString('it-IT')} carte · <b>${eur(un.v)}</b></div><div class="k" style="margin-top:4px">Clicca per vederle e assegnarle</div></button>`);
   el.querySelectorAll('[data-open]').forEach(b => b.onclick = e => { e.stopPropagation(); openCont(b.dataset.open); });
-  el.querySelectorAll('[data-bind]').forEach(b => { b.onclick = () => openBinderCard(b.dataset.bind); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openBinderCard(b.dataset.bind); } }; });
+  el.querySelectorAll('[data-bind]').forEach(b => { b.onclick = () => openViewer(b.dataset.bind); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openViewer(b.dataset.bind); } }; });
   el.querySelectorAll('[data-view]').forEach(b => { b.onclick = () => openViewer(b.dataset.view); b.onkeydown = e => { if(e.target===b && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); openViewer(b.dataset.view); } }; });
   const sn = el.querySelector('[data-show-none]'); if(sn) sn.onclick = () => { fillSelects(); $('#fDeck').value=''; $('#fLoc').value='__none'; ui.onlyMis=false; showTab('coll'); };
 }
@@ -1319,52 +1335,6 @@ async function mbImport(){
   $('#mbFile').value=''; toast('Carte importate');
 }
 
-// ---------- raccoglitore che si apre ----------
-function boLayout(){
-  const vw = window.innerWidth, vh = window.innerHeight;
-  const P = Math.min(380, vw*0.88), H = Math.min(540, vh*0.74, P*1.38);
-  const wide = 2*P <= vw - 24;
-  return {P, H, closed: -P/2, open: wide ? 0 : -P/2};
-}
-function openBinderCard(id){
-  const l = locById(id); if(!l) return;
-  const st = contStats(l.id), capN = (l.sheets||0)*18, full = Math.floor(st.n/18), free = Math.max(0, capN - st.n), pct = capN ? Math.min(100, st.n/capN*100) : 0;
-  const [c1, c2] = coverColor(l), box = $('#bopen'), book = $('#boBook'), cover = $('#boCover');
-  book.style.setProperty('--c1', c1); book.style.setProperty('--c2', c2);
-  $('#boLabel').textContent = l.name;
-  $('#boPage').innerHTML = `<div class="bo-k">Raccoglitore${tierBadge(l)}</div><h2>${esc(l.name)}</h2>
-    ${l.dest?`<p class="bo-dest">${esc(l.dest)}</p>`:'<p class="bo-dest muted">Nessuna destinazione indicata</p>'}
-    <div class="bo-stats"><div><b>${st.n.toLocaleString('it-IT')}</b><span>carte</span></div><div><b>${eur(st.v)}</b><span>valore</span></div></div>
-    ${capN ? `<div class="cap ${pct>=100?'full':pct>=90?'warn':''}"><i style="width:${pct}%"></i></div>
-      <p class="bo-line">${l.sheets} fogli · ${Math.min(full, l.sheets)} pieni · ${free} tasche libere su ${capN}</p>` : `<p class="bo-line">${full} fogli pieni (18 carte ciascuno). Indica quanti fogli ha il raccoglitore per vedere le tasche libere.</p>`}
-    <p class="bo-line">Organizzazione: ${esc(orderLbl(l.order))}</p>
-    ${st.mis?`<p class="warn">${st.mis} ${st.mis===1?'carta è':'carte sono'} fuori posto rispetto alla soglia di ${eur(thr())}.</p>`:''}
-    <div class="bo-act"><button class="btn primary" id="boGo">Sfoglia</button><button class="btn" id="boEdit">Modifica</button><button class="btn" id="boX">Chiudi</button></div>`;
-  const g = boLayout();
-  book.style.setProperty('--P', g.P + 'px'); book.style.setProperty('--H', g.H + 'px');
-  book.style.transition = 'none'; cover.style.transition = 'none';
-  book.style.transform = `translateX(${g.closed}px) scale(.92)`; cover.style.transform = 'rotateY(0deg)';
-  box.hidden = false; box.classList.remove('on'); document.body.style.overflow = 'hidden';
-  book.getBoundingClientRect();
-  const slow = reduced() ? 0 : 1;
-  requestAnimationFrame(() => {
-    box.classList.add('on');
-    book.style.transition = `transform ${0.9*slow}s cubic-bezier(.3,.7,.2,1)`; cover.style.transition = `transform ${1.05*slow}s cubic-bezier(.45,.05,.25,1) ${0.12*slow}s`;
-    book.style.transform = `translateX(${g.open}px) scale(1)`; cover.style.transform = 'rotateY(-178deg)';
-  });
-  const close = then => {
-    cover.style.transition = `transform ${0.7*slow}s cubic-bezier(.5,0,.3,1)`; book.style.transition = `transform ${0.7*slow}s cubic-bezier(.5,0,.3,1) ${0.15*slow}s`;
-    cover.style.transform = 'rotateY(0deg)'; book.style.transform = `translateX(${g.closed}px) scale(.92)`; box.classList.remove('on');
-    setTimeout(() => { box.hidden = true; document.body.style.overflow = ''; if(then) then(); }, 880*slow);
-  };
-  $('#boX').onclick = () => close();
-  $('#boGo').onclick = () => { box.hidden = true; box.classList.remove('on'); openViewer(l.id); };
-  $('#boEdit').onclick = () => { box.hidden = true; box.classList.remove('on'); document.body.style.overflow = ''; openCont(l.id); };
-  box.onclick = e => { if(e.target === box) close(); };
-  box.onkeydown = e => { if(e.key === 'Escape') close(); };
-  setTimeout(() => $('#boGo').focus({preventScroll:true}), 300);
-}
-
 // ---------- sfoglia contenitore ----------
 const V = {id:null, kind:'', items:[], pos:0, busy:false, hits:[], hitI:-1, dw:null};
 const reduced = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -1376,7 +1346,9 @@ function vItems(id){
 }
 const isBinder = () => V.kind==='binder';
 function vPages(){ const L = locById(V.id); const byCards = Math.max(1, Math.ceil(V.items.length/9)); return Math.max(byCards, L && L.sheets ? L.sheets*2 : 0); }
-function vSteps(){ return isBinder() ? Math.ceil(vPages()/2) : Math.max(1, V.items.length); }
+function vSteps(){ return isBinder() ? Math.ceil((vPages()+1)/2) : Math.max(1, V.items.length); }
+const leftOf = s => s*2 - 1;
+const pageLbl = p => p < 0 ? 'Interno copertina' : 'Pagina ' + (p+1);
 function openViewer(id){
   const L = locById(id); if(!L) return;
   V.id = id; V.kind = L.kind==='binder' ? 'binder' : 'drawer'; V.items = vItems(id); V.pos = 0; V.hits = []; V.hitI = -1; V.busy = false; V.single = false; V.side = 0; V.loupe = false;
@@ -1386,7 +1358,8 @@ function openViewer(id){
   $('#vSub').textContent = `${V.items.length.toLocaleString('it-IT')} carte · ${eur(v)} · ${orderLbl(L.order)}${L.dest?' · '+L.dest:''}`;
   $('#vQ').value = ''; $('#vHits').textContent = ''; $('#vHp').hidden = $('#vHn').hidden = true; $('#vInfo').hidden = true;
   $('#viewer').hidden = false; $('#viewer').classList.toggle('is-binder', isBinder()); document.body.style.overflow = 'hidden';
-  requestAnimationFrame(vRender);
+  const [c1, c2] = coverColor(L); $('#viewer').style.setProperty('--c1', c1); $('#viewer').style.setProperty('--c2', c2);
+  requestAnimationFrame(() => requestAnimationFrame(() => { vRender(); if(isBinder()) introOpen(); }));
 }
 function closeViewer(){ $('#viewer').hidden = true; document.body.style.overflow = ''; $('#preview').style.display='none'; V.id = null; V.busy = false; }
 const imgSeen = new Set();
@@ -1397,10 +1370,24 @@ function pocketHtml(c, idx){
 }
 function pageEl(p, side){
   const d = document.createElement('div'); d.className = 'pg ' + side;
+  if(p === -1){ d.classList.add('info'); d.innerHTML = infoHtml(); bindInfo(d); return d; }
   if(p < 0 || p >= vPages()){ d.classList.add('void'); return d; }
   let h = ''; for(let k=0;k<9;k++) h += pocketHtml(V.items[p*9+k], p*9+k);
   d.innerHTML = h; return d;
 }
+function infoHtml(){
+  const l = locById(V.id); if(!l) return '';
+  const st = contStats(l.id), capN = (l.sheets||0)*18, full = Math.floor(st.n/18), free = Math.max(0, capN - st.n), pct = capN ? Math.min(100, st.n/capN*100) : 0;
+  return `<div class="ip"><div class="ip-k">Raccoglitore</div><div class="ip-n">${esc(l.name)}</div>
+    <div class="ip-d">${esc(l.dest || 'Nessuna destinazione indicata')}</div>
+    <div class="ip-s"><div><b>${st.n.toLocaleString('it-IT')}</b><span>carte</span></div><div><b>${eur(st.v)}</b><span>valore</span></div></div>
+    ${capN ? `<div class="ip-bar"><i style="width:${pct}%"></i></div><div class="ip-l">${l.sheets} fogli · ${Math.min(full, l.sheets)} pieni · ${free} tasche libere</div>` : `<div class="ip-l">${full} fogli pieni · numero di fogli non indicato</div>`}
+    <div class="ip-l">${esc(tierLbl(l.tier).replace(' (nessun controllo)',''))} · ${esc(orderLbl(l.order))}</div>
+    ${st.mis ? `<div class="ip-l ip-w">${st.mis} ${st.mis===1?'carta fuori posto':'carte fuori posto'}</div>` : ''}
+    <button class="ip-b" type="button" data-act="edit">Modifica</button></div>`;
+}
+function bindInfo(root){ const b = root.querySelector('[data-act=edit]'); if(b) b.onclick = e => { e.stopPropagation(); const id = V.id; closeViewer(); openCont(id); }; }
+function coverHtml(){ const l = locById(V.id); return `<div class="cv-spine"><i></i><i></i><i></i></div><div class="cv-label">${esc(l ? l.name : '')}</div>`; }
 function preloadAround(a){ for(let p=a-2;p<=a+3;p++) for(let k=0;k<9;k++){ const c = V.items[p*9+k]; if(c) preload(c.img||c.imgL); } }
 function pageW(){
   const st = $('#vStage'); const W = st.clientWidth - 24, H = st.clientHeight - 12;
@@ -1412,9 +1399,9 @@ function pageW(){
 function updateNav(){
   const steps = vSteps(); V.pos = Math.max(0, Math.min(V.pos, steps-1));
   $('#vRange').max = steps-1; $('#vRange').value = V.pos;
-  if(isBinder()){ const pages = vPages(), a = V.pos*2; $('#vPos').textContent = V.single ? `Pagina ${a+1+V.side} di ${pages} · doppio tocco per due pagine` : `Pagine ${a+1}–${Math.min(a+2,pages)} di ${pages} · tocca una pagina per ingrandirla`; }
+  if(isBinder()){ const pages = vPages(), a = leftOf(V.pos); $('#vPos').textContent = V.single ? `${pageLbl(a+V.side)} di ${pages} · doppio tocco per due pagine` : `${pageLbl(a)}${a+1<pages?' e '+(a+2):''} di ${pages} · tocca una pagina per ingrandirla`; }
   else $('#vPos').textContent = V.items.length ? `Carta ${V.pos+1} di ${V.items.length}` : 'Contenitore vuoto';
-  if(isBinder() && V.single){ const pg = V.pos*2 + V.side; $('#vPrev').disabled = pg <= 0; $('#vNext').disabled = pg >= vPages()-1; }
+  if(isBinder() && V.single){ const pg = leftOf(V.pos) + V.side; $('#vPrev').disabled = pg <= -1; $('#vNext').disabled = pg >= vPages()-1; }
   else { $('#vPrev').disabled = V.pos<=0; $('#vNext').disabled = V.pos>=steps-1; }
   $('#vRot').hidden = !(isBinder() && window.innerWidth < window.innerHeight && window.innerWidth < 760);
 }
@@ -1425,7 +1412,7 @@ const NS = 12;                                   // strisce verticali che forman
 function bkRender(){
   const st = $('#vStage'); V.pos = Math.max(0, Math.min(V.pos, vSteps()-1));
   st.innerHTML = `<div class="bk ${V.hits.length?'hitmode':''}" style="--pw:${pageW()}px"><div class="rings"><i></i><i></i><i></i><i></i></div></div><div class="loupe" hidden></div>`;
-  const bk = st.firstChild, a = V.pos*2;
+  const bk = st.firstChild, a = leftOf(V.pos);
   bk.prepend(pageEl(a,'left'), pageEl(a+1,'right'));
   bindPockets(bk); preloadAround(a); applyCam(false);
 }
@@ -1449,11 +1436,11 @@ function startFlip(fwd){
   const to = V.pos + (fwd ? 1 : -1); if(to < 0 || to >= vSteps()) return null;
   const bk = $('#vStage .bk'); if(!bk) return null;
   V.busy = true; $('#vInfo').hidden = true; $('#preview').style.display = 'none';
-  const L = bk.querySelector('.pg.left'), R = bk.querySelector('.pg.right'), na = to*2, src = fwd ? R : L;
+  const L = bk.querySelector('.pg.left'), R = bk.querySelector('.pg.right'), na = leftOf(to), src = fwd ? R : L;
   const k = camScale(), rr = src.getBoundingClientRect(), br = bk.getBoundingClientRect();
   const W = rr.width / k, H = rr.height / k, sw = W / NS, X = (rr.left - br.left) / k, Y = (rr.top - br.top) / k;
   const frontHTML = src.innerHTML, backPage = pageEl(fwd ? na : na+1, fwd ? 'left' : 'right'), backHTML = backPage.innerHTML;
-  const fSide = fwd ? 'right' : 'left', bSide = fwd ? 'left' : 'right';
+  const fSide = src.className.replace(/\bpg\b/,'').trim(), bSide = backPage.className.replace(/\bpg\b/,'').trim();
   const leaf = document.createElement('div'); leaf.className = 'leaf ' + (fwd ? 'fwd' : 'bwd');
   Object.assign(leaf.style, {left: X.toFixed(3) + 'px', top: Y.toFixed(3) + 'px', width: W.toFixed(3) + 'px', height: H.toFixed(3) + 'px'});
   let parent = leaf; const strips = [];
@@ -1483,14 +1470,20 @@ function setFlip(f, t){
     el.children[0].lastChild.style.opacity = (dark * 0.5 + (A>90 ? 0.2 : 0)).toFixed(3);
     el.children[1].lastChild.style.opacity = (dark * 0.45 + (A<90 ? 0.2 : 0)).toFixed(3);
   });
-  f.cast.style.opacity = ((1 - t) * Math.min(1, t * 6) * 0.75).toFixed(3);
+  if(f.cast) f.cast.style.opacity = ((1 - t) * Math.min(1, t * 6) * 0.75).toFixed(3);
 }
-function endFlip(f, commit){
-  f.cast.remove(); const c = f.under.querySelector('.cast'); if(c) c.remove();
-  if(commit){ f.bk.querySelector(f.fwd ? '.pg.left' : '.pg.right').replaceWith(f.back); V.pos = f.to; }
-  else f.under.replaceWith(f.front);
-  f.leaf.remove(); V.busy = false;
-  bindPockets(f.bk); preloadAround(V.pos*2); updateNav();
+function endFlip(f, commit, after){
+  const target = commit ? f.bk.querySelector(f.fwd ? '.pg.left' : '.pg.right') : f.under;
+  const repl = commit ? f.back : f.front;
+  if(f.cast) f.cast.remove();
+  if(target) target.replaceWith(repl);
+  if(commit) V.pos = f.to;
+  bindPockets(f.bk); bindInfo(f.bk);
+  const imgs = [...repl.querySelectorAll('img')];
+  const ready = Promise.all(imgs.map(im => (im.decode ? im.decode() : Promise.resolve()).catch(() => {})));
+  Promise.race([ready, new Promise(r => setTimeout(r, 260))]).then(() => requestAnimationFrame(() => {
+    f.leaf.remove(); V.busy = false; preloadAround(leftOf(V.pos)); updateNav(); if(after) after();
+  }));
 }
 const easeIO = x => x<.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2;
 const easeOut = x => 1 - Math.pow(1-x, 3);
@@ -1499,7 +1492,7 @@ function animateFlip(f, to, ms, ease, done){
   const step = now => { const k = Math.min(1, (now - t0)/ms); setFlip(f, from + (to-from)*ease(k)); if(k < 1) requestAnimationFrame(step); else done(); };
   requestAnimationFrame(step);
 }
-function vFlip(fwd, after){ const f = startFlip(fwd); if(!f) return false; setFlip(f, 0); animateFlip(f, 1, reduced() ? 1 : 820, easeIO, () => { endFlip(f, true); if(after) after(); }); return true; }
+function vFlip(fwd, after){ const f = startFlip(fwd); if(!f) return false; setFlip(f, 0); animateFlip(f, 1, reduced() ? 1 : 820, easeIO, () => endFlip(f, true, after)); return true; }
 function bindOne(b){
   const img = b.querySelector('img'); if(img && !touch && isBinder() && !V.single) bindPreview(img);
   if(isBinder()) return;                           // nel raccoglitore i tocchi li gestisce lo stage
@@ -1536,6 +1529,42 @@ function binderTap(tgt, x, y){
   const b = tgt && tgt.closest ? tgt.closest('.pk[data-i]') : null;
   clearTimeout(V.tapT);
   V.tapT = setTimeout(() => { if(b) vShowInfo(V.items[+b.dataset.i]); else $('#vInfo').hidden = true; }, 330);
+}
+
+function coverLeaf(open){
+  const bk = $('#vStage .bk'); if(!bk || V.busy) return null;
+  const L = bk.querySelector('.pg.left'), R = bk.querySelector('.pg.right');
+  const k = camScale(), rr = R.getBoundingClientRect(), br = bk.getBoundingClientRect();
+  const W = rr.width / k, H = rr.height / k, sw = W / NS;
+  V.busy = true;
+  const info = L, blank = document.createElement('div'); blank.className = 'pg left void';
+  if(open) info.replaceWith(blank);
+  const leaf = document.createElement('div'); leaf.className = 'leaf fwd';
+  Object.assign(leaf.style, {left: ((rr.left - br.left)/k).toFixed(3)+'px', top: ((rr.top - br.top)/k).toFixed(3)+'px', width: W.toFixed(3)+'px', height: H.toFixed(3)+'px'});
+  let parent = leaf; const strips = [];
+  for(let i=0;i<NS;i++){
+    const el = document.createElement('div'); el.className = 'strip';
+    el.style.width = (sw + (i < NS-1 ? 0.6 : 0)).toFixed(3) + 'px'; el.style.height = H.toFixed(3) + 'px';
+    el.style.left = (i===0 ? 0 : sw) + 'px'; el.style.transformOrigin = 'left center';
+    el.innerHTML = sliceFace(coverHtml(), 'right coverpg', W, H, -i*sw, 'front') + sliceFace(infoHtml(), 'left info', W, H, -(W - (i+1)*sw), 'back');
+    parent.appendChild(el); strips.push(el); parent = el;
+  }
+  bk.appendChild(leaf);
+  return {fwd:true, to:V.pos, bk, leaf, strips, back:info, blank, cast:null, t: open ? 0 : 1, bend:0};
+}
+function introOpen(){
+  const f = coverLeaf(true); if(!f) return; const bk = f.bk;
+  const cast = document.createElement('i'); cast.className = 'cast'; bk.querySelector('.pg.right').appendChild(cast); f.cast = cast;
+  setFlip(f, 0);
+  if(reduced()){ f.blank.replaceWith(f.back); f.leaf.remove(); cast.remove(); V.busy = false; return; }
+  bk.animate([{transform:'scale(.94)', opacity:.0},{transform:'scale(1)', opacity:1}], {duration:380, easing:'ease-out'});
+  setTimeout(() => animateFlip(f, 1, 1000, easeIO, () => { f.blank.replaceWith(f.back); bindInfo(bk); cast.remove(); requestAnimationFrame(() => { f.leaf.remove(); V.busy = false; updateNav(); }); }), 300);
+}
+function closeAnimated(){
+  if(!isBinder() || V.single || V.pos !== 0 || V.busy || reduced()){ closeViewer(); return; }
+  const f = coverLeaf(false); if(!f) { closeViewer(); return; }
+  setFlip(f, 1); f.back.replaceWith(f.blank);
+  animateFlip(f, 0, 750, easeIO, () => { f.bk.animate([{opacity:1},{opacity:0}], {duration:220, easing:'ease-in'}).onfinish = () => { V.busy = false; closeViewer(); }; });
 }
 
 // --- cassetto: le carte scorrono in prospettiva, i nodi restano e si spostano
@@ -1593,14 +1622,14 @@ function vSearch(){
   $('#vHp').hidden = $('#vHn').hidden = V.hits.length < 2;
   if(V.hits.length){ V.hitI = 0; vJumpHit(); } else vRender();
 }
-function vJumpHit(){ const i = V.hits[V.hitI]; V.pos = isBinder() ? Math.floor(Math.floor(i/9)/2) : i; if(isBinder()) V.side = Math.floor(i/9) % 2; vRender(); $('#vHits').textContent = `${V.hitI+1} di ${V.hits.length}`; }
+function vJumpHit(){ const i = V.hits[V.hitI]; const pg = Math.floor(i/9); V.pos = isBinder() ? Math.floor((pg+1)/2) : i; if(isBinder()) V.side = (pg+1) % 2; vRender(); $('#vHits').textContent = `${V.hitI+1} di ${V.hits.length}`; }
 $('#vQ').addEventListener('input', () => { clearTimeout(V.qt); V.qt = setTimeout(vSearch, 200); });
 $('#vHn').onclick = () => { if(!V.hits.length) return; V.hitI = (V.hitI+1) % V.hits.length; vJumpHit(); };
 $('#vHp').onclick = () => { if(!V.hits.length) return; V.hitI = (V.hitI-1+V.hits.length) % V.hits.length; vJumpHit(); };
 function vStep(dir){
   if(V.busy) return;
   if(isBinder() && V.single){
-    if(dir > 0 && V.side === 0){ if(V.pos*2+1 < vPages()){ V.side = 1; applyCam(true); updateNav(); } return; }
+    if(dir > 0 && V.side === 0){ if(leftOf(V.pos)+1 < vPages()){ V.side = 1; applyCam(true); updateNav(); } return; }
     if(dir < 0 && V.side === 1){ V.side = 0; applyCam(true); updateNav(); return; }
     const ok = vFlip(dir > 0, () => { V.side = dir > 0 ? 0 : 1; applyCam(true); updateNav(); });
     return;
@@ -1610,7 +1639,7 @@ function vStep(dir){
 $('#vPrev').onclick = () => vStep(-1);
 $('#vNext').onclick = () => vStep(1);
 $('#vRange').oninput = () => { if(V.busy) return; V.pos = +$('#vRange').value; vRender(); };
-$('#vClose').onclick = closeViewer;
+$('#vClose').onclick = () => closeAnimated();
 $('#vStage').addEventListener('click', e => { if(e.target === $('#vStage')) $('#vInfo').hidden = true; });
 document.addEventListener('keydown', e => {
   if($('#viewer').hidden || $('#dlg').open || e.target === $('#vQ')) return;
@@ -1621,7 +1650,7 @@ document.addEventListener('keydown', e => {
   const st = $('#vStage'); let tgt = null, x0 = null, y0 = 0, f = null, lastX = 0, lastY = 0, lastT = 0, vel = 0, hold = null, moved = false;
   st.addEventListener('pointerdown', e => {
     if(e.button > 0 || V.busy || !V.id) return;
-    if(e.target.closest && e.target.closest('.v-info')) return;
+    if(e.target.closest && (e.target.closest('.v-info') || e.target.closest('.ip-b'))) return;
     tgt = e.target; x0 = lastX = e.clientX; y0 = lastY = e.clientY; lastT = performance.now(); vel = 0; f = null; moved = false; V.dragged = false;
     clearTimeout(hold);
     if(isBinder()) hold = setTimeout(() => { if(x0 != null && !moved){ V.dragged = true; loupeShow(lastX, lastY); } }, 450);
@@ -1639,10 +1668,11 @@ document.addEventListener('keydown', e => {
       V.dragged = true;
       if(V.single && ((dx < 0 && V.side === 0) || (dx > 0 && V.side === 1))) return;   // scorrimento tra le due facciate: al rilascio
       f = startFlip(dx < 0); if(!f) return;
-      f.bend = 1.25;
+      f.bend = 1.25; f.dx0 = dx;
     }
     const pw = f.leaf.offsetWidth * camScale() || 200;
-    setFlip(f, Math.max(0, Math.min(1, (f.fwd ? -dx : dx) / (pw * 1.45))));
+    const d = dx - (f.dx0 || 0);
+    setFlip(f, Math.max(0, Math.min(1, (f.fwd ? -d : d) / (pw * 1.45))));
   });
   const up = e => {
     clearTimeout(hold);
@@ -1652,7 +1682,7 @@ document.addEventListener('keydown', e => {
     if(f){ const g = f; f = null; const v = g.fwd ? -vel : vel;
       const commit = g.t > 0.4 || v > 0.45;
       const ms = Math.max(200, Math.min(560, (commit ? 1-g.t : g.t) * 800 / Math.max(1, Math.abs(v)*1.6)));
-      animateFlip(g, commit ? 1 : 0, reduced() ? 1 : ms, easeOut, () => { const fw = g.fwd; endFlip(g, commit); if(commit && V.single){ V.side = fw ? 0 : 1; applyCam(true); updateNav(); } });
+      animateFlip(g, commit ? 1 : 0, reduced() ? 1 : ms, easeOut, () => { const fw = g.fwd; endFlip(g, commit, () => { if(commit && V.single){ V.side = fw ? 0 : 1; applyCam(true); updateNav(); } }); });
     } else if(V.dragged){ if(V.single && Math.abs(dx) > 40) vStep(dx < 0 ? 1 : -1); }
     else if(!moved && e && e.type === 'pointerup') binderTap(tgt, sx, sy);
     setTimeout(() => V.dragged = false, 0);
@@ -1661,7 +1691,11 @@ document.addEventListener('keydown', e => {
   st.addEventListener('contextmenu', e => { if(isBinder()) e.preventDefault(); });
   st.addEventListener('wheel', e => { if(isBinder() || Math.abs(e.deltaX)+Math.abs(e.deltaY) < 20) return; e.preventDefault(); vGo(V.pos + ((e.deltaX||e.deltaY) > 0 ? 1 : -1)); }, {passive:false});
 })();
-window.addEventListener('resize', () => { if(V.id && !V.busy) vRender(); });
+let vRz = null;
+const vResize = () => { clearTimeout(vRz); vRz = setTimeout(() => { if(V.id && !V.busy) vRender(); }, 160); };
+window.addEventListener('resize', vResize);
+if(window.visualViewport) window.visualViewport.addEventListener('resize', vResize);
+window.addEventListener('orientationchange', () => setTimeout(vResize, 300));
 
 // ---------- storico del valore ----------
 function openHistory(){
