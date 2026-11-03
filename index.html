@@ -139,7 +139,7 @@ dialog::backdrop{background:rgba(10,14,20,.55)}
 .dlg-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
 .chk{display:flex;align-items:center;gap:8px;font-size:14px}
 
-#preview{position:fixed;pointer-events:none;z-index:50;width:244px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none}
+#preview{position:fixed;pointer-events:none;z-index:66;width:244px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;z-index:60;display:none;max-width:90vw}
 .toast.on{display:block}
 .progress{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:8px;display:none}
@@ -227,6 +227,45 @@ th{background:var(--solid)}
 .addrow{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-top:6px}
 .addrow .searchbox{flex:1 1 260px;margin:0}
 .addrow select{flex:0 0 auto}
+#viewer{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:color-mix(in srgb,var(--bg) 55%,rgba(8,10,20,.82));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+#viewer[hidden]{display:none}
+.v-top{display:flex;gap:12px 18px;align-items:center;flex-wrap:wrap;padding:14px 20px 8px}
+.v-title{flex:1 1 220px;min-width:0}.v-title h2{font-size:22px;color:var(--ink)}
+.v-search{display:flex;gap:6px;align-items:center;flex:1 1 260px}.v-search input{flex:1;min-width:0}
+.v-stage{flex:1;display:flex;align-items:center;justify-content:center;perspective:2200px;overflow:hidden;padding:6px 14px;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.v-nav{display:flex;gap:12px;align-items:center;justify-content:center;padding:8px 16px 14px;color:var(--ink-2);font-size:14px;flex-wrap:wrap}
+.v-nav input[type=range]{width:min(40vw,280px)}
+.v-info{position:absolute;left:50%;bottom:72px;transform:translateX(-50%);width:min(94vw,520px);background:var(--solid);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:3}
+.v-info[hidden]{display:none}.v-info img{width:56px;border-radius:5px}
+/* raccoglitore */
+.bk{position:relative;display:flex;gap:26px;padding:16px;border-radius:14px 18px 18px 14px;background:linear-gradient(135deg,#4a3460,#211833);box-shadow:0 18px 50px rgba(0,0,0,.45);transform-style:preserve-3d}
+.bk .pg{position:relative;width:var(--pw);aspect-ratio:488/680;height:auto;background:#dfe2ee;border-radius:8px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:8px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.bk .pg.left{border-radius:8px 3px 3px 8px}.bk .pg.right{border-radius:3px 8px 8px 3px}
+.bk .rings{position:absolute;left:50%;top:16px;bottom:16px;width:26px;margin-left:-13px;display:flex;flex-direction:column;justify-content:space-around;align-items:center;z-index:4;pointer-events:none}
+.bk .rings i{width:30px;height:14px;border:4px solid #e7cf8f;border-radius:8px;background:transparent}
+.bk.single{padding:14px 14px 14px 34px}.bk.single .rings{left:6px;margin-left:0;width:24px}
+.pk{position:relative;border-radius:5px;background:#c9cde0;overflow:hidden;padding:0;border:0;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.pk::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(255,255,255,0) 40%);pointer-events:none}
+.pk img{width:100%;height:100%;object-fit:cover;display:block}
+.pk.empty{cursor:default;background:#d3d7e6}
+.pk .fl{position:absolute;left:3px;top:3px;background:var(--brass);color:#fff;font-size:10px;font-weight:600;padding:0 5px;border-radius:6px;z-index:2}
+.pk.hit{outline:3px solid var(--brass);outline-offset:-1px}.hitmode .pk:not(.hit):not(.empty) img{opacity:.35}
+.leaf{position:absolute;top:16px;width:var(--pw);aspect-ratio:488/680;transform-style:preserve-3d;transition:transform .62s cubic-bezier(.3,.1,.3,1);z-index:5}
+.leaf .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;margin:0}
+.leaf .face.back{transform:rotateY(180deg)}
+.leaf .face.blank{background:#cfd3e2;border-radius:8px}
+/* cassetto */
+.dw{position:relative;width:100%;height:min(62vh,520px);transform-style:preserve-3d}
+.dw .cd{position:absolute;left:50%;top:50%;width:min(56vw,250px);aspect-ratio:488/680;margin:0;border-radius:12px;overflow:hidden;transition:transform .38s ease,opacity .38s ease,filter .38s ease;box-shadow:0 12px 32px rgba(0,0,0,.45);cursor:pointer;background:#222;border:0;padding:0}
+.dw .cd img{width:100%;height:100%;object-fit:cover;display:block}
+.dw .cd.hit{outline:3px solid var(--brass)}
+.dw-floor{position:absolute;left:8%;right:8%;bottom:4%;height:16%;border-radius:12px;background:linear-gradient(#6b4f3a,#3e2c20);opacity:.55;transform:rotateX(60deg);transform-origin:bottom}
+@media (prefers-reduced-motion:reduce){.leaf,.dw .cd{transition:none}}
+.cont[role=button]{cursor:pointer}
+.tile-gear{position:absolute;top:10px;right:10px}
+.cont{position:relative}
+.drawer[role=button]{cursor:pointer}
+.drawer .gear2{grid-column:2;grid-row:1;justify-self:end}
 </style>
 </head>
 <body>
@@ -369,6 +408,16 @@ th{background:var(--solid)}
 </main>
 
 <dialog id="dlg"><div id="dlgBody"></div></dialog>
+<div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Sfoglia contenitore">
+  <div class="v-top">
+    <div class="v-title"><div class="k" id="vKind"></div><h2 id="vName"></h2><div class="k" id="vSub"></div></div>
+    <div class="v-search"><input type="search" id="vQ" placeholder="Cerca qui dentro…" aria-label="Cerca nel contenitore"><span id="vHits" class="k"></span><button class="btn small" id="vHp" aria-label="Risultato precedente" hidden>‹</button><button class="btn small" id="vHn" aria-label="Risultato successivo" hidden>›</button></div>
+    <button class="btn" id="vClose">Chiudi</button>
+  </div>
+  <div class="v-stage" id="vStage"></div>
+  <div class="v-nav"><button class="btn" id="vPrev">‹ Indietro</button><span id="vPos"></span><input type="range" id="vRange" min="0" value="0" aria-label="Vai a"><button class="btn" id="vNext">Avanti ›</button></div>
+  <div class="v-info" id="vInfo" hidden></div>
+</div>
 <img id="preview" alt="">
 <div id="zoom" role="dialog" aria-label="Anteprima carta"><img alt=""></div>
 <div class="toast" id="toast" role="status"></div>
@@ -400,6 +449,7 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const eur = n => n == null || isNaN(n) ? '—' : '€ ' + Number(n).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
 const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function toast(msg, ms=3200){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'), ms); }
@@ -537,7 +587,9 @@ function filtered(){
     }
     return true;
   });
-  const s = $('#fSort').value;
+  return sortCards(list, $('#fSort').value);
+}
+function sortCards(list, s){
   const cmp = {
     name:(a,b)=>a.name.localeCompare(b.name),
     value:(a,b)=>value(b)-value(a),
@@ -616,7 +668,9 @@ function renderColl(){
   const viaIt = ui.it && ui.it.q===qq ? list.filter(c => !(`${c.name} ${c.printed} ${c.type} ${c.setName} ${c.set} ${c.note||''}`.toLowerCase().includes(qq))).length : 0;
   $('#summary').innerHTML = `<span><b>${n.toLocaleString('it-IT')}</b> carte</span><span><b>${list.length}</b> righe</span><span>Valore della selezione: <b>${eur(v)}</b></span>` +
     (viaIt ? `<span>${viaIt} ${viaIt===1?'trovata':'trovate'} tramite il nome italiano</span>` : '') +
+    (($('#fLoc').value && $('#fLoc').value!=='__none' && locById($('#fLoc').value) && locById($('#fLoc').value).kind!=='chest') ? `<span><button class="thr" id="openV">Apri e sfoglia ${esc(locName($('#fLoc').value))}</button></span>` : '') +
     (ui.onlyMis ? `<span>Mostro solo le carte fuori posto · <button class="thr" id="misOff">Mostra tutte</button></span>` : '');
+  if($('#openV')) $('#openV').onclick = () => openViewer($('#fLoc').value);
   if($('#misOff')) $('#misOff').onclick = () => { ui.onlyMis = false; renderColl(); };
   const out = $('#collOut');
   if(!S.cards.length){
@@ -956,19 +1010,20 @@ function renderArchive(){
     if(l.kind==='chest'){
       const dr = S.locs.filter(d=>d.parent===l.id).sort((a,b)=>(a.pos||0)-(b.pos||0));
       return `<div class="chest"><div class="chest-top"><div><div class="k">Cassettiera</div><h3>${esc(l.name)}</h3><div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div></div><button class="btn small" data-open="${l.id}">Imposta</button></div>` +
-        dr.map(d => { const ds = contStats(d.id); return `<button class="drawer" data-open="${d.id}"><b>${esc(d.name)}${tierBadge(d, l.tier)}${ds.mis?`<span class="badge red">${ds.mis}</span>`:''}</b><span class="v">${ds.n.toLocaleString('it-IT')} · ${eur(ds.v)}</span><span class="dest">${esc(d.dest||'Clicca per indicare la destinazione')}</span></button>`; }).join('') + '</div>';
+        dr.map(d => { const ds = contStats(d.id); return `<div class="drawer" role="button" tabindex="0" data-view="${d.id}" aria-label="Apri ${esc(d.name)}"><b>${esc(d.name)}${tierBadge(d, l.tier)}${ds.mis?`<span class="badge red">${ds.mis}</span>`:''}</b><span class="v">${ds.n.toLocaleString('it-IT')} · ${eur(ds.v)}</span><span class="dest">${esc(d.dest||'Nessuna destinazione indicata')} · <button class="thr" data-open="${d.id}">Imposta</button></span></div>`; }).join('') + '</div>';
     }
     if(l.kind==='binder'){
       const capN = (l.sheets||0)*18, pct = capN ? Math.min(100, st.n/capN*100) : 0;
-      return `<button class="cont binder-c" data-open="${l.id}"><div class="k">Raccoglitore${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div>
+      return `<div class="cont binder-c" role="button" tabindex="0" data-view="${l.id}" aria-label="Sfoglia ${esc(l.name)}"><button class="btn small tile-gear" data-open="${l.id}">Imposta</button><div class="k">Raccoglitore${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div>
         <div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div><div class="k" style="margin-top:4px">Ordine: ${esc(orderLbl(l.order))}</div>
-        ${capN ? `<div class="cap ${pct>=100?'full':pct>=90?'warn':''}"><i style="width:${pct}%"></i></div><div class="k">${l.sheets} fogli · ${Math.max(0,capN-st.n)} tasche libere su ${capN}</div>` : '<div class="k" style="margin-top:6px">Indica i fogli per vedere le tasche libere</div>'}</button>`;
+        ${capN ? `<div class="cap ${pct>=100?'full':pct>=90?'warn':''}"><i style="width:${pct}%"></i></div><div class="k">${l.sheets} fogli · ${Math.max(0,capN-st.n)} tasche libere su ${capN}</div>` : '<div class="k" style="margin-top:6px">Indica i fogli per vedere le tasche libere</div>'}<div class="k" style="margin-top:8px"><b>Tocca per sfogliare</b></div></div>`;
     }
-    return `<button class="cont" data-open="${l.id}"><div class="k">${esc(KINDS[l.kind]||'Altro')}${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div><div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div><div class="k" style="margin-top:4px">Ordine: ${esc(orderLbl(l.order))}</div></button>`;
+    return `<div class="cont" role="button" tabindex="0" data-view="${l.id}" aria-label="Sfoglia ${esc(l.name)}"><button class="btn small tile-gear" data-open="${l.id}">Imposta</button><div class="k">${esc(KINDS[l.kind]||'Altro')}${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div><div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div><div class="k" style="margin-top:4px">Ordine: ${esc(orderLbl(l.order))}</div><div class="k" style="margin-top:8px"><b>Tocca per sfogliare</b></div></div>`;
   }).join('');
   const un = groupStats('loc','');
   if(un.n) el.insertAdjacentHTML('beforeend', `<button class="cont" data-show-none="1"><div class="k">Da sistemare</div><h3>Carte senza luogo</h3><div class="st">${un.n.toLocaleString('it-IT')} carte · <b>${eur(un.v)}</b></div><div class="k" style="margin-top:4px">Clicca per vederle e assegnarle</div></button>`);
-  el.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openCont(b.dataset.open));
+  el.querySelectorAll('[data-open]').forEach(b => b.onclick = e => { e.stopPropagation(); openCont(b.dataset.open); });
+  el.querySelectorAll('[data-view]').forEach(b => { b.onclick = () => openViewer(b.dataset.view); b.onkeydown = e => { if(e.target===b && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); openViewer(b.dataset.view); } }; });
   const sn = el.querySelector('[data-show-none]'); if(sn) sn.onclick = () => { fillSelects(); $('#fDeck').value=''; $('#fLoc').value='__none'; ui.onlyMis=false; showTab('coll'); };
 }
 $('#newCont').onclick = () => openCont(null);
@@ -1002,7 +1057,7 @@ function openCont(id){
       ${L&&!isDrawer?'<button type="button" class="btn danger" id="cDel" style="margin-right:auto">Elimina</button>':''}
       ${L&&kind!=='chest'?`<button type="button" class="btn" id="cShow">Vedi carte</button>`:''}
       ${L&&kind==='chest'?`<button type="button" class="btn" id="cShow">Vedi tutte le carte</button>`:''}
-      ${L&&kind==='binder'?`<button type="button" class="btn" id="cBrowse">Sfoglia</button>`:''}
+      ${L&&kind!=='chest'?`<button type="button" class="btn" id="cBrowse">Sfoglia</button>`:''}
       <button type="button" class="btn" id="cCancel">Annulla</button>
       <button type="submit" class="btn primary">${isNew?'Crea':'Salva'}</button>
     </div></form>`;
@@ -1013,7 +1068,7 @@ function openCont(id){
   $('#addSheet').onclick = () => { const n = prompt('Quanti fogli hai aggiunto?', '1'); const v = parseInt(n); if(v>0) F('sheets').value = (parseInt(F('sheets').value)||0) + v; };
   $('#cCancel').onclick = () => dlg.close();
   if($('#cShow')) $('#cShow').onclick = () => showCont(L.id, false);
-  if($('#cBrowse')) $('#cBrowse').onclick = () => showCont(L.id, true);
+  if($('#cBrowse')) $('#cBrowse').onclick = () => { dlg.close(); openViewer(L.id); };
   if($('#cDel')) $('#cDel').onclick = () => {
     const ids = kind==='chest' ? [L.id, ...S.locs.filter(d=>d.parent===L.id).map(d=>d.id)] : [L.id];
     if(!confirm(`Eliminare “${L.name}”${kind==='chest'?' e i suoi cassetti':''}? Le ${st.n} carte restano in collezione, senza luogo.`)) return;
@@ -1191,6 +1246,139 @@ async function mbImport(){
     '<p class="hint">Le carte importate hanno già i prezzi di oggi.</p>';
   $('#mbFile').value=''; toast('Carte importate');
 }
+
+// ---------- sfoglia contenitore ----------
+const V = {id:null, kind:'', items:[], pos:0, busy:false, hits:[], hitI:-1};
+function vItems(id){
+  const L = locById(id); const ids = L && L.kind==='chest' ? S.locs.filter(d=>d.parent===id).map(d=>d.id) : [id];
+  const list = sortCards(S.cards.filter(c=>ids.includes(c.loc)), (L && L.order) || 'color');
+  const out = []; list.forEach(c => { for(let k=0;k<c.qty;k++) out.push(c); });
+  return out;
+}
+const isBinder = () => V.kind==='binder';
+const spreadN = () => window.innerWidth < 760 ? 1 : 2;
+function vPages(){ const L = locById(V.id); const byCards = Math.max(1, Math.ceil(V.items.length/9)); return Math.max(byCards, L && L.sheets ? L.sheets*2 : 0); }
+function vSteps(){ return isBinder() ? Math.ceil(vPages()/spreadN()) : Math.max(1, V.items.length); }
+function openViewer(id){
+  const L = locById(id); if(!L) return;
+  V.id = id; V.kind = L.kind==='binder' ? 'binder' : 'drawer'; V.items = vItems(id); V.pos = 0; V.hits = []; V.hitI = -1;
+  $('#vKind').textContent = L.kind==='drawer' ? 'Cassetto' : (KINDS[L.kind]||'Contenitore');
+  $('#vName').textContent = locName(id);
+  const v = V.items.reduce((a,c)=>a+(unitPrice(c)||0),0);
+  $('#vSub').textContent = `${V.items.length.toLocaleString('it-IT')} carte · ${eur(v)} · ${orderLbl(L.order)}${L.dest?' · '+L.dest:''}`;
+  $('#vQ').value = ''; $('#vHits').textContent = ''; $('#vHp').hidden = $('#vHn').hidden = true; $('#vInfo').hidden = true;
+  $('#viewer').hidden = false; document.body.style.overflow = 'hidden';
+  vRender();
+}
+function closeViewer(){ $('#viewer').hidden = true; document.body.style.overflow = ''; $('#preview').style.display='none'; V.id = null; }
+function pocketHtml(c, idx){
+  if(!c) return '<div class="pk empty" aria-hidden="true"></div>';
+  const hit = V.hits.includes(idx) ? ' hit' : '';
+  return `<button class="pk${hit}" data-i="${idx}" title="${esc(c.name)}${c.printed&&c.printed!==c.name?' · '+esc(c.printed):''} · ${esc(c.setName)} · ${eur(unitPrice(c))}"><img src="${esc(c.imgL||c.img)}" data-big="${esc(c.imgL)}" alt="${esc(c.name)}" loading="lazy" draggable="false">${c.foil?'<span class="fl">Foil</span>':''}</button>`;
+}
+function pageHtml(p){ let h=''; for(let k=0;k<9;k++){ const i=p*9+k; h += pocketHtml(V.items[i], i); } return h; }
+function pageW(){ const sp = spreadN(), H = window.innerHeight - 230, W = window.innerWidth - 40 - (sp===2?26+32:48);
+  const byH = H * (488/680), byW = W / sp; return Math.max(150, Math.min(byH, byW, 520)); }
+function vRender(){
+  const st = $('#vStage'); const steps = vSteps();
+  V.pos = Math.max(0, Math.min(V.pos, steps-1));
+  $('#vRange').max = steps-1; $('#vRange').value = V.pos;
+  if(isBinder()){
+    const sp = spreadN(), pages = vPages(), a = V.pos*sp;
+    st.innerHTML = `<div class="bk ${sp===1?'single':''} ${V.hits.length?'hitmode':''}" style="--pw:${pageW()}px">${sp===2?`<div class="pg left">${pageHtml(a)}</div><div class="pg right">${a+1<pages?pageHtml(a+1):''}</div>`:`<div class="pg left">${pageHtml(a)}</div>`}<div class="rings"><i></i><i></i><i></i></div></div>`;
+    $('#vPos').textContent = sp===2 ? `Pagine ${a+1}–${Math.min(a+2,pages)} di ${pages}` : `Pagina ${a+1} di ${pages}`;
+  } else {
+    st.innerHTML = '<div class="dw"><div class="dw-floor"></div></div>';
+    const dw = st.firstChild;
+    for(let d=-6; d<=6; d++){ const i = V.pos+d; if(i<0 || i>=V.items.length) continue; const c = V.items[i];
+      dw.insertAdjacentHTML('beforeend', `<button class="cd${V.hits.includes(i)?' hit':''}" data-i="${i}" data-d="${d}"><img src="${esc(c.imgL||c.img)}" data-big="${esc(c.imgL)}" alt="${esc(c.name)}" draggable="false"></button>`); }
+    dwLayout();
+    $('#vPos').textContent = V.items.length ? `Carta ${V.pos+1} di ${V.items.length}` : 'Contenitore vuoto';
+    if(!V.items.length) dw.insertAdjacentHTML('beforeend','<p class="hint" style="position:absolute;top:45%;width:100%;text-align:center">Qui non ci sono ancora carte.</p>');
+  }
+  $('#vPrev').disabled = V.pos<=0; $('#vNext').disabled = V.pos>=steps-1;
+  vBind();
+}
+function dwLayout(){
+  $$('#vStage .cd').forEach(el => { const d = +el.dataset.i - V.pos, a = Math.abs(d);
+    const x = d===0 ? 0 : Math.sign(d)*(120 + (a-1)*42), z = d===0 ? 60 : -60 - a*30, r = d===0 ? 0 : -Math.sign(d)*58;
+    el.style.transform = `translate(-50%,-50%) translateX(${x}px) translateZ(${z}px) rotateY(${r}deg)`;
+    el.style.zIndex = 100 - a; el.style.opacity = a>5 ? 0 : 1; el.style.filter = d===0 ? 'none' : `brightness(${1-a*0.08})`; });
+}
+function vBind(){
+  $$('#vStage [data-i]').forEach(b => {
+    const img = b.querySelector('img'); if(img && !touch && isBinder()) bindPreview(img);
+    b.onclick = e => { e.stopPropagation(); const i = +b.dataset.i;
+      if(!isBinder() && i !== V.pos){ vGo(i); return; } vShowInfo(V.items[i]); };
+  });
+}
+function vShowInfo(c){
+  const box = $('#vInfo');
+  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}${flag(c)}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${eur(unitPrice(c))}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><button class="btn small" id="vEdit">Modifica</button><button class="btn small" id="vX">Chiudi</button></div>`;
+  box.hidden = false;
+  bindPreview(box.querySelector('img'));
+  $('#vX').onclick = () => box.hidden = true;
+  $('#vEdit').onclick = () => { box.hidden = true; openEdit(c.id); dlg.addEventListener('close', () => { if(V.id){ V.items = vItems(V.id); vRender(); } }, {once:true}); };
+}
+function vGo(to){
+  const steps = vSteps(); to = Math.max(0, Math.min(steps-1, to));
+  if(to===V.pos || V.busy) return;
+  $('#vInfo').hidden = true;
+  if(!isBinder() || Math.abs(to-V.pos)>1 || window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){ V.pos = to; vRender(); return; }
+  const fwd = to > V.pos, sp = spreadN(), bk = $('#vStage .bk'), pages = vPages();
+  const L = bk.querySelector('.pg.left'), R = bk.querySelector('.pg.right');
+  const na = to*sp, newL = pageHtml(na), newR = sp===2 && na+1<pages ? pageHtml(na+1) : '';
+  V.busy = true;
+  const leaf = document.createElement('div'); leaf.className = 'leaf';
+  const pw = pageW(), pad = sp===1 ? 34 : 16;
+  if(sp===2){
+    leaf.style.left = fwd ? (16 + pw + 26) + 'px' : '16px';
+    leaf.style.transformOrigin = fwd ? 'left center' : 'right center';
+    leaf.innerHTML = fwd ? `<div class="pg right face">${R.innerHTML}</div><div class="pg left face back">${newL}</div>` : `<div class="pg left face">${L.innerHTML}</div><div class="pg right face back">${newR}</div>`;
+    if(fwd) R.innerHTML = newR; else L.innerHTML = newL;
+  } else {
+    leaf.style.left = pad + 'px'; leaf.style.transformOrigin = 'left center';
+    if(fwd){ leaf.innerHTML = `<div class="pg left face">${L.innerHTML}</div><div class="face back blank"></div>`; L.innerHTML = newL; }
+    else { leaf.innerHTML = `<div class="pg left face">${newL}</div><div class="face back blank"></div>`; leaf.style.transform = 'rotateY(-180deg)'; }
+  }
+  leaf.style.top = (sp===1?14:16)+'px';
+  bk.appendChild(leaf);
+  const end = () => { V.pos = to; V.busy = false; vRender(); };
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    leaf.style.transform = sp===2 ? (fwd ? 'rotateY(-180deg)' : 'rotateY(180deg)') : (fwd ? 'rotateY(-180deg)' : 'rotateY(0deg)');
+  }));
+  let done = false; const fin = () => { if(done) return; done = true; end(); };
+  leaf.addEventListener('transitionend', fin); setTimeout(fin, 900);
+}
+function vSearch(){
+  const q = $('#vQ').value.trim().toLowerCase();
+  V.hits = []; V.hitI = -1;
+  if(q.length >= 2){ V.items.forEach((c,i) => { if(`${c.name} ${c.printed||''} ${c.setName}`.toLowerCase().includes(q) || (ui.it && ui.it.q===q && ui.it.names.has(c.name))) V.hits.push(i); }); }
+  $('#vHits').textContent = q.length<2 ? '' : V.hits.length ? `${V.hits.length} ${V.hits.length===1?'trovata':'trovate'}` : 'nessuna';
+  $('#vHp').hidden = $('#vHn').hidden = V.hits.length < 2;
+  if(V.hits.length){ V.hitI = 0; vJumpHit(); } else vRender();
+}
+function vJumpHit(){ const i = V.hits[V.hitI]; const to = isBinder() ? Math.floor(Math.floor(i/9)/spreadN()) : i; V.pos = to; vRender(); $('#vHits').textContent = `${V.hitI+1} di ${V.hits.length}`; }
+$('#vQ').addEventListener('input', () => { clearTimeout(V.qt); V.qt = setTimeout(vSearch, 200); });
+$('#vHn').onclick = () => { if(!V.hits.length) return; V.hitI = (V.hitI+1) % V.hits.length; vJumpHit(); };
+$('#vHp').onclick = () => { if(!V.hits.length) return; V.hitI = (V.hitI-1+V.hits.length) % V.hits.length; vJumpHit(); };
+$('#vPrev').onclick = () => vGo(V.pos-1);
+$('#vNext').onclick = () => vGo(V.pos+1);
+$('#vRange').oninput = () => { V.pos = +$('#vRange').value; vRender(); };
+$('#vClose').onclick = closeViewer;
+$('#vStage').addEventListener('click', e => { if(e.target === $('#vStage')) $('#vInfo').hidden = true; });
+document.addEventListener('keydown', e => {
+  if($('#viewer').hidden || $('#dlg').open || e.target === $('#vQ')) return;
+  if(e.key==='ArrowRight') vGo(V.pos+1); else if(e.key==='ArrowLeft') vGo(V.pos-1); else if(e.key==='Escape') closeViewer();
+});
+(() => { let x0=null, y0=null; const st = $('#vStage');
+  st.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, {passive:true});
+  st.addEventListener('touchend', e => { if(x0==null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+    if(Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)){ const n = isBinder() ? 1 : Math.max(1, Math.round(Math.abs(dx)/90)); vGo(V.pos + (dx<0 ? n : -n)); } });
+  st.addEventListener('wheel', e => { if(isBinder() || Math.abs(e.deltaX)+Math.abs(e.deltaY) < 20) return; e.preventDefault(); vGo(V.pos + ((e.deltaX||e.deltaY) > 0 ? 1 : -1)); }, {passive:false});
+})();
+window.addEventListener('resize', () => { if(V.id) vRender(); });
 
 // ---------- storico del valore ----------
 function openHistory(){
