@@ -6,6 +6,10 @@
 <title>Raccoglitore Magic</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" sizes="180x180" href="https://mattiafalser-max.github.io/raccoglitore-magic/apple-touch-icon.png?v=4">
+<link rel="icon" type="image/png" href="https://mattiafalser-max.github.io/raccoglitore-magic/favicon.png?v=4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Raccoglitore">
 <style>
 :root{
   --bg:#EDEFF2; --surface:rgba(255,255,255,.80); --surface-2:rgba(245,246,248,.70); --solid:#FFFFFF; --veil:rgba(237,239,242,.38); --ink:#1E2430; --ink-2:#5A6273;
@@ -194,6 +198,32 @@ th{background:var(--solid)}
   .tablewrap td:nth-child(10){grid-area:act}
   .bpage{padding:8px;gap:5px}
 }
+.flag.mis{background:var(--danger)}
+.worth{cursor:pointer}
+.arch-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.arch{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;align-items:start}
+.cont{background:var(--surface);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:left;cursor:pointer;display:block;width:100%}
+.cont h3{font-size:18px;line-height:1.2}
+.cont .k{font-size:12.5px;color:var(--ink-2)}
+.cont .st{font-size:13.5px;margin-top:6px}
+.cont .dest{font-size:13px;color:var(--ink-2);margin-top:2px}
+.binder-c{position:relative;padding-left:30px;min-height:170px;border-radius:8px 14px 14px 8px}
+.binder-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:18px;border-radius:8px 0 0 8px;background:color-mix(in srgb,var(--accent) 70%,transparent)}
+.binder-c::after{content:"";position:absolute;left:7px;top:30%;width:4px;height:40%;border-radius:2px;background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.cap{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}.cap i{display:block;height:100%;background:var(--ok)}
+.cap.warn i{background:var(--brass)}.cap.full i{background:var(--danger)}
+.chest{background:var(--surface);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:12px;padding:12px;grid-column:span 1}
+.chest-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.drawer{display:grid;grid-template-columns:1fr auto;gap:2px 10px;width:100%;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:9px 12px;margin-top:7px;cursor:pointer;position:relative}
+.drawer::after{content:"";position:absolute;left:50%;bottom:5px;width:34px;height:4px;margin-left:-17px;border-radius:2px;background:var(--line)}
+.drawer b{font-size:14px}.drawer .dest{grid-column:1/3;font-size:12.5px;color:var(--ink-2);padding-bottom:6px}
+.drawer .v{font-size:13px;text-align:right;white-space:nowrap}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);margin-left:6px;vertical-align:1px}
+.badge.red{background:var(--danger);color:#fff;border-color:var(--danger)}
+.own{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:9px;background:var(--ok);color:#fff;margin-top:3px}
+.ownbar{margin-bottom:12px}
+.chartbox svg{width:100%;height:auto;display:block}
+.chartbox .axis{font-size:11px;fill:var(--ink-2)}
 </style>
 </head>
 <body>
@@ -204,7 +234,7 @@ th{background:var(--solid)}
       <p id="lastUpd">Prezzi non ancora aggiornati</p>
       <p class="sync" id="sync"><span id="syncTxt">Solo su questo dispositivo</span> <button class="thr" id="syncBtn" hidden>Accedi con Google</button></p>
     </div>
-    <div class="worth">
+    <div class="worth" id="worth" role="button" tabindex="0" title="Vedi l’andamento del valore nel tempo">
       <div class="v" id="totVal">€ 0,00</div>
       <div class="l" id="totCount">0 carte in collezione</div>
     </div>
@@ -216,7 +246,7 @@ th{background:var(--solid)}
       <button role="tab" data-tab="coll" aria-selected="true">Collezione</button>
       <button role="tab" data-tab="add" aria-selected="false">Aggiungi carte</button>
       <button role="tab" data-tab="decks" aria-selected="false">Mazzi</button>
-      <button role="tab" data-tab="locs" aria-selected="false">Luoghi</button>
+      <button role="tab" data-tab="locs" aria-selected="false">Archivio</button>
       <button role="tab" data-tab="backup" aria-selected="false">Backup</button>
     </nav>
   </div>
@@ -226,6 +256,7 @@ th{background:var(--solid)}
 <main>
   <!-- COLLEZIONE -->
   <section class="panel on" id="p-coll">
+    <div id="bkRemind"></div>
     <div class="filters">
       <input type="search" id="fText" placeholder="Cerca per nome, tipo, set, nota…" aria-label="Cerca">
       <select id="fDeck" aria-label="Mazzo"></select>
@@ -242,7 +273,7 @@ th{background:var(--solid)}
         <button class="pip C" data-c="C" aria-pressed="false" title="Incolore"></button>
       </div>
       <select id="fSort" aria-label="Ordina">
-        <option value="name">Nome A–Z</option><option value="value">Valore (più alto)</option><option value="price">Prezzo unitario</option><option value="added">Aggiunte di recente</option><option value="set">Set</option>
+        <option value="name">Nome A–Z</option><option value="color">Colore, poi nome</option><option value="type">Tipo, poi nome</option><option value="value">Valore (più alto)</option><option value="price">Prezzo unitario</option><option value="added">Aggiunte di recente</option><option value="set">Set</option>
       </select>
       <select id="fView" aria-label="Vista"><option value="table">Vista a tabella</option><option value="grid">Vista a griglia</option><option value="binder">Raccoglitore</option></select>
       <label class="chk" id="fFlagWrap"><input type="checkbox" id="fFlag"> <span id="fFlagTxt">Solo sopra soglia</span></label>
@@ -287,19 +318,13 @@ th{background:var(--solid)}
 
   <!-- LUOGHI -->
   <section class="panel" id="p-locs">
-    <div class="cols">
-      <div class="box">
-        <h2>Nuovo luogo</h2>
-        <form id="locForm">
-          <label class="f">Nome<input type="text" name="name" required placeholder="es. Raccoglitore blu, scaffale studio"></label>
-          <label class="f">Note<textarea name="note" placeholder="es. Pagine 1–20 rare, il resto bulk"></textarea></label>
-          <button class="btn primary" type="submit">Crea luogo</button>
-        </form>
-      </div>
-      <div class="items" id="locList"></div>
+    <div class="arch-head">
+      <div><h2 style="font-size:24px">Archivio</h2><p class="hint">I tuoi contenitori fisici. Clicca su un raccoglitore, un cassetto o una scatola per impostarne destinazione, tipo e organizzazione.</p></div>
+      <button class="btn primary" id="newCont">Nuovo contenitore</button>
     </div>
+    <div id="archWarn"></div>
+    <div class="arch" id="locList"></div>
   </section>
-
   <!-- BACKUP -->
   <section class="panel" id="p-backup">
     <div class="box" style="margin-bottom:18px">
@@ -358,6 +383,7 @@ const ui = {view:'table', colors:new Set(), sel:new Set(), page:0};
 function load(){
   try{ const raw = localStorage.getItem(KEY); if(raw){ const d = JSON.parse(raw); S = Object.assign(S, d); } }
   catch(e){ storageOk = false; }
+  migrate();
 }
 function save(){
   try{ if(window.RM && RM.onSave) RM.onSave(S); }catch(e){ console.error(e); }
@@ -398,7 +424,24 @@ function fromScry(card){
   };
 }
 const deckName = id => (S.decks.find(d=>d.id===id)||{}).name || '';
-const locName = id => (S.locs.find(l=>l.id===id)||{}).name || '';
+const KINDS = {binder:'Raccoglitore', chest:'Cassettiera', box:'Scatola', deckbox:'Deck box', other:'Altro'};
+const TIERS = [['value','Di valore'],['bulk','Bulk'],['theme','Tematico (nessun controllo)'],['','Da classificare']];
+const ORDERS = [['color','Colore, poi nome'],['name','Solo nome'],['type','Tipo, poi nome'],['set','Set e numero'],['value','Valore (più alto)']];
+const locById = id => S.locs.find(l=>l.id===id);
+const locName = id => { const l = locById(id); if(!l) return ''; if(l.parent){ const p = locById(l.parent); return (p ? p.name + ' · ' : '') + l.name; } return l.name; };
+function slots(){
+  const top = S.locs.filter(l=>!l.parent).sort((a,b)=>a.name.localeCompare(b.name));
+  const out = [];
+  top.forEach(l => { if(l.kind==='chest') S.locs.filter(d=>d.parent===l.id).sort((a,b)=>(a.pos||0)-(b.pos||0)).forEach(d=>out.push(d)); else out.push(l); });
+  S.locs.filter(l=>l.parent && !locById(l.parent)).forEach(l=>out.push(l));
+  return out;
+}
+function tierOf(c){ const l = locById(c.loc); if(!l) return ''; if(l.tier) return l.tier; const p = l.parent && locById(l.parent); return p ? (p.tier||'') : ''; }
+function misplaced(c){ const t = tierOf(c), p = unitPrice(c); if(p==null) return ''; if(t==='bulk' && p>=thr()) return 'up'; if(t==='value' && p<thr()) return 'down'; return ''; }
+function migrate(){
+  S.locs = S.locs || []; S.history = S.history || [];
+  S.locs.forEach(l => { if(!l.kind) l.kind = l.parent ? 'drawer' : 'other'; if(l.tier===undefined) l.tier=''; if(!l.order) l.order='color'; if(l.dest===undefined) l.dest = l.note || ''; });
+}
 
 // ---------- header ----------
 function renderHeader(){
@@ -424,13 +467,14 @@ function showTab(t){
 // ---------- selects ----------
 function fillSelects(){
   const dk = S.decks.slice().sort((a,b)=>a.name.localeCompare(b.name));
-  const lc = S.locs.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  const lc = slots();
+  const lcF = []; S.locs.filter(l=>!l.parent).sort((a,b)=>a.name.localeCompare(b.name)).forEach(l => { lcF.push([l.id, l.kind==='chest' ? l.name + ' (tutti i cassetti)' : l.name]); if(l.kind==='chest') S.locs.filter(d=>d.parent===l.id).sort((a,b)=>(a.pos||0)-(b.pos||0)).forEach(d=>lcF.push([d.id, '\u00a0\u00a0' + d.name])); });
   const keepD = $('#fDeck').value, keepL = $('#fLoc').value;
   $('#fDeck').innerHTML = '<option value="">Tutti i mazzi</option><option value="__none">Non in un mazzo</option>' + dk.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
-  $('#fLoc').innerHTML = '<option value="">Tutti i luoghi</option><option value="__none">Senza luogo</option>' + lc.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join('');
+  $('#fLoc').innerHTML = '<option value="">Tutti i luoghi</option><option value="__none">Senza luogo</option>' + lcF.map(([id,n])=>`<option value="${id}">${esc(n)}</option>`).join('');
   $('#fDeck').value = [...$('#fDeck').options].some(o=>o.value===keepD) ? keepD : '';
   $('#fLoc').value = [...$('#fLoc').options].some(o=>o.value===keepL) ? keepL : '';
-  $('#bulkLoc').innerHTML = '<option value="">Luogo…</option><option value="__none">Nessun luogo</option>' + lc.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join('');
+  $('#bulkLoc').innerHTML = '<option value="">Luogo…</option><option value="__none">Nessun luogo</option>' + lc.map(l=>`<option value="${l.id}">${esc(locName(l.id))}</option>`).join('');
   $('#bulkDeck').innerHTML = '<option value="">Mazzo…</option><option value="__none">Togli dal mazzo</option>' + dk.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
 }
 
@@ -443,14 +487,42 @@ document.querySelectorAll('#fColors .pip').forEach(p => p.addEventListener('clic
 $('#fView').addEventListener('input', () => { ui.view = $('#fView').value; ui.page = 0; renderColl(); });
 $('#fFlag').addEventListener('input', () => { ui.page = 0; renderColl(); });
 ['#fText','#fDeck','#fLoc','#fRar','#fSort'].forEach(x => $(x).addEventListener('input', () => { ui.page = 0; }));
+const itCache = {}; let itTimer = null;
+$('#fText').addEventListener('input', () => {
+  clearTimeout(itTimer);
+  const q = $('#fText').value.trim().toLowerCase();
+  if(q.length < 3){ ui.it = null; return; }
+  itTimer = setTimeout(async () => {
+    if(!itCache[q]){
+      try{
+        const {status, data} = await api('/cards/search?unique=cards&q=' + encodeURIComponent(`lang:it "${q.replace(/"/g,'')}"`));
+        itCache[q] = new Set(status===200 ? (data.data||[]).map(c=>c.name) : []);
+      }catch(e){ return; }
+    }
+    if($('#fText').value.trim().toLowerCase() !== q) return;
+    ui.it = {q, names: itCache[q]}; renderColl();
+  }, 650);
+});
 
+const COLORD = {W:0,U:1,B:2,R:3,G:4};
+function colorKey(c){
+  const t = c.type||'', cs = c.colors||[];
+  if(/\bLand\b/.test(t) && !/Creature/.test(t)) return [7,''];
+  if(!cs.length) return [6,''];
+  if(cs.length>1) return [5, cs.map(x=>COLORD[x]??9).sort().join('')];
+  return [COLORD[cs[0]]??6, ''];
+}
+const TYPES = ['Creature','Planeswalker','Instant','Sorcery','Artifact','Enchantment','Battle','Land'];
+function typeKey(c){ const t = c.type||''; const i = TYPES.findIndex(x=>t.includes(x)); return i<0 ? 99 : i; }
 function filtered(){
   const q = $('#fText').value.trim().toLowerCase();
   const fd = $('#fDeck').value, fl = $('#fLoc').value, fr = $('#fRar').value;
   let list = S.cards.filter(c => {
-    if(q && !(`${c.name} ${c.printed} ${c.type} ${c.setName} ${c.set} ${c.note||''}`.toLowerCase().includes(q))) return false;
+    if(q && !(`${c.name} ${c.printed} ${c.type} ${c.setName} ${c.set} ${c.note||''}`.toLowerCase().includes(q)) && !(ui.it && ui.it.q===q && ui.it.names.has(c.name))) return false;
     if(fd==='__none' && c.deck) return false; if(fd && fd!=='__none' && c.deck!==fd) return false;
-    if(fl==='__none' && c.loc) return false; if(fl && fl!=='__none' && c.loc!==fl) return false;
+    if(fl==='__none' && c.loc) return false;
+    if(fl && fl!=='__none'){ const L = locById(fl); if(L && L.kind==='chest'){ const cl = locById(c.loc); if(!cl || cl.parent!==fl) return false; } else if(c.loc!==fl) return false; }
+    if(ui.onlyMis && !misplaced(c)) return false;
     if(fr && c.rarity!==fr) return false;
     if($('#fFlag').checked && !c.alert) return false;
     if(ui.colors.size){
@@ -465,8 +537,10 @@ function filtered(){
     value:(a,b)=>value(b)-value(a),
     price:(a,b)=>(unitPrice(b)||0)-(unitPrice(a)||0),
     added:(a,b)=>(b.added||0)-(a.added||0),
-    set:(a,b)=>a.setName.localeCompare(b.setName)||a.num.localeCompare(b.num,undefined,{numeric:true})
-  }[s];
+    set:(a,b)=>a.setName.localeCompare(b.setName)||a.num.localeCompare(b.num,undefined,{numeric:true}),
+    color:(a,b)=>{ const x=colorKey(a), y=colorKey(b); return x[0]-y[0] || x[1].localeCompare(y[1]) || a.name.localeCompare(b.name); },
+    type:(a,b)=> typeKey(a)-typeKey(b) || a.name.localeCompare(b.name)
+  }[s] || ((a,b)=>a.name.localeCompare(b.name));
   return list.sort(cmp);
 }
 
@@ -476,7 +550,11 @@ function trend(c){
   return p>o ? `<span class="up" title="Prima: ${eur(o)}">▲</span>` : `<span class="down" title="Prima: ${eur(o)}">▼</span>`;
 }
 
-function flag(c){ return c.alert ? `<span class="flag" title="Era ${eur(c.alert.from)}, ora ${eur(c.alert.to)}">Sopra soglia</span>` : ''; }
+function flag(c){
+  const m = misplaced(c);
+  return (c.alert ? `<span class="flag" title="Era ${eur(c.alert.from)}, ora ${eur(c.alert.to)}">Sopra soglia</span>` : '') +
+    (m ? `<span class="flag mis" title="${m==='up'?'Vale almeno '+eur(thr())+' ma è in un contenitore bulk':'Vale meno di '+eur(thr())+' ma è in un contenitore di valore'}">${m==='up'?'Da spostare nel valore':'Da spostare nel bulk'}</span>` : '');
+}
 function thr(){ return S.threshold ?? 2; }
 function renderThr(){
   $('#btnThr').textContent = 'Soglia segnalazioni: ' + eur(thr());
@@ -493,7 +571,7 @@ $('#btnThr').onclick = () => {
 };
 function showAlerts(list){
   const dlg = $('#dlg');
-  const locOpts = '<option value="">Sposta in…</option>' + S.locs.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join('');
+  const locOpts = '<option value="">Sposta in…</option>' + slots().map(l=>`<option value="${l.id}">${esc(locName(l.id))}</option>`).join('');
   $('#dlgBody').innerHTML = `<div style="padding:18px 20px">
     <h2 style="font-size:22px">${list.length===1?'Una carta ha superato':list.length+' carte hanno superato'} la soglia di ${eur(thr())}</h2>
     <p class="hint">Se sono nel bulk, è il momento di spostarle tra le carte di valore.</p>
@@ -501,7 +579,7 @@ function showAlerts(list){
       <img class="thumb" src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt="">
       <div><div class="cname" data-big="${esc(c.imgL)}">${esc(c.name)}</div><div class="cset">${esc(c.setName)} #${esc(c.num)}${c.foil?' · foil':''} · ${c.qty}×</div></div>
       <div class="pr"><span class="muted">${eur(c.alert.from)}</span> → <b>${eur(c.alert.to)}</b></div>
-      <div class="mv"><span class="muted">Ora in: ${esc(locName(c.loc)) || 'nessun luogo'}</span>${S.locs.length?`<select data-mv="${c.id}">${locOpts}</select>`:''}</div>
+      <div class="mv"><span class="muted">Ora in: ${esc(locName(c.loc)) || 'nessun luogo'}</span>${slots().length?`<select data-mv="${c.id}">${locOpts}</select>`:''}</div>
     </div>`).join('')}</div>
     <div class="row" style="justify-content:flex-end;gap:8px">
       <button class="btn" id="aShow">Vedi in collezione</button>
@@ -524,11 +602,16 @@ function showAlerts(list){
 }
 
 function renderColl(){
-  renderThr();
+  renderThr(); renderRemind();
   fillSelects();
   const list = filtered();
   const n = list.reduce((a,c)=>a+c.qty,0), v = list.reduce((a,c)=>a+value(c),0);
-  $('#summary').innerHTML = `<span><b>${n.toLocaleString('it-IT')}</b> carte</span><span><b>${list.length}</b> righe</span><span>Valore della selezione: <b>${eur(v)}</b></span>`;
+  const qq = $('#fText').value.trim().toLowerCase();
+  const viaIt = ui.it && ui.it.q===qq ? list.filter(c => !(`${c.name} ${c.printed} ${c.type} ${c.setName} ${c.set} ${c.note||''}`.toLowerCase().includes(qq))).length : 0;
+  $('#summary').innerHTML = `<span><b>${n.toLocaleString('it-IT')}</b> carte</span><span><b>${list.length}</b> righe</span><span>Valore della selezione: <b>${eur(v)}</b></span>` +
+    (viaIt ? `<span>${viaIt} ${viaIt===1?'trovata':'trovate'} tramite il nome italiano</span>` : '') +
+    (ui.onlyMis ? `<span>Mostro solo le carte fuori posto · <button class="thr" id="misOff">Mostra tutte</button></span>` : '');
+  if($('#misOff')) $('#misOff').onclick = () => { ui.onlyMis = false; renderColl(); };
   const out = $('#collOut');
   if(!S.cards.length){
     out.innerHTML = `<div class="tablewrap"><div class="empty"><h3>La collezione è vuota</h3><p>Inizia dalla scheda <a href="#" data-go="add">Aggiungi carte</a>. Conviene creare prima qualche luogo e mazzo, così li assegni subito.</p></div></div>`;
@@ -622,8 +705,8 @@ function opts(arr, cur){ return arr.map(([v,l])=>`<option value="${v}" ${v===cur
 function cardForm(base, entry){
   const canFoil = (base.finishes||[]).some(f=>f!=='nonfoil'), canNon = (base.finishes||['nonfoil']).includes('nonfoil');
   const e = entry || {qty:1, foil: !canNon && canFoil, cond:'NM', lang:'it', loc:'', deck:'', note:''};
-  const locO = [['','— nessuno —'], ...S.locs.map(l=>[l.id,l.name])];
-  const deckO = [['','— nessuno —'], ...S.decks.map(d=>[d.id,d.name])];
+  const locO = [['','Nessun luogo'], ...slots().map(l=>[l.id,locName(l.id)])];
+  const deckO = [['','Nessun mazzo'], ...S.decks.map(d=>[d.id,d.name])];
   return `<form method="dialog" class="dlg" id="cardF">
     <div><img src="${esc(base.imgL||base.img)}" alt="${esc(base.name)}"></div>
     <div>
@@ -735,12 +818,20 @@ async function loadPrints(query, label, italian){
       prints.push(base);
     }
     const names = [...new Set(prints.map(p=>p.name))];
-    box.innerHTML = `<p class="muted" style="margin-bottom:12px">${prints.length} edizioni${names.length>1?' ('+names.length+' carte diverse)':''}. Clicca quella che possiedi.</p>
+    const own = S.cards.filter(c=>names.includes(c.name));
+    const ownBy = {}; own.forEach(c => ownBy[c.sid] = (ownBy[c.sid]||0) + c.qty);
+    let ownHtml = '';
+    if(own.length){
+      const where = {}; own.forEach(c => { const w = c.deck ? 'nel mazzo ' + deckName(c.deck) : (c.loc ? 'in ' + locName(c.loc) : 'senza luogo'); where[w] = (where[w]||0) + c.qty; });
+      const tot = own.reduce((a,c)=>a+c.qty,0);
+      ownHtml = `<p class="warn ownbar">Ne hai già <b>${tot}</b>: ${Object.entries(where).map(([w,q])=>`${q} ${esc(w)}`).join(', ')}.</p>`;
+    }
+    box.innerHTML = ownHtml + `<p class="muted" style="margin-bottom:12px">${prints.length} edizioni${names.length>1?' ('+names.length+' carte diverse)':''}. Clicca quella che possiedi.</p>
       <div class="grid">` + prints.map((p,i)=>`
       <button class="pcard" data-i="${i}">
         <img src="${esc(p.imgL||p.img)}" alt="${esc(p.name)} – ${esc(p.setName)}" loading="lazy">
         <div class="meta"><b>${esc(p.setName)}</b> <span class="muted">#${esc(p.num)}</span>${names.length>1?'<br>'+esc(p.name):''}<br>
-        <span class="p">${eur(p.eur)}</span>${p.eurFoil!=null?` <span class="muted">· foil ${eur(p.eurFoil)}</span>`:''}</div>
+        <span class="p">${eur(p.eur)}</span>${p.eurFoil!=null?` <span class="muted">· foil ${eur(p.eurFoil)}</span>`:''}${ownBy[p.sid]?`<br><span class="own">Ne hai ${ownBy[p.sid]}</span>`:''}</div>
       </button>`).join('') + '</div>';
     box.querySelectorAll('.pcard').forEach(b => b.onclick = () => openAdd(prints[b.dataset.i]));
   }catch(e){ box.innerHTML=''; showNet(e); }
@@ -754,26 +845,32 @@ async function updatePrices(){
   if(!ids.length){ toast('Aggiungi qualche carta prima di aggiornare i prezzi'); return; }
   const btn = $('#btnPrices'), prog = $('#prog'), bar = prog.querySelector('i');
   btn.disabled = true; btn.textContent = 'Aggiorno…'; prog.classList.add('on'); bar.style.width='0';
-  const fresh = {};
+  const fresh = {}, raws = [];
   try{
     for(let i=0;i<ids.length;i+=75){
       const chunk = ids.slice(i,i+75);
       const {data} = await api('/cards/collection', {method:'POST', body: JSON.stringify({identifiers: chunk.map(id=>({id}))})});
-      (data.data||[]).forEach(card => fresh[card.id] = fromScry(card));
-      bar.style.width = Math.round(Math.min(i+75,ids.length)/ids.length*100)+'%';
+      (data.data||[]).forEach(card => raws.push(card));
+      bar.style.width = Math.round(Math.min(i+75,ids.length)/ids.length*90)+'%';
       await sleep(120);
     }
+    Object.assign(fresh, await englishMap(raws));
     let changed = 0; const crossed = [];
     S.cards.forEach(c => {
       const f = fresh[c.sid]; if(!f) return;
       c.eurPrev = c.eur; c.eurFoilPrev = c.eurFoil;
       if(f.eur!==c.eur || f.eurFoil!==c.eurFoil) changed++;
+      if(f.sid !== c.sid){ c.sid = f.sid; if(!c.printed && f.printed) c.printed = f.printed; }
       Object.assign(c, {eur:f.eur, eurFoil:f.eurFoil, cm:f.cm||c.cm, img:f.img||c.img, imgL:f.imgL||c.imgL, finishes:f.finishes, pAt:Date.now()});
       const o = prevPrice(c), p = unitPrice(c);
       if(o!=null && p!=null && o < thr() && p >= thr()){ c.alert = {from:o, to:p, at:Date.now()}; crossed.push(c); }
       else if(c.alert && p!=null && p < thr()) delete c.alert;
     });
-    S.lastPrices = Date.now(); save(); renderHeader(); renderColl(); refreshLists();
+    S.lastPrices = Date.now();
+    const today = new Date().toDateString();
+    S.history = (S.history||[]).filter(h => new Date(h.t).toDateString() !== today);
+    S.history.push({t:Date.now(), v:+S.cards.reduce((a,c)=>a+value(c),0).toFixed(2), n:S.cards.reduce((a,c)=>a+c.qty,0)});
+    save(); renderHeader(); renderColl(); refreshLists();
     toast(`Prezzi aggiornati: ${changed} ${changed===1?'riga è cambiata':'righe sono cambiate'}`);
     if(crossed.length) showAlerts(crossed.sort((a,b)=>unitPrice(b)-unitPrice(a)));
   }catch(e){ showNet(e); }
@@ -809,14 +906,127 @@ function renderList(kind){
     S.cards.forEach(c=>{ if(c[key]===x.id) c[key]=''; }); save(); renderList(kind);
   });
 }
-const renderDecks = () => renderList('deck'), renderLocs = () => renderList('loc');
+const renderDecks = () => renderList('deck'), renderLocs = () => renderArchive();
+
+// ---------- archivio ----------
+function contStats(id){ const L = locById(id); const ids = L && L.kind==='chest' ? S.locs.filter(d=>d.parent===id).map(d=>d.id) : [id];
+  const cs = S.cards.filter(c=>ids.includes(c.loc)); return {n: cs.reduce((a,c)=>a+c.qty,0), v: cs.reduce((a,c)=>a+value(c),0), mis: cs.filter(c=>misplaced(c)).reduce((a,c)=>a+c.qty,0)}; }
+const tierLbl = t => (TIERS.find(x=>x[0]===(t||''))||TIERS[3])[1];
+const orderLbl = o => (ORDERS.find(x=>x[0]===o)||ORDERS[0])[1];
+function tierBadge(l, inherit){ const t = l.tier || inherit || ''; if(!t) return '<span class="badge">Da classificare</span>'; return `<span class="badge">${esc(tierLbl(t).replace(' (nessun controllo)',''))}</span>`; }
+function renderArchive(){
+  const el = $('#locList');
+  const top = S.locs.filter(l=>!l.parent).sort((a,b)=>{ const o={binder:0,chest:1,box:2,deckbox:3,other:4}; return (o[a.kind]??9)-(o[b.kind]??9) || a.name.localeCompare(b.name); });
+  const misUp = S.cards.filter(c=>misplaced(c)==='up').reduce((a,c)=>a+c.qty,0), misDown = S.cards.filter(c=>misplaced(c)==='down').reduce((a,c)=>a+c.qty,0);
+  const unclass = slots().filter(l=>!(l.tier || (l.parent && (locById(l.parent)||{}).tier))).length;
+  const full = top.filter(l=>l.kind==='binder' && l.sheets && contStats(l.id).n >= l.sheets*18*0.9);
+  let w = '';
+  if(misUp||misDown) w += `<p class="warn">Carte nel posto sbagliato: ${misUp?`<b>${misUp}</b> valgono almeno ${eur(thr())} ma sono nel bulk`:''}${misUp&&misDown?'; ':''}${misDown?`<b>${misDown}</b> valgono meno di ${eur(thr())} ma occupano spazio tra le carte di valore`:''}. <button class="thr" id="seeMis">Vedi quali</button></p>`;
+  if(full.length) w += `<p class="warn">${full.map(l=>`<b>${esc(l.name)}</b>`).join(', ')} ${full.length===1?'è quasi pieno':'sono quasi pieni'}: aggiungi fogli.</p>`;
+  if(unclass) w += `<p class="hint" style="margin:6px 0 10px">${unclass} ${unclass===1?'contenitore è':'contenitori sono'} da classificare: indica se ${unclass===1?'è':'sono'} di valore, bulk o tematic${unclass===1?'o':'i'}, così l’app può segnalarti le carte fuori posto.</p>`;
+  $('#archWarn').innerHTML = w;
+  if($('#seeMis')) $('#seeMis').onclick = () => { ui.onlyMis = true; fillSelects(); $('#fLoc').value=''; $('#fDeck').value=''; showTab('coll'); };
+  if(!top.length){ el.innerHTML = `<div class="box empty" style="grid-column:1/-1"><h3>Nessun contenitore</h3><p>Crea i tuoi raccoglitori, la cassettiera, le scatole: poi assegni le carte a ciascuno.</p></div>`; }
+  else el.innerHTML = top.map(l => {
+    const st = contStats(l.id);
+    const mis = st.mis ? `<span class="badge red">${st.mis} fuori posto</span>` : '';
+    if(l.kind==='chest'){
+      const dr = S.locs.filter(d=>d.parent===l.id).sort((a,b)=>(a.pos||0)-(b.pos||0));
+      return `<div class="chest"><div class="chest-top"><div><div class="k">Cassettiera</div><h3>${esc(l.name)}</h3><div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div></div><button class="btn small" data-open="${l.id}">Imposta</button></div>` +
+        dr.map(d => { const ds = contStats(d.id); return `<button class="drawer" data-open="${d.id}"><b>${esc(d.name)}${tierBadge(d, l.tier)}${ds.mis?`<span class="badge red">${ds.mis}</span>`:''}</b><span class="v">${ds.n.toLocaleString('it-IT')} · ${eur(ds.v)}</span><span class="dest">${esc(d.dest||'Clicca per indicare la destinazione')}</span></button>`; }).join('') + '</div>';
+    }
+    if(l.kind==='binder'){
+      const capN = (l.sheets||0)*18, pct = capN ? Math.min(100, st.n/capN*100) : 0;
+      return `<button class="cont binder-c" data-open="${l.id}"><div class="k">Raccoglitore${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div>
+        <div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div><div class="k" style="margin-top:4px">Ordine: ${esc(orderLbl(l.order))}</div>
+        ${capN ? `<div class="cap ${pct>=100?'full':pct>=90?'warn':''}"><i style="width:${pct}%"></i></div><div class="k">${l.sheets} fogli · ${Math.max(0,capN-st.n)} tasche libere su ${capN}</div>` : '<div class="k" style="margin-top:6px">Indica i fogli per vedere le tasche libere</div>'}</button>`;
+    }
+    return `<button class="cont" data-open="${l.id}"><div class="k">${esc(KINDS[l.kind]||'Altro')}${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div><div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div><div class="k" style="margin-top:4px">Ordine: ${esc(orderLbl(l.order))}</div></button>`;
+  }).join('');
+  const un = groupStats('loc','');
+  if(un.n) el.insertAdjacentHTML('beforeend', `<button class="cont" data-show-none="1"><div class="k">Da sistemare</div><h3>Carte senza luogo</h3><div class="st">${un.n.toLocaleString('it-IT')} carte · <b>${eur(un.v)}</b></div><div class="k" style="margin-top:4px">Clicca per vederle e assegnarle</div></button>`);
+  el.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openCont(b.dataset.open));
+  const sn = el.querySelector('[data-show-none]'); if(sn) sn.onclick = () => { fillSelects(); $('#fDeck').value=''; $('#fLoc').value='__none'; ui.onlyMis=false; showTab('coll'); };
+}
+$('#newCont').onclick = () => openCont(null);
+function showCont(id, binder){
+  const L = locById(id); fillSelects(); $('#fDeck').value=''; $('#fText').value=''; ui.onlyMis=false; ui.page=0;
+  $('#fLoc').value = id; if(L && L.order) $('#fSort').value = L.order;
+  ui.view = binder ? 'binder' : 'table'; $('#fView').value = ui.view;
+  dlg.close(); showTab('coll');
+}
+function openCont(id){
+  const L = id ? locById(id) : null, isNew = !L;
+  const kind = L ? L.kind : 'binder', isDrawer = kind==='drawer';
+  const parent = isDrawer ? locById(L.parent) : null;
+  const drawers = L && kind==='chest' ? S.locs.filter(d=>d.parent===L.id).length : 5;
+  const st = L ? contStats(L.id) : {n:0};
+  $('#dlgBody').innerHTML = `<form class="cform" id="contF" style="padding:18px 20px">
+    <h2 style="font-size:22px;margin-bottom:4px">${isNew?'Nuovo contenitore':isDrawer?esc(parent?parent.name:'')+' · '+esc(L.name):esc(L.name)}</h2>
+    ${L?`<p class="hint">${st.n.toLocaleString('it-IT')} carte · ${eur(st.v)}</p>`:''}
+    <div class="fgrid">
+      <label class="f">Nome<input type="text" name="name" required value="${esc(L?L.name:'')}" placeholder="${isDrawer?'es. Cassetto 1':'es. Raccoglitore rare'}"></label>
+      ${isDrawer?'':`<label class="f">Tipo di contenitore<select name="kind" ${L&&kind==='chest'?'disabled':''}>${opts(Object.entries(KINDS).filter(([k])=>!L||k!=='chest'), kind)}</select></label>`}
+      <label class="f full">Destinazione<input type="text" name="dest" value="${esc(L?L.dest||'':'')}" placeholder="es. rare e mitiche di valore, comuni 2020–2023, planeswalker…"></label>
+      <label class="f" data-for="nochest">Tipo di carte<select name="tier">${opts(isDrawer?[['','Come la cassettiera ('+esc(tierLbl(parent&&parent.tier))+')'],...TIERS.slice(0,3)]:TIERS, L?L.tier||'':'')}</select></label>
+      <label class="f" data-for="nochest">Organizzazione<select name="order">${opts(ORDERS, L?L.order:'color')}</select></label>
+      <label class="f" data-for="binder">Fogli (18 tasche ciascuno)<span class="row" style="gap:6px;flex-wrap:nowrap"><input type="number" name="sheets" min="0" value="${L&&L.sheets||0}" style="width:90px"><button type="button" class="btn small" id="addSheet">+ Aggiungi fogli</button></span></label>
+      <label class="f" data-for="chest">Numero di cassetti<input type="number" name="drawers" min="1" max="30" value="${drawers}"></label>
+      <label class="f" data-for="chest">Tipo di carte (predefinito per i cassetti)<select name="ctier">${opts(TIERS, L?L.tier||'':'')}</select></label>
+    </div>
+    <p class="hint" style="margin-top:8px">“Di valore” e “Bulk” attivano le segnalazioni sulle carte fuori posto in base alla soglia di ${eur(thr())}. “Tematico” (per esempio i planeswalker) non viene controllato.</p>
+    <div class="dlg-foot" style="flex-wrap:wrap">
+      ${L&&!isDrawer?'<button type="button" class="btn danger" id="cDel" style="margin-right:auto">Elimina</button>':''}
+      ${L&&kind!=='chest'?`<button type="button" class="btn" id="cShow">Vedi carte</button>`:''}
+      ${L&&kind==='chest'?`<button type="button" class="btn" id="cShow">Vedi tutte le carte</button>`:''}
+      ${L&&kind==='binder'?`<button type="button" class="btn" id="cBrowse">Sfoglia</button>`:''}
+      <button type="button" class="btn" id="cCancel">Annulla</button>
+      <button type="submit" class="btn primary">${isNew?'Crea':'Salva'}</button>
+    </div></form>`;
+  const f = $('#contF'); const F = n => f.elements[n];
+  const sync = () => { const k = isDrawer ? 'drawer' : F('kind').value;
+    f.querySelectorAll('[data-for]').forEach(x => { const w = x.dataset.for; x.style.display = (w==='binder' && k==='binder') || (w==='chest' && k==='chest') || (w==='nochest' && k!=='chest') ? '' : 'none'; }); };
+  if(F('kind')) F('kind').onchange = sync; sync();
+  $('#addSheet').onclick = () => { const n = prompt('Quanti fogli hai aggiunto?', '1'); const v = parseInt(n); if(v>0) F('sheets').value = (parseInt(F('sheets').value)||0) + v; };
+  $('#cCancel').onclick = () => dlg.close();
+  if($('#cShow')) $('#cShow').onclick = () => showCont(L.id, false);
+  if($('#cBrowse')) $('#cBrowse').onclick = () => showCont(L.id, true);
+  if($('#cDel')) $('#cDel').onclick = () => {
+    const ids = kind==='chest' ? [L.id, ...S.locs.filter(d=>d.parent===L.id).map(d=>d.id)] : [L.id];
+    if(!confirm(`Eliminare “${L.name}”${kind==='chest'?' e i suoi cassetti':''}? Le ${st.n} carte restano in collezione, senza luogo.`)) return;
+    S.locs = S.locs.filter(x=>!ids.includes(x.id)); S.cards.forEach(c=>{ if(ids.includes(c.loc)) c.loc=''; });
+    save(); dlg.close(); renderArchive(); toast('Contenitore eliminato');
+  };
+  f.onsubmit = ev => {
+    ev.preventDefault();
+    const k = isDrawer ? 'drawer' : (L && L.kind==='chest' ? 'chest' : F('kind').value);
+    const x = L || {id:uid(), kind:k}; x.kind = k;
+    x.name = F('name').value.trim(); x.dest = F('dest').value.trim();
+    if(k==='chest'){
+      x.tier = F('ctier').value; x.order = x.order || 'color';
+      const want = Math.max(1, Math.min(30, parseInt(F('drawers').value)||5));
+      const cur = S.locs.filter(d=>d.parent===x.id).sort((a,b)=>(a.pos||0)-(b.pos||0));
+      if(want < cur.length){
+        const gone = cur.slice(want), n = S.cards.filter(c=>gone.some(g=>g.id===c.loc)).reduce((a,c)=>a+c.qty,0);
+        if(n && !confirm(`Togliendo ${cur.length-want} cassetti, ${n} carte resteranno senza luogo. Procedo?`)) return;
+        S.locs = S.locs.filter(l=>!gone.includes(l)); S.cards.forEach(c=>{ if(gone.some(g=>g.id===c.loc)) c.loc=''; });
+      }
+      for(let i=cur.length;i<want;i++) S.locs.push({id:uid(), kind:'drawer', parent:x.id, pos:i, name:'Cassetto '+(i+1), dest:'', tier:'', order:'color'});
+    } else {
+      x.tier = F('tier').value; x.order = F('order').value;
+      if(k==='binder') x.sheets = Math.max(0, parseInt(F('sheets').value)||0);
+    }
+    if(isNew) S.locs.push(x);
+    save(); dlg.close(); renderArchive(); fillSelects(); toast(isNew?'Contenitore creato':'Modifiche salvate');
+  };
+  dlg.showModal();
+}
 $('#deckForm').onsubmit = e => { e.preventDefault(); const f=e.target; S.decks.push({id:uid(), name:f.name.value.trim(), format:f.format.value.trim(), note:f.note.value.trim()}); f.reset(); save(); renderDecks(); toast('Mazzo creato'); };
-$('#locForm').onsubmit = e => { e.preventDefault(); const f=e.target; S.locs.push({id:uid(), name:f.name.value.trim(), note:f.note.value.trim()}); f.reset(); save(); renderLocs(); toast('Luogo creato'); };
 
 // ---------- backup ----------
 function download(name, text, type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); }
 const stamp = () => new Date().toISOString().slice(0,10);
-$('#expJson').onclick = () => { download(`raccoglitore-magic-${stamp()}.json`, JSON.stringify({app:'raccoglitore-magic',version:1,exported:Date.now(),...S},null,1), 'application/json'); toast('Backup scaricato'); };
+$('#expJson').onclick = () => { S.lastBackup = Date.now(); save(); if($('#bkRemind')) renderRemind(); download(`raccoglitore-magic-${stamp()}.json`, JSON.stringify({app:'raccoglitore-magic',version:1,exported:Date.now(),...S},null,1), 'application/json'); toast('Backup scaricato'); };
 $('#expCsv').onclick = () => {
   const head = ['Nome','Nome stampato','Set','Codice set','Numero','Rarità','Quantità','Foil','Condizione','Lingua','Luogo','Mazzo','Prezzo unitario EUR','Valore EUR','Note','Cardmarket'];
   const q = v => `"${String(v??'').replace(/"/g,'""')}"`;
@@ -831,20 +1041,37 @@ $('#impGo').onclick = () => {
     try{
       const d = JSON.parse(r.result);
       if(!Array.isArray(d.cards)) throw new Error('formato');
-      if(mode==='replace'){ if(!confirm('Sostituire tutta la collezione attuale con il backup?')) return; S = {cards:d.cards, decks:d.decks||[], locs:d.locs||[], lastPrices:d.lastPrices||null, threshold:d.threshold, mbLedger:d.mbLedger||{}}; }
+      if(mode==='replace'){ if(!confirm('Sostituire tutta la collezione attuale con il backup?')) return; const {app, version, exported, ...rest} = d; S = Object.assign({cards:[], decks:[], locs:[], lastPrices:null}, rest); migrate(); }
       else {
         const has = (arr, id) => arr.some(x=>x.id===id);
         (d.decks||[]).forEach(x=>{ if(!has(S.decks,x.id)) S.decks.push(x); });
         (d.locs||[]).forEach(x=>{ if(!has(S.locs,x.id)) S.locs.push(x); });
         (d.cards||[]).forEach(x=>{ if(!has(S.cards,x.id)) S.cards.push(x); });
       }
-      save(); renderHeader(); fillSelects(); toast(`Backup importato: ${d.cards.length} righe`); showTab('coll');
+      migrate(); save(); renderHeader(); fillSelects(); toast(`Backup importato: ${d.cards.length} righe`); showTab('coll');
     }catch(e){ toast('Questo file non è un backup valido del Raccoglitore'); }
   };
   r.readAsText(file);
 };
 
 // ---------- init ----------
+// ---------- stampe inglesi per prezzo e immagine ----------
+async function englishMap(raws){
+  const out = {}, need = [];
+  raws.forEach(r => { if(r.lang==='en' || !r.lang) out[r.id] = fromScry(r); else need.push(r); });
+  for(let i=0;i<need.length;i+=75){
+    const chunk = need.slice(i,i+75);
+    let found = {};
+    try{
+      const {data} = await api('/cards/collection', {method:'POST', body: JSON.stringify({identifiers: chunk.map(r=>({set:r.set, collector_number:r.collector_number}))})});
+      (data.data||[]).forEach(e => { if(e.lang==='en') found[e.set+'/'+e.collector_number] = e; });
+    }catch(e){}
+    chunk.forEach(r => { const e = found[r.set+'/'+r.collector_number]; const b = fromScry(e || r); b.printed = r.printed_name || r.name || ''; if(!e) b.printed = r.printed_name || ''; out[r.id] = b; });
+    await sleep(120);
+  }
+  return out;
+}
+
 // ---------- import ManaBox ----------
 function parseCSV(text){
   text = text.replace(/^\uFEFF/,'');
@@ -890,7 +1117,7 @@ $('#mbGo').onclick = async () => {
   if(res.err){ box.innerHTML = `<p class="hint" style="color:var(--danger)">${esc(res.err)}</p>`; return; }
   const list = res.list; if(!list.length){ box.innerHTML = '<p class="hint">Nel file non ci sono carte da importare.</p>'; return; }
   const binders = [...new Set(list.map(x=>x.binder).filter(Boolean))];
-  const newLocs = binders.filter(b=>!S.locs.some(l=>l.name.toLowerCase()===b.toLowerCase()));
+  const newLocs = binders.filter(b=>!slots().some(l=>locName(l.id).toLowerCase()===b.toLowerCase() || l.name.toLowerCase()===b.toLowerCase()));
   const n = list.reduce((a,x)=>a+x.qty,0);
   mbPending = list;
   const led = S.mbLedger || {};
@@ -910,16 +1137,19 @@ async function mbImport(){
   S.mbLedger = S.mbLedger || {};
   const box = $('#mbOut'); const btn = $('#mbConfirm'); btn.disabled = true; btn.textContent = 'Importo…';
   const prog = $('#prog'), bar = prog.querySelector('i'); prog.classList.add('on'); bar.style.width='0';
-  const ids = [...new Set(list.map(x=>x.sid))]; const fresh = {};
+  const ids = [...new Set(list.map(x=>x.sid))]; const fresh = {}, raws = [];
   try{
     for(let i=0;i<ids.length;i+=75){
       const {data} = await api('/cards/collection', {method:'POST', body: JSON.stringify({identifiers: ids.slice(i,i+75).map(id=>({id}))})});
-      (data.data||[]).forEach(card => fresh[card.id] = fromScry(card));
-      bar.style.width = Math.round(Math.min(i+75,ids.length)/ids.length*100)+'%';
+      (data.data||[]).forEach(card => raws.push(card));
+      bar.style.width = Math.round(Math.min(i+75,ids.length)/ids.length*90)+'%';
       await sleep(120);
     }
+    Object.assign(fresh, await englishMap(raws));
   }catch(e){ showNet(e); btn.disabled=false; btn.textContent='Riprova'; prog.classList.remove('on'); return; }
-  const locId = name => { if(!name) return ''; let l = S.locs.find(x=>x.name.toLowerCase()===name.toLowerCase()); if(!l){ l={id:uid(), name, note:'Creato dall’importazione ManaBox'}; S.locs.push(l); } return l.id; };
+  const locId = name => { if(!name) return ''; const nm = name.toLowerCase();
+    let l = slots().find(x=>locName(x.id).toLowerCase()===nm) || slots().find(x=>x.name.toLowerCase()===nm);
+    if(!l){ l = {id:uid(), name, kind:'other', tier:'', order:'color', dest:'Creato dall’importazione ManaBox'}; S.locs.push(l); } return l.id; };
   let added=0, merged=0, skipped=0; const missing=[];
   list.forEach(x=>{
     const base = fresh[x.sid]; if(!base){ missing.push(x.name||x.sid); return; }
@@ -939,10 +1169,46 @@ async function mbImport(){
   $('#mbFile').value=''; toast('Carte importate');
 }
 
+// ---------- storico del valore ----------
+function openHistory(){
+  const h = (S.history||[]).slice().sort((a,b)=>a.t-b.t);
+  let body;
+  if(h.length < 2){
+    body = `<p class="hint">Il grafico compare dopo almeno due aggiornamenti dei prezzi fatti in giorni diversi. A ogni “Aggiorna prezzi” salvo il valore totale della collezione.</p>`;
+  } else {
+    const W=640, H=260, P={l:64,r:16,t:16,b:34};
+    const xs = h.map(p=>p.t), ys = h.map(p=>p.v);
+    const x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys)*0.97, y1=Math.max(...ys)*1.03 || 1;
+    const X = t => P.l + (x1===x0?0:(t-x0)/(x1-x0))*(W-P.l-P.r), Y = v => H-P.b - (y1===y0?0.5:(v-y0)/(y1-y0))*(H-P.t-P.b);
+    const pts = h.map(p=>`${X(p.t).toFixed(1)},${Y(p.v).toFixed(1)}`).join(' ');
+    const ticks = [y0,(y0+y1)/2,y1].map(v=>`<line x1="${P.l}" x2="${W-P.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text class="axis" x="${P.l-8}" y="${Y(v)+4}" text-anchor="end">${eur(v).replace('€ ','€')}</text>`).join('');
+    const d = t => new Date(t).toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'2-digit'});
+    const first = h[0], last = h[h.length-1], diff = last.v - first.v;
+    body = `<div class="chartbox"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Andamento del valore della collezione">${ticks}
+      <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>
+      ${h.map(p=>`<circle cx="${X(p.t)}" cy="${Y(p.v)}" r="3.5" fill="var(--accent)"><title>${d(p.t)}: ${eur(p.v)} (${p.n} carte)</title></circle>`).join('')}
+      <text class="axis" x="${P.l}" y="${H-10}">${d(first.t)}</text><text class="axis" x="${W-P.r}" y="${H-10}" text-anchor="end">${d(last.t)}</text></svg></div>
+      <p style="margin-top:8px">Dal ${d(first.t)} il valore è ${diff>=0?'salito':'sceso'} di <b>${eur(Math.abs(diff))}</b>, da ${eur(first.v)} a ${eur(last.v)}. Il valore cambia sia per i prezzi sia per le carte che aggiungi o togli.</p>`;
+  }
+  $('#dlgBody').innerHTML = `<div style="padding:18px 20px"><h2 style="font-size:22px;margin-bottom:8px">Andamento del valore</h2>${body}<div class="dlg-foot"><button class="btn primary" id="hClose">Chiudi</button></div></div>`;
+  $('#hClose').onclick = () => dlg.close(); dlg.showModal();
+}
+$('#worth').onclick = openHistory;
+$('#worth').onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openHistory(); } };
+
+function renderRemind(){
+  const box = $('#bkRemind'); const now = Date.now(), M = 30*864e5;
+  const due = S.cards.length && (!S.lastBackup || now - S.lastBackup > M) && !(S.bkSnooze && now < S.bkSnooze);
+  if(!due){ box.innerHTML = ''; return; }
+  box.innerHTML = `<p class="warn" style="margin-bottom:12px">${S.lastBackup ? 'È passato più di un mese dall’ultimo backup.' : 'Non hai ancora scaricato un backup della collezione.'} Anche con la sincronizzazione online conviene tenerne una copia. <button class="thr" id="bkNow">Scarica ora</button> · <button class="thr" id="bkLater">Ricordamelo tra una settimana</button></p>`;
+  $('#bkNow').onclick = () => $('#expJson').click();
+  $('#bkLater').onclick = () => { S.bkSnooze = Date.now() + 7*864e5; save(); renderRemind(); };
+}
+
 window.RM = {
   get: () => S,
   apply(d){
-    S = Object.assign({cards:[], decks:[], locs:[], lastPrices:null}, d);
+    S = Object.assign({cards:[], decks:[], locs:[], lastPrices:null}, d); migrate();
     try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
     renderHeader(); fillSelects();
     const t = document.querySelector('.panel.on');
@@ -989,7 +1255,7 @@ if(location.protocol === 'file:'){
   function split(S){
     const b = Array.from({length:N}, () => []);
     S.cards.forEach(c => b[bucketOf(c.id)].push(c));
-    const meta = {decks:S.decks||[], locs:S.locs||[], lastPrices:S.lastPrices||null, threshold:S.threshold ?? null, mbLedger:S.mbLedger||{}};
+    const {cards, ...meta} = S;
     const out = {meta: JSON.stringify(meta)};
     b.forEach((arr,i) => out['b'+i] = JSON.stringify(arr));
     return out;
@@ -1012,7 +1278,7 @@ if(location.protocol === 'file:'){
   function assemble(){
     const meta = remote.meta ? JSON.parse(remote.meta) : {};
     const cards = []; for(let i=0;i<N;i++){ const v = remote.b['b'+i]; if(v) cards.push(...JSON.parse(v)); }
-    return Object.assign({cards}, meta, {threshold: meta.threshold ?? undefined});
+    return Object.assign({}, meta, {cards});
   }
   function start(){
     unsub.forEach(f=>f()); unsub = []; last = {}; ready = false;
