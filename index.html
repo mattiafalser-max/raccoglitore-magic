@@ -238,26 +238,37 @@ th{background:var(--solid)}
 .v-info{position:absolute;left:50%;bottom:72px;transform:translateX(-50%);width:min(94vw,520px);background:var(--solid);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:3}
 .v-info[hidden]{display:none}.v-info img{width:56px;border-radius:5px}
 /* raccoglitore */
-.bk{position:relative;display:flex;gap:26px;padding:16px;border-radius:14px 18px 18px 14px;background:linear-gradient(135deg,#4a3460,#211833);box-shadow:0 18px 50px rgba(0,0,0,.45);transform-style:preserve-3d}
-.bk .pg{position:relative;width:var(--pw);aspect-ratio:488/680;height:auto;background:#dfe2ee;border-radius:8px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:8px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
-.bk .pg.left{border-radius:8px 3px 3px 8px}.bk .pg.right{border-radius:3px 8px 8px 3px}
-.bk .rings{position:absolute;left:50%;top:16px;bottom:16px;width:26px;margin-left:-13px;display:flex;flex-direction:column;justify-content:space-around;align-items:center;z-index:4;pointer-events:none}
-.bk .rings i{width:30px;height:14px;border:4px solid #e7cf8f;border-radius:8px;background:transparent}
-.bk.single{padding:14px 14px 14px 34px}.bk.single .rings{left:6px;margin-left:0;width:24px}
-.pk{position:relative;border-radius:5px;background:#c9cde0;overflow:hidden;padding:0;border:0;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.bk{position:relative;display:flex;gap:22px;padding:14px;border-radius:12px;background:linear-gradient(135deg,#4a3460,#211833);box-shadow:0 18px 50px rgba(0,0,0,.45);transform-style:preserve-3d}
+.bk .pg{position:relative;width:var(--pw);aspect-ratio:488/680;background:#dfe2ee;padding:calc(var(--pw)*.035);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:calc(var(--pw)*.028);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.bk .pg.left{border-radius:7px 2px 2px 7px;box-shadow:inset -10px 0 14px -10px rgba(0,0,0,.35),inset 0 0 0 1px rgba(0,0,0,.08)}
+.bk .pg.right{border-radius:2px 7px 7px 2px;box-shadow:inset 10px 0 14px -10px rgba(0,0,0,.35),inset 0 0 0 1px rgba(0,0,0,.08)}
+.bk .pg.void{background:rgba(255,255,255,.06);box-shadow:none}
+.bk .rings{position:absolute;left:50%;top:14px;bottom:14px;width:22px;margin-left:-11px;display:flex;flex-direction:column;justify-content:space-around;align-items:center;z-index:4;pointer-events:none}
+.bk .rings i{width:30px;height:12px;border:3.5px solid #e7cf8f;border-radius:7px;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.pk{position:relative;border-radius:4px;background:#c9cde0;overflow:hidden;padding:0;border:0;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
 .pk::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(255,255,255,0) 40%);pointer-events:none}
-.pk img{width:100%;height:100%;object-fit:cover;display:block}
+.pk img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
 .pk.empty{cursor:default;background:#d3d7e6}
 .pk .fl{position:absolute;left:3px;top:3px;background:var(--brass);color:#fff;font-size:10px;font-weight:600;padding:0 5px;border-radius:6px;z-index:2}
 .pk.hit{outline:3px solid var(--brass);outline-offset:-1px}.hitmode .pk:not(.hit):not(.empty) img{opacity:.35}
-.leaf{position:absolute;top:16px;width:var(--pw);aspect-ratio:488/680;transform-style:preserve-3d;transition:transform .62s cubic-bezier(.3,.1,.3,1);z-index:5}
-.leaf .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;margin:0}
+.leaf{position:absolute;transform-style:preserve-3d;will-change:transform;z-index:6;pointer-events:none}
+.leaf.fwd{transform-origin:left center}.leaf.bwd{transform-origin:right center}
+.leaf .face{position:absolute;inset:0;width:auto !important;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 0 calc(var(--sh,0)*70px) rgba(0,0,0,calc(var(--sh,0)*1.1))}
 .leaf .face.back{transform:rotateY(180deg)}
-.leaf .face.blank{background:#cfd3e2;border-radius:8px}
+.shade,.cast{position:absolute;inset:0;pointer-events:none;opacity:0;border-radius:inherit;z-index:3}
+.leaf.fwd .front .shade{background:linear-gradient(to right,rgba(0,0,0,.65),rgba(0,0,0,.12) 55%,rgba(255,255,255,.1))}
+.leaf.fwd .back .shade{background:linear-gradient(to left,rgba(0,0,0,.6),rgba(0,0,0,0) 60%)}
+.leaf.bwd .front .shade{background:linear-gradient(to left,rgba(0,0,0,.65),rgba(0,0,0,.12) 55%,rgba(255,255,255,.1))}
+.leaf.bwd .back .shade{background:linear-gradient(to right,rgba(0,0,0,.6),rgba(0,0,0,0) 60%)}
+.pg.right .cast{background:linear-gradient(to right,rgba(0,0,0,.5),rgba(0,0,0,0) 50%)}
+.pg.left .cast{background:linear-gradient(to left,rgba(0,0,0,.5),rgba(0,0,0,0) 50%)}
+#viewer.is-binder .v-stage{touch-action:none;cursor:grab}
+@media (max-height:540px){.v-top{padding:6px 12px 2px;gap:6px 12px}.v-title h2{font-size:16px}#vSub,#vKind{display:none}.v-nav{padding:4px 10px 6px;gap:8px}.v-nav input[type=range]{display:none}.bk{padding:10px;gap:18px}.v-info{bottom:46px}}
 /* cassetto */
 .dw{position:relative;width:100%;height:min(62vh,520px);transform-style:preserve-3d}
-.dw .cd{position:absolute;left:50%;top:50%;width:min(56vw,250px);aspect-ratio:488/680;margin:0;border-radius:12px;overflow:hidden;transition:transform .38s ease,opacity .38s ease,filter .38s ease;box-shadow:0 12px 32px rgba(0,0,0,.45);cursor:pointer;background:#222;border:0;padding:0}
-.dw .cd img{width:100%;height:100%;object-fit:cover;display:block}
+.dw .cd{position:absolute;left:50%;top:50%;width:min(56vw,250px);aspect-ratio:488/680;margin:0;border-radius:12px;overflow:hidden;transition:transform .5s cubic-bezier(.2,.75,.2,1),opacity .35s ease,filter .5s ease;will-change:transform;box-shadow:0 12px 32px rgba(0,0,0,.45);cursor:pointer;background:#222;border:0;padding:0}
+.dw .cd img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+#viewer:not(.is-binder) .v-stage{touch-action:pan-y}
 .dw .cd.hit{outline:3px solid var(--brass)}
 .dw-floor{position:absolute;left:8%;right:8%;bottom:4%;height:16%;border-radius:12px;background:linear-gradient(#6b4f3a,#3e2c20);opacity:.55;transform:rotateX(60deg);transform-origin:bottom}
 @media (prefers-reduced-motion:reduce){.leaf,.dw .cd{transition:none}}
@@ -415,7 +426,7 @@ th{background:var(--solid)}
     <button class="btn" id="vClose">Chiudi</button>
   </div>
   <div class="v-stage" id="vStage"></div>
-  <div class="v-nav"><button class="btn" id="vPrev">‹ Indietro</button><span id="vPos"></span><input type="range" id="vRange" min="0" value="0" aria-label="Vai a"><button class="btn" id="vNext">Avanti ›</button></div>
+  <div class="v-nav"><button class="btn" id="vPrev">‹ Indietro</button><span id="vPos"></span><input type="range" id="vRange" min="0" value="0" aria-label="Vai a"><button class="btn" id="vNext">Avanti ›</button><span class="k" id="vRot" hidden>Ruota il telefono per vederlo più grande</span></div>
   <div class="v-info" id="vInfo" hidden></div>
 </div>
 <img id="preview" alt="">
@@ -1248,7 +1259,8 @@ async function mbImport(){
 }
 
 // ---------- sfoglia contenitore ----------
-const V = {id:null, kind:'', items:[], pos:0, busy:false, hits:[], hitI:-1};
+const V = {id:null, kind:'', items:[], pos:0, busy:false, hits:[], hitI:-1, dw:null};
+const reduced = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 function vItems(id){
   const L = locById(id); const ids = L && L.kind==='chest' ? S.locs.filter(d=>d.parent===id).map(d=>d.id) : [id];
   const list = sortCards(S.cards.filter(c=>ids.includes(c.loc)), (L && L.order) || 'color');
@@ -1256,62 +1268,135 @@ function vItems(id){
   return out;
 }
 const isBinder = () => V.kind==='binder';
-const spreadN = () => window.innerWidth < 760 ? 1 : 2;
 function vPages(){ const L = locById(V.id); const byCards = Math.max(1, Math.ceil(V.items.length/9)); return Math.max(byCards, L && L.sheets ? L.sheets*2 : 0); }
-function vSteps(){ return isBinder() ? Math.ceil(vPages()/spreadN()) : Math.max(1, V.items.length); }
+function vSteps(){ return isBinder() ? Math.ceil(vPages()/2) : Math.max(1, V.items.length); }
 function openViewer(id){
   const L = locById(id); if(!L) return;
-  V.id = id; V.kind = L.kind==='binder' ? 'binder' : 'drawer'; V.items = vItems(id); V.pos = 0; V.hits = []; V.hitI = -1;
+  V.id = id; V.kind = L.kind==='binder' ? 'binder' : 'drawer'; V.items = vItems(id); V.pos = 0; V.hits = []; V.hitI = -1; V.busy = false;
   $('#vKind').textContent = L.kind==='drawer' ? 'Cassetto' : (KINDS[L.kind]||'Contenitore');
   $('#vName').textContent = locName(id);
   const v = V.items.reduce((a,c)=>a+(unitPrice(c)||0),0);
   $('#vSub').textContent = `${V.items.length.toLocaleString('it-IT')} carte · ${eur(v)} · ${orderLbl(L.order)}${L.dest?' · '+L.dest:''}`;
   $('#vQ').value = ''; $('#vHits').textContent = ''; $('#vHp').hidden = $('#vHn').hidden = true; $('#vInfo').hidden = true;
-  $('#viewer').hidden = false; document.body.style.overflow = 'hidden';
-  vRender();
+  $('#viewer').hidden = false; $('#viewer').classList.toggle('is-binder', isBinder()); document.body.style.overflow = 'hidden';
+  requestAnimationFrame(vRender);
 }
-function closeViewer(){ $('#viewer').hidden = true; document.body.style.overflow = ''; $('#preview').style.display='none'; V.id = null; }
+function closeViewer(){ $('#viewer').hidden = true; document.body.style.overflow = ''; $('#preview').style.display='none'; V.id = null; V.busy = false; }
+const imgSeen = new Set();
+function preload(u){ if(!u || imgSeen.has(u)) return; imgSeen.add(u); const im = new Image(); im.decoding = 'async'; im.src = u; }
 function pocketHtml(c, idx){
   if(!c) return '<div class="pk empty" aria-hidden="true"></div>';
-  const hit = V.hits.includes(idx) ? ' hit' : '';
-  return `<button class="pk${hit}" data-i="${idx}" title="${esc(c.name)}${c.printed&&c.printed!==c.name?' · '+esc(c.printed):''} · ${esc(c.setName)} · ${eur(unitPrice(c))}"><img src="${esc(c.imgL||c.img)}" data-big="${esc(c.imgL)}" alt="${esc(c.name)}" loading="lazy" draggable="false">${c.foil?'<span class="fl">Foil</span>':''}</button>`;
+  return `<button class="pk${V.hits.includes(idx)?' hit':''}" data-i="${idx}" title="${esc(c.name)}${c.printed&&c.printed!==c.name?' · '+esc(c.printed):''} · ${esc(c.setName)} · ${eur(unitPrice(c))}"><img src="${esc(c.img||c.imgL)}" data-big="${esc(c.imgL)}" alt="${esc(c.name)}" decoding="async" draggable="false">${c.foil?'<span class="fl">Foil</span>':''}</button>`;
 }
-function pageHtml(p){ let h=''; for(let k=0;k<9;k++){ const i=p*9+k; h += pocketHtml(V.items[i], i); } return h; }
-function pageW(){ const sp = spreadN(), H = window.innerHeight - 230, W = window.innerWidth - 40 - (sp===2?26+32:48);
-  const byH = H * (488/680), byW = W / sp; return Math.max(150, Math.min(byH, byW, 520)); }
-function vRender(){
-  const st = $('#vStage'); const steps = vSteps();
-  V.pos = Math.max(0, Math.min(V.pos, steps-1));
+function pageEl(p, side){
+  const d = document.createElement('div'); d.className = 'pg ' + side;
+  if(p < 0 || p >= vPages()){ d.classList.add('void'); return d; }
+  let h = ''; for(let k=0;k<9;k++) h += pocketHtml(V.items[p*9+k], p*9+k);
+  d.innerHTML = h; return d;
+}
+function preloadAround(a){ for(let p=a-2;p<=a+3;p++) for(let k=0;k<9;k++){ const c = V.items[p*9+k]; if(c) preload(c.img||c.imgL); } }
+function pageW(){
+  const st = $('#vStage'); const W = st.clientWidth - 24, H = st.clientHeight - 12;
+  const byW = (W - 2*14 - 22) / 2;          // due pagine, bordo e dorso
+  const byH = (H - 2*14) * (488/680);
+  return Math.max(110, Math.floor(Math.min(byW, byH, 560)));
+}
+function updateNav(){
+  const steps = vSteps(); V.pos = Math.max(0, Math.min(V.pos, steps-1));
   $('#vRange').max = steps-1; $('#vRange').value = V.pos;
-  if(isBinder()){
-    const sp = spreadN(), pages = vPages(), a = V.pos*sp;
-    st.innerHTML = `<div class="bk ${sp===1?'single':''} ${V.hits.length?'hitmode':''}" style="--pw:${pageW()}px">${sp===2?`<div class="pg left">${pageHtml(a)}</div><div class="pg right">${a+1<pages?pageHtml(a+1):''}</div>`:`<div class="pg left">${pageHtml(a)}</div>`}<div class="rings"><i></i><i></i><i></i></div></div>`;
-    $('#vPos').textContent = sp===2 ? `Pagine ${a+1}–${Math.min(a+2,pages)} di ${pages}` : `Pagina ${a+1} di ${pages}`;
-  } else {
-    st.innerHTML = '<div class="dw"><div class="dw-floor"></div></div>';
-    const dw = st.firstChild;
-    for(let d=-6; d<=6; d++){ const i = V.pos+d; if(i<0 || i>=V.items.length) continue; const c = V.items[i];
-      dw.insertAdjacentHTML('beforeend', `<button class="cd${V.hits.includes(i)?' hit':''}" data-i="${i}" data-d="${d}"><img src="${esc(c.imgL||c.img)}" data-big="${esc(c.imgL)}" alt="${esc(c.name)}" draggable="false"></button>`); }
-    dwLayout();
-    $('#vPos').textContent = V.items.length ? `Carta ${V.pos+1} di ${V.items.length}` : 'Contenitore vuoto';
-    if(!V.items.length) dw.insertAdjacentHTML('beforeend','<p class="hint" style="position:absolute;top:45%;width:100%;text-align:center">Qui non ci sono ancora carte.</p>');
-  }
+  if(isBinder()){ const pages = vPages(), a = V.pos*2; $('#vPos').textContent = `Pagine ${a+1}–${Math.min(a+2,pages)} di ${pages}`; }
+  else $('#vPos').textContent = V.items.length ? `Carta ${V.pos+1} di ${V.items.length}` : 'Contenitore vuoto';
   $('#vPrev').disabled = V.pos<=0; $('#vNext').disabled = V.pos>=steps-1;
-  vBind();
+  $('#vRot').hidden = !(isBinder() && window.innerWidth < window.innerHeight && window.innerWidth < 760);
 }
-function dwLayout(){
-  $$('#vStage .cd').forEach(el => { const d = +el.dataset.i - V.pos, a = Math.abs(d);
-    const x = d===0 ? 0 : Math.sign(d)*(120 + (a-1)*42), z = d===0 ? 60 : -60 - a*30, r = d===0 ? 0 : -Math.sign(d)*58;
-    el.style.transform = `translate(-50%,-50%) translateX(${x}px) translateZ(${z}px) rotateY(${r}deg)`;
-    el.style.zIndex = 100 - a; el.style.opacity = a>5 ? 0 : 1; el.style.filter = d===0 ? 'none' : `brightness(${1-a*0.08})`; });
+function vRender(){ if(!V.id) return; if(isBinder()) bkRender(); else dwRender(true); updateNav(); }
+
+// --- raccoglitore: due pagine affiancate, pagina che gira trascinandola
+function bkRender(){
+  const st = $('#vStage'); V.pos = Math.max(0, Math.min(V.pos, vSteps()-1));
+  st.innerHTML = `<div class="bk ${V.hits.length?'hitmode':''}" style="--pw:${pageW()}px"><div class="rings"><i></i><i></i><i></i><i></i></div></div>`;
+  const bk = st.firstChild, a = V.pos*2;
+  bk.prepend(pageEl(a,'left'), pageEl(a+1,'right'));
+  bindPockets(bk); preloadAround(a);
 }
-function vBind(){
-  $$('#vStage [data-i]').forEach(b => {
-    const img = b.querySelector('img'); if(img && !touch && isBinder()) bindPreview(img);
-    b.onclick = e => { e.stopPropagation(); const i = +b.dataset.i;
-      if(!isBinder() && i !== V.pos){ vGo(i); return; } vShowInfo(V.items[i]); };
-  });
+function startFlip(fwd){
+  if(V.busy) return null;
+  const to = V.pos + (fwd ? 1 : -1); if(to < 0 || to >= vSteps()) return null;
+  const bk = $('#vStage .bk'); if(!bk) return null;
+  V.busy = true; $('#vInfo').hidden = true; $('#preview').style.display = 'none';
+  const L = bk.querySelector('.pg.left'), R = bk.querySelector('.pg.right'), na = to*2, src = fwd ? R : L;
+  const leaf = document.createElement('div'); leaf.className = 'leaf ' + (fwd ? 'fwd' : 'bwd');
+  leaf.style.left = src.offsetLeft + 'px'; leaf.style.top = src.offsetTop + 'px'; leaf.style.width = src.offsetWidth + 'px'; leaf.style.height = src.offsetHeight + 'px';
+  const front = src.cloneNode(true); front.classList.add('face','front');
+  const back = pageEl(fwd ? na : na+1, fwd ? 'left' : 'right'); back.classList.add('face','back');
+  const shF = document.createElement('i'), shB = document.createElement('i'); shF.className = shB.className = 'shade';
+  front.appendChild(shF); back.appendChild(shB); leaf.append(front, back);
+  const under = pageEl(fwd ? na+1 : na, fwd ? 'right' : 'left');
+  const cast = document.createElement('i'); cast.className = 'cast'; under.appendChild(cast);
+  src.replaceWith(under); bk.appendChild(leaf);
+  return {fwd, to, bk, leaf, front, back, shF, shB, under, cast, t:0};
 }
+function setFlip(f, t){
+  f.t = t; const ang = (f.fwd ? -180 : 180) * t, lift = Math.sin(Math.PI * t);
+  f.leaf.style.transform = `translateZ(${(lift*18).toFixed(1)}px) rotateY(${ang.toFixed(2)}deg)`;
+  f.shF.style.opacity = (Math.min(1, t*2) * 0.55).toFixed(3);
+  f.shB.style.opacity = (Math.min(1, (1-t)*2) * 0.55).toFixed(3);
+  f.cast.style.opacity = ((1-t) * 0.7).toFixed(3);
+  f.leaf.style.setProperty('--sh', (lift*0.45).toFixed(3));
+}
+function endFlip(f, commit){
+  const clean = el => { el.classList.remove('face','front','back'); const sh = el.querySelector(':scope > .shade'); if(sh) sh.remove(); return el; };
+  f.cast.remove();
+  if(commit){ const side = f.fwd ? '.pg.left' : '.pg.right'; f.bk.querySelector(side).replaceWith(clean(f.back)); V.pos = f.to; }
+  else f.under.replaceWith(clean(f.front));
+  f.leaf.remove(); V.busy = false;
+  bindPockets(f.bk); preloadAround(V.pos*2); updateNav();
+}
+const easeIO = x => x<.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2;
+const easeOut = x => 1 - Math.pow(1-x, 3);
+function animateFlip(f, to, ms, ease, done){
+  const from = f.t, t0 = performance.now();
+  const step = now => { const k = Math.min(1, (now - t0)/ms); setFlip(f, from + (to-from)*ease(k)); if(k < 1) requestAnimationFrame(step); else done(); };
+  requestAnimationFrame(step);
+}
+function vFlip(fwd){ const f = startFlip(fwd); if(!f) return; setFlip(f, 0); animateFlip(f, 1, reduced() ? 1 : 720, easeIO, () => endFlip(f, true)); }
+function bindOne(b){
+  const img = b.querySelector('img'); if(img && !touch && isBinder()) bindPreview(img);
+  b.onclick = e => { e.stopPropagation(); if(V.dragged) return; const i = +b.dataset.i; if(!isBinder() && i !== V.pos){ vGo(i); return; } vShowInfo(V.items[i]); };
+}
+function bindPockets(root){ root.querySelectorAll('[data-i]').forEach(bindOne); }
+
+// --- cassetto: le carte scorrono in prospettiva, i nodi restano e si spostano
+function dwRender(full){
+  const st = $('#vStage');
+  if(full || !st.querySelector('.dw')){ st.innerHTML = '<div class="dw"><div class="dw-floor"></div></div>'; V.dw = new Map(); }
+  const dw = st.querySelector('.dw'), want = new Set();
+  if(!V.items.length){ dw.insertAdjacentHTML('beforeend','<p class="hint" style="position:absolute;top:45%;width:100%;text-align:center">Qui non ci sono ancora carte.</p>'); return; }
+  for(let d=-7; d<=7; d++){
+    const i = V.pos + d; if(i < 0 || i >= V.items.length) continue; want.add(i);
+    if(!V.dw.has(i)){
+      const c = V.items[i], el = document.createElement('button');
+      el.className = 'cd'; el.dataset.i = i;
+      el.innerHTML = `<img src="${esc(Math.abs(d)<=2 ? (c.imgL||c.img) : (c.img||c.imgL))}" data-big="${esc(c.imgL)}" alt="${esc(c.name)}" decoding="async" draggable="false">`;
+      el.style.transition = 'none'; el.style.opacity = 0; placeCard(el, i + Math.sign(d||1)*1.5);
+      dw.appendChild(el); V.dw.set(i, el); bindOne(el);
+      el.getBoundingClientRect(); el.style.transition = '';
+    } else if(Math.abs(d)<=2){ const im = V.dw.get(i).querySelector('img'); const c = V.items[i]; if(c.imgL && im.getAttribute('src') !== c.imgL) im.src = c.imgL; }
+  }
+  V.dw.forEach((el, i) => { if(!want.has(i)){ V.dw.delete(i); el.style.opacity = 0; placeCard(el, i); setTimeout(() => el.remove(), 450); } });
+  V.dw.forEach((el, i) => { placeCard(el, i); el.classList.toggle('hit', V.hits.includes(i)); });
+  for(let d=8; d<=12; d++){ const c = V.items[V.pos+d]; if(c) preload(c.img); }
+}
+function placeCard(el, i){
+  const d = i - V.pos, a = Math.abs(d), w = Math.min(window.innerWidth*0.56, 250);
+  const x = d===0 ? 0 : Math.sign(d) * (w*0.5 + 34 + (a-1)*Math.max(26, w*0.17));
+  const z = d===0 ? 80 : -40 - a*26, r = d===0 ? 0 : -Math.sign(d) * Math.min(62, 40 + a*6);
+  el.style.transform = `translate(-50%,-50%) translateX(${x.toFixed(1)}px) translateZ(${z}px) rotateY(${r}deg)`;
+  el.style.zIndex = 100 - Math.round(a*2);
+  if(el.style.opacity !== '0' || a <= 6.5) el.style.opacity = a > 6.5 ? 0 : 1;
+  el.style.filter = d===0 ? 'none' : `brightness(${Math.max(.45, 1 - a*0.09).toFixed(2)})`;
+}
+
 function vShowInfo(c){
   const box = $('#vInfo');
   box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}${flag(c)}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${eur(unitPrice(c))}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></div>
@@ -1323,33 +1408,10 @@ function vShowInfo(c){
 }
 function vGo(to){
   const steps = vSteps(); to = Math.max(0, Math.min(steps-1, to));
-  if(to===V.pos || V.busy) return;
+  if(to === V.pos || V.busy) return;
   $('#vInfo').hidden = true;
-  if(!isBinder() || Math.abs(to-V.pos)>1 || window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){ V.pos = to; vRender(); return; }
-  const fwd = to > V.pos, sp = spreadN(), bk = $('#vStage .bk'), pages = vPages();
-  const L = bk.querySelector('.pg.left'), R = bk.querySelector('.pg.right');
-  const na = to*sp, newL = pageHtml(na), newR = sp===2 && na+1<pages ? pageHtml(na+1) : '';
-  V.busy = true;
-  const leaf = document.createElement('div'); leaf.className = 'leaf';
-  const pw = pageW(), pad = sp===1 ? 34 : 16;
-  if(sp===2){
-    leaf.style.left = fwd ? (16 + pw + 26) + 'px' : '16px';
-    leaf.style.transformOrigin = fwd ? 'left center' : 'right center';
-    leaf.innerHTML = fwd ? `<div class="pg right face">${R.innerHTML}</div><div class="pg left face back">${newL}</div>` : `<div class="pg left face">${L.innerHTML}</div><div class="pg right face back">${newR}</div>`;
-    if(fwd) R.innerHTML = newR; else L.innerHTML = newL;
-  } else {
-    leaf.style.left = pad + 'px'; leaf.style.transformOrigin = 'left center';
-    if(fwd){ leaf.innerHTML = `<div class="pg left face">${L.innerHTML}</div><div class="face back blank"></div>`; L.innerHTML = newL; }
-    else { leaf.innerHTML = `<div class="pg left face">${newL}</div><div class="face back blank"></div>`; leaf.style.transform = 'rotateY(-180deg)'; }
-  }
-  leaf.style.top = (sp===1?14:16)+'px';
-  bk.appendChild(leaf);
-  const end = () => { V.pos = to; V.busy = false; vRender(); };
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    leaf.style.transform = sp===2 ? (fwd ? 'rotateY(-180deg)' : 'rotateY(180deg)') : (fwd ? 'rotateY(-180deg)' : 'rotateY(0deg)');
-  }));
-  let done = false; const fin = () => { if(done) return; done = true; end(); };
-  leaf.addEventListener('transitionend', fin); setTimeout(fin, 900);
+  if(isBinder()){ if(Math.abs(to - V.pos) === 1 && !reduced()) vFlip(to > V.pos); else { V.pos = to; bkRender(); updateNav(); } }
+  else { V.pos = to; dwRender(Math.abs(to - V.pos) > 10); updateNav(); }
 }
 function vSearch(){
   const q = $('#vQ').value.trim().toLowerCase();
@@ -1359,26 +1421,46 @@ function vSearch(){
   $('#vHp').hidden = $('#vHn').hidden = V.hits.length < 2;
   if(V.hits.length){ V.hitI = 0; vJumpHit(); } else vRender();
 }
-function vJumpHit(){ const i = V.hits[V.hitI]; const to = isBinder() ? Math.floor(Math.floor(i/9)/spreadN()) : i; V.pos = to; vRender(); $('#vHits').textContent = `${V.hitI+1} di ${V.hits.length}`; }
+function vJumpHit(){ const i = V.hits[V.hitI]; V.pos = isBinder() ? Math.floor(Math.floor(i/9)/2) : i; vRender(); $('#vHits').textContent = `${V.hitI+1} di ${V.hits.length}`; }
 $('#vQ').addEventListener('input', () => { clearTimeout(V.qt); V.qt = setTimeout(vSearch, 200); });
 $('#vHn').onclick = () => { if(!V.hits.length) return; V.hitI = (V.hitI+1) % V.hits.length; vJumpHit(); };
 $('#vHp').onclick = () => { if(!V.hits.length) return; V.hitI = (V.hitI-1+V.hits.length) % V.hits.length; vJumpHit(); };
 $('#vPrev').onclick = () => vGo(V.pos-1);
 $('#vNext').onclick = () => vGo(V.pos+1);
-$('#vRange').oninput = () => { V.pos = +$('#vRange').value; vRender(); };
+$('#vRange').oninput = () => { if(V.busy) return; V.pos = +$('#vRange').value; vRender(); };
 $('#vClose').onclick = closeViewer;
 $('#vStage').addEventListener('click', e => { if(e.target === $('#vStage')) $('#vInfo').hidden = true; });
 document.addEventListener('keydown', e => {
   if($('#viewer').hidden || $('#dlg').open || e.target === $('#vQ')) return;
   if(e.key==='ArrowRight') vGo(V.pos+1); else if(e.key==='ArrowLeft') vGo(V.pos-1); else if(e.key==='Escape') closeViewer();
 });
-(() => { let x0=null, y0=null; const st = $('#vStage');
-  st.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, {passive:true});
-  st.addEventListener('touchend', e => { if(x0==null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
-    if(Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)){ const n = isBinder() ? 1 : Math.max(1, Math.round(Math.abs(dx)/90)); vGo(V.pos + (dx<0 ? n : -n)); } });
+// trascinamento: nel raccoglitore la pagina segue il dito o il mouse
+(() => {
+  const st = $('#vStage'); let x0 = null, y0 = 0, t0 = 0, f = null, lastX = 0, lastT = 0, vel = 0;
+  st.addEventListener('pointerdown', e => { if(e.button > 0 || V.busy) return; x0 = e.clientX; y0 = e.clientY; t0 = lastT = performance.now(); lastX = x0; vel = 0; f = null; V.dragged = false; });
+  window.addEventListener('pointermove', e => {
+    if(x0 == null || !V.id) return;
+    const dx = e.clientX - x0, dy = e.clientY - y0, now = performance.now();
+    if(now > lastT){ vel = (e.clientX - lastX) / (now - lastT); lastX = e.clientX; lastT = now; }
+    if(!isBinder()){ if(Math.abs(dx) > 10) V.dragged = true; return; }
+    if(!f){ if(Math.abs(dx) < 10 || Math.abs(dx) < Math.abs(dy)) return; f = startFlip(dx < 0); if(!f){ x0 = null; return; } V.dragged = true; }
+    const pw = f.leaf.offsetWidth || 200;
+    setFlip(f, Math.max(0, Math.min(1, (f.fwd ? -dx : dx) / (pw * 1.5))));
+  });
+  const up = () => {
+    if(x0 == null) return; const dx = lastX - x0; x0 = null;
+    if(!isBinder()){ if(V.dragged){ const n = Math.round(-dx/70) + Math.max(-6, Math.min(6, Math.round(-vel*4))); vGo(V.pos + (n || (dx<0?1:-1))); } setTimeout(() => V.dragged = false, 0); return; }
+    if(f){ const g = f; f = null; const v = g.fwd ? -vel : vel;
+      const commit = g.t > 0.4 || v > 0.45;
+      const ms = Math.max(160, Math.min(520, (commit ? 1-g.t : g.t) * 700 / Math.max(1, Math.abs(v)*2)));
+      animateFlip(g, commit ? 1 : 0, reduced() ? 1 : ms, easeOut, () => endFlip(g, commit));
+    }
+    setTimeout(() => V.dragged = false, 0);
+  };
+  window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
   st.addEventListener('wheel', e => { if(isBinder() || Math.abs(e.deltaX)+Math.abs(e.deltaY) < 20) return; e.preventDefault(); vGo(V.pos + ((e.deltaX||e.deltaY) > 0 ? 1 : -1)); }, {passive:false});
 })();
-window.addEventListener('resize', () => { if(V.id) vRender(); });
+window.addEventListener('resize', () => { if(V.id && !V.busy) vRender(); });
 
 // ---------- storico del valore ----------
 function openHistory(){
