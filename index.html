@@ -474,6 +474,13 @@ th{background:var(--solid)}
 .sleeves{position:absolute;inset:5px 6px;border-radius:3px;background:repeating-linear-gradient(90deg,#2b2340 0 2px,#3a3056 2px 3px),linear-gradient(#3a3056,#241d36);box-shadow:inset 0 2px 6px rgba(0,0,0,.6)}
 .dbx-wrap{gap:2px}
 @media (prefers-reduced-motion:reduce){.d3,.d3-lid{transition:none}}
+.cmd-sel{margin:4px 0 8px}
+.cmd-list{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto;margin-top:6px}
+.cmd-h{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin:4px 0 2px}
+.cmd-row{display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:center;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;cursor:pointer;width:100%;color:inherit;font:inherit}
+.cmd-row.on{border-color:var(--brass);background:color-mix(in srgb,var(--brass) 10%,var(--surface-2))}
+.cmd-row img{width:62px;height:45px;object-fit:cover;border-radius:5px;background:#222}
+.cmd-row .muted{font-size:12.5px}
 </style>
 </head>
 <body>
@@ -1275,7 +1282,8 @@ function bandsBg(cs){
   return `linear-gradient(90deg, ${stops.join(', ')})`;
 }
 function deckBox3D(d, mini){
-  const cs = deckColors(d), cmd = d.commander && S.cards.find(c=>c.id===d.commander);
+  const cmd = d._cmdBase || (d.commander && S.cards.find(c=>c.id===d.commander));
+  const cs = d._cmdBase && !(d.colors && d.colors.length) ? (WUBRG.filter(x=>(d._cmdBase.ci||d._cmdBase.colors||[]).includes(x)).length ? WUBRG.filter(x=>(d._cmdBase.ci||d._cmdBase.colors||[]).includes(x)) : ['C']) : deckColors(d);
   const cl = MANA[cs[0]], cr = MANA[cs[cs.length-1]];
   const win = isCmd(d) ? `<div class="dbx-win">${cmd ? `<img src="${esc(cmd.art || cmd.imgL || cmd.img)}" class="${cmd.art?'art':'full'}" alt="${esc(cmd.name)}" loading="lazy" draggable="false">` : '<span>Scegli il comandante</span>'}</div>` : '';
   const pips = cs.map(x=>pip(x)).join('');
@@ -1324,17 +1332,20 @@ function renderDeckBoxes(){
 $('#newDeck').onclick = () => openDeck(null);
 function openDeck(id){
   const d = id ? S.decks.find(x=>x.id===id) : null, isNew = !d;
-  const legends = S.cards.filter(c => /Legendary/.test(c.type||'') && /(Creature|Planeswalker)/.test(c.type||''));
-  const inDeck = d ? legends.filter(c=>c.deck===d.id) : [];
-  const names = [...new Set([...inDeck, ...legends].map(c=>c.name))];
+  const isLegend = c => /Legendary/.test(c.type||'') && /(Creature|Planeswalker|Background)/.test(c.type||'');
   const cmd = d && d.commander && S.cards.find(c=>c.id===d.commander);
+  let chosen = cmd ? {card: cmd} : null;
   const manual = d && d.colors && d.colors.length;
   $('#dlgBody').innerHTML = `<form class="cform" id="deckF" style="padding:18px 20px">
     <h2 style="font-size:22px;margin-bottom:8px">${isNew?'Nuovo mazzo':esc(d.name)}</h2>
     <div class="fgrid">
       <label class="f">Nome<input type="text" name="name" required value="${esc(d?d.name:'')}" placeholder="es. Atraxa contatori"></label>
       <label class="f">Formato<select name="format">${opts([['','Scegli…'], ...FORMATS.map(x=>[x,x])], d ? d.format||'' : 'Commander')}</select></label>
-      <label class="f full" data-cmd>Comandante<input type="text" name="cmd" list="cmdList" value="${esc(cmd?cmd.name:'')}" placeholder="Scrivi o scegli una creatura leggendaria della collezione"><datalist id="cmdList">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist></label>
+      <div class="f full" data-cmd><span>Comandante</span>
+        <div class="cmd-sel" id="cmdSel"></div>
+        <input type="search" name="cmdq" placeholder="Cerca il comandante per nome (anche in italiano)" autocomplete="off" enterkeyhint="search">
+        <div class="cmd-list" id="cmdList"></div>
+      </div>
       <div class="f full"><span>Colori del mazzo</span>
         <label class="chk" style="margin:4px 0"><input type="checkbox" name="auto" ${manual?'':'checked'}> Automatici (dal comandante o dalle carte del mazzo)</label>
         <div class="dk-cols" id="dkCols">${[...WUBRG,'C'].map(x=>`<label class="dk-col"><input type="checkbox" name="col" value="${x}" ${manual && d.colors.includes(x)?'checked':''}>${pip(x,'26px')}</label>`).join('')}</div>
@@ -1348,20 +1359,51 @@ function openDeck(id){
       <button type="submit" class="btn primary">${isNew?'Crea':'Salva'}</button>
     </div></form>`;
   const f = $('#deckF'), F = n => f.elements[n];
-  const pickCmd = () => { const n = F('cmd').value.trim().toLowerCase(); if(!n) return null;
-    const pool = S.cards.filter(c => c.name.toLowerCase()===n || (c.printed||'').toLowerCase()===n);
-    return pool.find(c => d && c.deck===d.id) || pool[0] || null; };
   const draft = () => { const t = {id: d ? d.id : '__new', name: F('name').value || 'Nuovo mazzo', format: F('format').value};
-    const c = pickCmd(); if(c) t.commander = c.id;
+    if(chosen && chosen.card) t.commander = chosen.card.id;
+    if(chosen && chosen.base) t._cmdBase = chosen.base;
     if(!F('auto').checked){ t.colors = [...f.querySelectorAll('input[name=col]:checked')].map(x=>x.value); }
     return t; };
   const upd = () => {
     f.querySelector('[data-cmd]').style.display = CMD_FORMATS.includes(F('format').value) ? '' : 'none';
     $('#dkCols').classList.toggle('off', F('auto').checked);
-    const t = draft(), cs = deckColors(t), c = t.commander && S.cards.find(x=>x.id===t.commander);
+    const t = draft();
     $('#dkPrev').innerHTML = `<div class="d3-stage mini">${deckBox3D(t, true)}</div>`; bindBox3D($('#dkPrev .d3-stage'));
   };
-  ['name','format','cmd','auto'].forEach(n => F(n).addEventListener('input', upd));
+  ['name','format','auto'].forEach(n => F(n).addEventListener('input', upd));
+  // --- scelta del comandante: dalla collezione, oppure da tutte le carte
+  const thumb = c => `<img src="${esc(c.art || c.img || c.imgL)}" alt="" loading="lazy">`;
+  const renderSel = () => {
+    const c = chosen && (chosen.card || chosen.base);
+    $('#cmdSel').innerHTML = c ? `<div class="cmd-row on">${thumb(c)}<div><b>${esc(c.name)}</b>${c.printed && c.printed!==c.name?`<div class="muted">${esc(c.printed)}</div>`:''}<div class="muted">${chosen.base ? 'Verrà aggiunto alla collezione, in questo mazzo' : (d && c.deck===d.id ? 'Nel mazzo' : 'Nella collezione')}</div></div><button type="button" class="btn small" id="cmdRm">Rimuovi</button></div>` : '<p class="hint" style="margin:4px 0">Nessun comandante scelto: cercalo qui sotto e toccalo.</p>';
+    if($('#cmdRm')) $('#cmdRm').onclick = () => { chosen = null; renderSel(); upd(); };
+  };
+  const pickOwn = c => { chosen = {card: c}; F('cmdq').value = ''; $('#cmdList').innerHTML = ''; renderSel(); upd(); listOwn(); };
+  const listOwn = () => {
+    const q = F('cmdq').value.trim().toLowerCase();
+    let pool = S.cards.filter(isLegend);
+    if(q) pool = pool.filter(c => `${c.name} ${c.printed||''}`.toLowerCase().includes(q) || (ui.it && ui.it.q===q && ui.it.names.has(c.name)));
+    const seen = new Set(); pool = pool.sort((a,b)=> ((d && b.deck===d.id) - (d && a.deck===d.id)) || a.name.localeCompare(b.name)).filter(c => !seen.has(c.name) && seen.add(c.name)).slice(0, 30);
+    $('#cmdList').innerHTML = (pool.length ? `<div class="cmd-h">${q?'Dalla tua collezione':'Creature leggendarie nella tua collezione'}</div>` + pool.map((c,i)=>`<button type="button" class="cmd-row" data-own="${esc(c.id)}">${thumb(c)}<div><b>${esc(c.name)}</b>${c.printed && c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}<div class="muted">${d && c.deck===d.id ? 'Nel mazzo' : (c.deck ? 'Nel mazzo ' + esc(deckName(c.deck)) : (c.loc ? esc(locName(c.loc)) : 'Senza luogo'))}</div></div></button>`).join('') : `<p class="hint" style="margin:6px 0">${q?'Non ce l’hai in collezione.':'Nella collezione non ci sono ancora creature leggendarie.'}</p>`)
+      + (q.length>=3 ? `<button type="button" class="btn small" id="cmdWeb" style="margin-top:6px">Cerca “${esc(F('cmdq').value.trim())}” tra tutte le carte</button>` : '');
+    $('#cmdList').querySelectorAll('[data-own]').forEach(b => b.onclick = () => pickOwn(S.cards.find(c=>c.id===b.dataset.own)));
+    if($('#cmdWeb')) $('#cmdWeb').onclick = searchWeb;
+  };
+  const searchWeb = async () => {
+    const q = F('cmdq').value.trim().replace(/["()]/g,' '); if(!q) return;
+    $('#cmdList').innerHTML = '<p class="hint">Cerco…</p>';
+    try{
+      const {status, data} = await api('/cards/search?unique=cards&order=edhrec&include_multilingual=true&q=' + encodeURIComponent(`is:commander ${q}`));
+      const raws = status===200 ? (data.data||[]).slice(0, 20) : [];
+      const map = await englishMap(raws);
+      const list = raws.map(r => map[r.id]).filter(Boolean);
+      $('#cmdList').innerHTML = list.length ? '<div class="cmd-h">Da tutte le carte (verrà aggiunto alla collezione in questo mazzo)</div>' + list.map((c,i)=>`<button type="button" class="cmd-row" data-web="${i}">${thumb(c)}<div><b>${esc(c.name)}</b>${c.printed && c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}<div class="muted">${esc(c.setName)}</div></div></button>`).join('') : '<p class="hint">Nessun comandante trovato con quel nome.</p>';
+      $('#cmdList').querySelectorAll('[data-web]').forEach(b => b.onclick = () => { const base = list[+b.dataset.web]; const own = S.cards.find(c=>c.sid===base.sid); chosen = own ? {card: own} : {base}; F('cmdq').value=''; $('#cmdList').innerHTML=''; renderSel(); upd(); listOwn(); });
+    }catch(e){ $('#cmdList').innerHTML = '<p class="hint">Ricerca non riuscita: controlla la connessione.</p>'; }
+  };
+  let cmdT = null; F('cmdq').addEventListener('input', () => { clearTimeout(cmdT); cmdT = setTimeout(listOwn, 150); });
+  F('cmdq').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); const first = $('#cmdList [data-own]'); if(first) first.click(); else if($('#cmdWeb')) searchWeb(); } });
+  renderSel(); listOwn();
   f.querySelectorAll('input[name=col]').forEach(x => x.addEventListener('input', () => { F('auto').checked = false; upd(); }));
   upd();
   $('#dkCancel').onclick = () => dlg.close();
@@ -1370,13 +1412,16 @@ function openDeck(id){
     S.decks = S.decks.filter(a=>a.id!==d.id); S.cards.forEach(c=>{ if(c.deck===d.id) c.deck=''; }); save(); dlg.close(); renderDeckBoxes(); toast('Mazzo eliminato'); };
   f.onsubmit = ev => {
     ev.preventDefault();
-    if(F('cmd').value.trim() && CMD_FORMATS.includes(F('format').value) && !pickCmd()){ toast('Non trovo quel comandante nella collezione: aggiungilo prima da “Aggiungi carte”.', 5000); return; }
     const t = draft(), x = d || {id: uid()};
+    if(CMD_FORMATS.includes(F('format').value) && chosen && chosen.base){
+      const c = Object.assign({id:uid(), added:Date.now()}, chosen.base, {qty:1, foil:false, cond:(S.addPrefs&&S.addPrefs.cond)||'NM', lang: chosen.base.srcLang || 'en', loc:'', deck:x.id, note:''}); delete c.srcLang;
+      S.cards.push(c); t.commander = c.id; chosen = {card: c};
+    } else if(CMD_FORMATS.includes(F('format').value) && chosen && chosen.card && !chosen.card.deck){ chosen.card.deck = x.id; }
     x.name = F('name').value.trim(); x.format = F('format').value; x.note = F('note').value.trim();
     if(CMD_FORMATS.includes(x.format) && t.commander) x.commander = t.commander; else delete x.commander;
     if(t.colors && t.colors.length) x.colors = t.colors; else delete x.colors;
     if(isNew) S.decks.push(x);
-    save(); dlg.close(); renderDeckBoxes(); fillSelects(); toast(isNew ? 'Mazzo creato' : 'Mazzo aggiornato');
+    save(); renderHeader(); dlg.close(); renderDeckBoxes(); fillSelects(); toast(isNew ? 'Mazzo creato' : 'Mazzo aggiornato');
   };
   dlg.showModal();
 }
