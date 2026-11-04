@@ -780,7 +780,28 @@ async function api(path, opts={}){
 }
 
 // ---------- card helpers ----------
-function unitPrice(c){ return c.foil ? (c.eurFoil ?? c.eur) : (c.eur ?? c.eurFoil); }
+// prezzo in euro; se Cardmarket non ha il prezzo di quella stampa, stima dal prezzo in dollari
+function fxRate(){ return (S.fx && S.fx.r) || 0.9; }
+function priceInfo(c){
+  const fx = fxRate();
+  if(c.foil){
+    if(c.eurFoil != null) return {p:c.eurFoil, est:false};
+    if(c.usdFoil != null) return {p:+(c.usdFoil*fx).toFixed(2), est:true};
+    if(c.eur != null) return {p:c.eur, est:false, nf:true};
+    if(c.usd != null) return {p:+(c.usd*fx).toFixed(2), est:true, nf:true};
+  } else {
+    if(c.eur != null) return {p:c.eur, est:false};
+    if(c.usd != null) return {p:+(c.usd*fx).toFixed(2), est:true};
+    if(c.eurFoil != null) return {p:c.eurFoil, est:false};
+  }
+  return {p:null, est:false};
+}
+function unitPrice(c){ return priceInfo(c).p; }
+function priceTxt(c){ const i = priceInfo(c); if(i.p == null) return '<span class="muted" title="Prezzo non disponibile">n.d.</span>'; return (i.est ? `<span title="Stima dal prezzo in dollari: Cardmarket non riporta questa stampa">≈ ${eur(i.p)}</span>` : eur(i.p)); }
+async function refreshFx(force){
+  if(!force && S.fx && Date.now() - S.fx.at < 864e5) return;
+  try{ const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR'); const j = await r.json(); if(j && j.rates && j.rates.EUR){ S.fx = {r: j.rates.EUR, at: Date.now()}; save(); } }catch(e){}
+}
 function prevPrice(c){ return c.foil ? (c.eurFoilPrev ?? c.eurPrev) : (c.eurPrev ?? c.eurFoilPrev); }
 function value(c){ const p = unitPrice(c); return p == null ? 0 : p * c.qty; }
 function fromScry(card){
@@ -794,6 +815,8 @@ function fromScry(card){
     cm: (card.purchase_uris && card.purchase_uris.cardmarket) || '',
     eur: card.prices && card.prices.eur != null ? parseFloat(card.prices.eur) : null,
     eurFoil: card.prices && card.prices.eur_foil != null ? parseFloat(card.prices.eur_foil) : null,
+    usd: card.prices && card.prices.usd != null ? parseFloat(card.prices.usd) : null,
+    usdFoil: card.prices && (card.prices.usd_foil != null || card.prices.usd_etched != null) ? parseFloat(card.prices.usd_foil ?? card.prices.usd_etched) : null,
     finishes: card.finishes || ['nonfoil'], pAt: Date.now()
   };
 }
@@ -1068,7 +1091,7 @@ function renderColl(){
         <td>${c.foil?'<span class="tag foil">Foil</span> ':''}<span class="tag">${esc(c.cond)}</span> <span class="tag">${esc((c.lang||'').toUpperCase())}</span></td>
         <td>${c.deck ? `<span class="where-deck">Mazzo ${esc(deckName(c.deck))}</span>` : (esc(locName(c.loc)) || '<span class="muted">—</span>')}</td>
         <td></td>
-        <td class="num price">${eur(unitPrice(c))} ${trend(c)}</td>
+        <td class="num price">${priceTxt(c)} ${trend(c)}</td>
         <td class="num price"><b>${eur(value(c))}</b></td>
         <td><div class="row" style="flex-wrap:nowrap;gap:6px"><button class="btn small" data-edit="${c.id}">Modifica</button>${c.cm?`<a class="btn small" href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></td>
       </tr>`).join('') + '</tbody></table></div>';
@@ -1321,13 +1344,17 @@ async function updatePrices(){
       await sleep(120);
     }
     Object.assign(fresh, await englishMap(raws));
+    const foilRaw = raws.filter(r => S.cards.some(c => c.sid===r.id && c.foil));
+    const stars = await starPrintings(foilRaw);
+    Object.entries(stars).forEach(([oid, st]) => { const b = fromScry(st); S.cards.forEach(c => { if(c.sid===oid && c.foil){ c.sid = b.sid; c.num = b.num; c.img = b.img; c.imgL = b.imgL; c.art = b.art; c.finishes = b.finishes; c.cm = b.cm || c.cm; } }); fresh[b.sid] = b; });
+    await refreshFx(true);
     let changed = 0; const crossed = [];
     S.cards.forEach(c => {
       const f = fresh[c.sid]; if(!f) return;
       c.eurPrev = c.eur; c.eurFoilPrev = c.eurFoil;
       if(f.eur!==c.eur || f.eurFoil!==c.eurFoil) changed++;
       if(f.sid !== c.sid){ c.sid = f.sid; if(!c.printed && f.printed) c.printed = f.printed; }
-      Object.assign(c, {eur:f.eur, eurFoil:f.eurFoil, cm:f.cm||c.cm, img:f.img||c.img, imgL:f.imgL||c.imgL, art:f.art||c.art||'', ci:f.ci||c.ci, cmc:f.cmc!=null?f.cmc:c.cmc, finishes:f.finishes, pAt:Date.now()});
+      Object.assign(c, {eur:f.eur, eurFoil:f.eurFoil, usd:f.usd, usdFoil:f.usdFoil, cm:f.cm||c.cm, img:f.img||c.img, imgL:f.imgL||c.imgL, art:f.art||c.art||'', ci:f.ci||c.ci, cmc:f.cmc!=null?f.cmc:c.cmc, finishes:f.finishes, pAt:Date.now()});
       const o = prevPrice(c), p = unitPrice(c);
       if(o!=null && p!=null && o < thr() && p >= thr()){ c.alert = {from:o, to:p, at:Date.now()}; crossed.push(c); }
       else if(c.alert && p!=null && p < thr()) delete c.alert;
@@ -1471,6 +1498,21 @@ function renderDeckBoxes(){
   el.querySelectorAll('[data-deck]').forEach(b => { bindBox3D(b); b.onclick = () => openBox(b); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openBox(b); } }; });
 }
 $('#newDeck').onclick = () => openDeck(null);
+async function starPrintings(raws){
+  // raws: carte Scryfall foil che però non hanno la finitura foil: cerca la versione ★ (es. surge foil delle Collector's Edition)
+  const need = raws.filter(r => r && !(r.finishes||[]).some(f=>f!=='nonfoil') && !/★/.test(r.collector_number));
+  const out = {};
+  for(let i=0;i<need.length;i+=75){
+    try{
+      const chunk = need.slice(i,i+75);
+      const {data} = await api('/cards/collection', {method:'POST', body: JSON.stringify({identifiers: chunk.map(r=>({set:r.set, collector_number:r.collector_number+'★'}))})});
+      (data.data||[]).forEach(c => { const o = chunk.find(r => r.set===c.set && r.collector_number+'★'===c.collector_number); if(o) out[o.id] = c; });
+    }catch(e){}
+    await sleep(120);
+  }
+  return out;
+}
+
 // ---------- mazzi precostruiti (elenco ufficiale da MTGJSON, carte esatte da Scryfall) ----------
 const MTGJ = 'https://mtgjson.com/api/v5/';
 let PRECONS = null;
@@ -1505,7 +1547,9 @@ async function resolvePrecon(deck){
       await sleep(120);
     }
   }
-  return entries.map(e => { const raw = e.raw || (e.c.identifiers && raws[e.c.identifiers.scryfallId]); return {qty: e.c.count || 1, foil: !!e.c.isFoil, cmd: e.cmd, name: e.c.name, base: raw ? fromScry(raw) : null}; });
+  entries.forEach(e => { e.raw = e.raw || (e.c.identifiers && raws[e.c.identifiers.scryfallId]); });
+  const stars = await starPrintings(entries.filter(e => e.c.isFoil).map(e => e.raw));
+  return entries.map(e => { let raw = e.raw; if(raw && e.c.isFoil && stars[raw.id]) raw = stars[raw.id]; return {qty: e.c.count || 1, foil: !!e.c.isFoil, cmd: e.cmd, name: e.c.name, base: raw ? fromScry(raw) : null}; });
 }
 
 // ---------- importa una lista di mazzo ----------
@@ -1599,10 +1643,13 @@ function openDeckImport(){
       const rows = await resolvePrecon(deck); pcRows = rows;
       const ok = rows.filter(r=>r.base), bad = rows.filter(r=>!r.base);
       const n = ok.reduce((a,r)=>a+r.qty,0), foils = ok.filter(r=>r.foil).reduce((a,r)=>a+r.qty,0);
-      const val = ok.reduce((a,r)=>a + r.qty * ((r.foil ? r.base.eurFoil : r.base.eur) ?? r.base.eur ?? 0), 0);
+      const val = ok.reduce((a,r)=>a + r.qty * (priceInfo(Object.assign({}, r.base, {foil:r.foil})).p || 0), 0);
+      const est = ok.filter(r => priceInfo(Object.assign({}, r.base, {foil:r.foil})).est).reduce((a,r)=>a+r.qty,0);
+      const nop = ok.filter(r => priceInfo(Object.assign({}, r.base, {foil:r.foil})).p == null).reduce((a,r)=>a+r.qty,0);
       const cmd = ok.find(r=>r.cmd);
       $('#pcOut').innerHTML = `<div class="pc-sum"><div><b>${esc(d.name)}</b><div class="muted">${esc(d.type||'')} · ${esc((d.code||'').toUpperCase())}${d.releaseDate?' · '+esc(d.releaseDate):''}</div></div>
         <p>${n} carte${foils?` (${foils === n ? 'tutte foil' : foils + ' foil'})`:''} · valore stimato <b>${eur(val)}</b>${cmd?` · comandante <b>${esc(cmd.base.name)}</b>`:''}</p>
+        ${est||nop ? `<p class="hint">${est?`Per ${est} carte Cardmarket non riporta il prezzo di questa versione: le stimo dal prezzo in dollari. `:''}${nop?`${nop} carte non hanno nessun prezzo disponibile.`:''}</p>` : ''}
         ${bad.length?`<p class="warn">Non trovate su Scryfall: ${bad.map(r=>esc(r.name)).join(', ')}.</p>`:''}
         <div class="fgrid"><label class="f">Nome del mazzo<input type="text" id="pcName" value="${esc(d.name)}"></label><label class="f">Condizione<select id="pcCond">${opts(CONDS.map(c=>[c[0], c[0]+' · '+c[1]]), 'NM')}</select></label></div>
         <div class="dlg-foot"><button type="button" class="btn" id="pcCancel">Annulla</button><button type="button" class="btn primary" id="pcAdd">Aggiungi il mazzo</button></div></div>`;
@@ -1611,7 +1658,7 @@ function openDeckImport(){
         const dk = {id: uid(), name: $('#pcName').value.trim() || d.name, format: preconFormat(d.type), note: `Precostruito: ${d.name}${d.code?' ('+d.code.toUpperCase()+')':''}`};
         const cond = $('#pcCond').value; let cmdId = null;
         ok.forEach(r => {
-          const canFoil = (r.base.finishes||[]).some(x=>x!=='nonfoil'), foil = r.foil && canFoil;
+          const foil = r.foil;
           const same = !r.cmd && S.cards.find(c => c.deck===dk.id && c.sid===r.base.sid && c.foil===foil && c.cond===cond);
           if(same) same.qty += r.qty;
           else { const c = Object.assign({id: uid(), added: Date.now()}, r.base, {qty: r.qty, foil, cond, lang:'en', loc:'', deck: dk.id, note:''}); delete c.srcLang; S.cards.push(c); if(r.cmd && !cmdId) cmdId = c.id; }
@@ -2109,7 +2156,7 @@ const imgSeen = new Set();
 function preload(u){ if(!u || imgSeen.has(u)) return; imgSeen.add(u); const im = new Image(); im.decoding = 'async'; im.src = u; }
 function pocketHtml(c, idx){
   if(!c) return '<div class="pk empty" aria-hidden="true"></div>';
-  return `<button class="pk${V.hits.includes(idx)?' hit':''}" data-i="${idx}" title="${esc(c.name)}${c.printed&&c.printed!==c.name?' · '+esc(c.printed):''} · ${esc(c.setName)} · ${eur(unitPrice(c))}"><img src="${esc(c.img||c.imgL)}" data-big="${esc(c.imgL)}" alt="${esc(c.name)}" decoding="async" draggable="false">${c.foil?'<span class="fl">Foil</span>':''}</button>`;
+  return `<button class="pk${V.hits.includes(idx)?' hit':''}" data-i="${idx}" title="${esc(c.name)}${c.printed&&c.printed!==c.name?' · '+esc(c.printed):''} · ${esc(c.setName)} · ${priceTxt(c)}"><img src="${esc(c.img||c.imgL)}" data-big="${esc(c.imgL)}" alt="${esc(c.name)}" decoding="async" draggable="false">${c.foil?'<span class="fl">Foil</span>':''}</button>`;
 }
 function pageEl(p, side){
   const d = document.createElement('div'); d.className = 'pg ' + side;
@@ -2389,7 +2436,7 @@ function placeCard(el, i){
 
 function vShowInfo(c){
   const box = $('#vInfo');
-  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}${flag(c)}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${eur(unitPrice(c))}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></div>
+  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}${flag(c)}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${priceTxt(c)}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></div>
     <div style="display:flex;flex-direction:column;gap:6px"><button class="btn small" id="vEdit">Modifica</button><button class="btn small" id="vX">Chiudi</button></div>`;
   box.hidden = false;
   bindPreview(box.querySelector('img'));
@@ -2535,7 +2582,7 @@ function renderTable(deal){
 }
 function tShowInfo(c){
   const box = $('#tInfo'); if(!c) return;
-  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${eur(unitPrice(c))}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></div>
+  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${priceTxt(c)}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></div>
     <div style="display:flex;flex-direction:column;gap:6px"><button class="btn small" id="tEdit">Modifica</button><button class="btn small" id="tX">Chiudi</button></div>`;
   box.hidden = false; bindPreview(box.querySelector('img'));
   $('#tX').onclick = () => box.hidden = true;
@@ -2655,7 +2702,7 @@ window.RM = {
   toast,
   onSave: null
 };
-load(); renderHeader(); renderColl(); renderArchive();
+load(); renderHeader(); renderColl(); renderArchive(); refreshFx(false);
 $('#storageNote').textContent = storageOk ? 'Salvataggio automatico nel browser attivo.' : 'Attenzione: questo browser non permette il salvataggio automatico. Usa i backup per non perdere i dati.';
 if(!storageOk) toast('Il salvataggio automatico non è disponibile in questo browser: usa i backup.', 6000);
 })();
