@@ -535,18 +535,25 @@ th{background:var(--solid)}
 .t-card.deal{animation:tDeal .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--dl)}
 @keyframes tDeal{from{opacity:0;transform:translate(-30px,40px) rotate(calc(var(--r) - 12deg)) scale(.9)}to{opacity:1;transform:rotate(var(--r))}}
 .t-empty{text-align:center;padding:60px 20px;color:#dfeee4}
-.t-hand{position:absolute;left:0;right:0;bottom:0;height:min(46vh,380px);background:linear-gradient(rgba(5,15,12,0),rgba(5,15,12,.88) 22%);display:flex;flex-direction:column;z-index:4}
+.t-hand{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(10,30,22,.82),rgba(4,12,9,.95));-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;flex-direction:column;z-index:6}
 .t-hand[hidden]{display:none}
-.t-hand-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:44px 18px 4px;font-size:14px;color:#e8f2ec}
-.t-hand-acts{display:flex;gap:6px;flex-wrap:wrap}
-.t-bottom{margin-top:4px;color:#f2d98f}
-.t-fan{position:relative;flex:1;overflow:visible}
-.t-hc{position:absolute;left:50%;bottom:-18px;width:var(--cw,130px);aspect-ratio:488/680;margin-left:calc(var(--cw,130px)/-2);padding:0;border:0;background:none;cursor:pointer;transform-origin:50% 120%;transform:translate(var(--x),var(--y)) rotate(var(--a));transition:transform .3s cubic-bezier(.2,.8,.2,1)}
-.t-hc img{width:100%;height:100%;object-fit:cover;border-radius:6.5%/4.6%;box-shadow:0 6px 16px rgba(0,0,0,.6);pointer-events:none}
-.t-hc:hover{transform:translate(var(--x),calc(var(--y) - 34px)) rotate(var(--a)) scale(1.06);z-index:50 !important}
-.t-hc.sel{transform:translate(var(--x),calc(var(--y) + 30px)) rotate(var(--a));filter:brightness(.55)}
-.t-hc.deal{animation:hDeal .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--dl)}
-@keyframes hDeal{from{opacity:0;transform:translate(0,-260px) rotate(-18deg) scale(.7)}to{opacity:1;transform:translate(var(--x),var(--y)) rotate(var(--a))}}
+.t-hand-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:calc(14px + env(safe-area-inset-top,0px)) 18px 6px;font-size:15px;color:#e8f2ec}
+.t-hand-acts{display:flex;gap:8px;flex-wrap:wrap}
+.t-hand-acts .btn{font-size:15px;padding:8px 14px}
+.t-bottom{margin-top:6px;color:#f2d98f}
+.t-fan{position:relative;flex:1;min-height:0;margin:0 0 calc(10px + env(safe-area-inset-bottom,0px))}
+.t-hc{position:absolute;left:50%;top:50%;width:var(--cw,160px);aspect-ratio:488/680;padding:0;border:0;background:none;cursor:pointer;transform-origin:50% 140%;transform:translate(-50%,-50%) translate(var(--x),var(--y)) rotate(var(--a));transition:transform .3s cubic-bezier(.2,.8,.2,1),filter .2s}
+.t-fan.grid .t-hc{transform-origin:50% 50%}
+.t-hc img{width:100%;height:100%;object-fit:cover;border-radius:4.8%/3.5%;box-shadow:0 10px 26px rgba(0,0,0,.65);pointer-events:none}
+@media (hover:hover){.t-hc:hover{transform:translate(-50%,-50%) translate(var(--x),calc(var(--y) - 30px)) rotate(var(--a)) scale(1.07);z-index:50 !important}}
+.t-hc.sel{transform:translate(-50%,-50%) translate(var(--x),calc(var(--y) + 26px)) rotate(var(--a)) scale(.94);filter:brightness(.45) saturate(.6)}
+.t-hc.sel::after{content:"In fondo";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#d9b866;color:#1c1a12;font-weight:700;font-size:13px;padding:3px 9px;border-radius:9px}
+.t-hc.deal{animation:hDeal .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--dl)}
+@keyframes hDeal{from{opacity:0;transform:translate(-50%,-50%) translate(0,-60vh) rotate(-18deg) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) translate(var(--x),var(--y)) rotate(var(--a))}}
+.t-hz{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.6);cursor:zoom-out;padding:20px}
+.t-hz[hidden]{display:none}
+.t-hz img{max-height:78%;max-width:92%;border-radius:4.8%/3.5%;box-shadow:0 14px 40px rgba(0,0,0,.7)}
+.t-hz-n{color:#f1ead6;font-size:15px}
 #tbl .t-info{position:absolute;bottom:20px;z-index:8}
 @media (max-width:760px){.t-cards{gap:10px 8px}.t-card{--tcw:84px}.t-top{padding:10px 12px 4px}#tbl .v-title h2{font-size:20px}.t-body{padding:4px 10px 40px}.t-hand-bar{padding-top:36px}}
 @media (prefers-reduced-motion:reduce){.t-card.deal,.t-hc.deal{animation:none}}
@@ -706,6 +713,7 @@ th{background:var(--solid)}
   <div class="t-hand" id="tHand" hidden>
     <div class="t-hand-bar"><div id="tHandInfo"></div><div class="t-hand-acts"><button class="btn small" id="hDraw">Pesca</button><button class="btn small" id="hMull">Mulligan</button><button class="btn small" id="hNew">Nuova mano</button><button class="btn small" id="hClose">Chiudi la mano</button></div></div>
     <div class="t-fan" id="tFan"></div>
+    <div class="t-hz" id="tHz" hidden><img alt=""><div class="t-hz-n"></div></div>
   </div>
   <div class="v-info t-info" id="tInfo" hidden></div>
 </div>
@@ -2346,18 +2354,36 @@ function renderHand(anim){
   const pending = T.bottom > 0;
   $('#tHandInfo').innerHTML = `<b>Mano di apertura</b>${T.mull?` · mulligan ${T.mull}`:''} · ${n} carte · ${lands} ${lands===1?'terra':'terre'} · ${T.lib.length} nel grimorio${T.drawn?` · pescate ${T.drawn}`:''}`
     + (pending ? `<div class="t-bottom">Tocca ${T.bottom} ${T.bottom===1?'carta':'carte'} da mettere in fondo al grimorio (${T.sel.size}/${T.bottom}) <button class="btn small primary" id="hBottom" ${T.sel.size===T.bottom?'':'disabled'}>Conferma</button></div>` : '');
-  const W = fan.clientWidth || 600, cw = Math.min(150, Math.max(78, W / Math.max(5, n) * 1.25));
-  const spread = Math.min(56, 300 / Math.max(1, n));
-  fan.style.setProperty('--cw', cw + 'px');
+  const W = fan.clientWidth || window.innerWidth, H = fan.clientHeight || window.innerHeight*0.6, R = 680/488;
+  // ventaglio grande al centro; se lo schermo è stretto, le carte vanno su due file
+  let cw = Math.min(250, (H*0.78)/R, W/3.1), step = n>1 ? Math.min(cw*0.8, (W - cw - 24)/(n-1)) : 0;
+  const grid = n > 1 && step < cw*0.45;
+  const pos = [];
+  if(grid){
+    const gap = 10; let cols = 2, best = 0;
+    for(let c=2;c<=n;c++){ const r = Math.ceil(n/c), w = Math.min((W - 24 - gap*(c-1))/c, ((H - 30) - gap*(r-1))/r/R, 230); if(w > best + 0.5){ best = w; cols = c; } }
+    cw = best;
+    const ch = cw*R, rows = Math.ceil(n/cols), totH = rows*ch + (rows-1)*gap;
+    for(let i=0;i<n;i++){ const r = Math.floor(i/cols), inRow = Math.min(cols, n - r*cols), c = i - r*cols;
+      const rowW = inRow*cw + (inRow-1)*gap;
+      pos.push({x: -rowW/2 + c*(cw+gap) + cw/2, y: -totH/2 + r*(ch+gap) + ch/2, a: 0}); }
+  } else {
+    const ch = cw*R, mid = (n-1)/2, totA = Math.min(26, n*4);
+    for(let i=0;i<n;i++){ const t = n>1 ? (i-mid)/mid : 0;
+      pos.push({x: (i-mid)*step, y: t*t*ch*0.07, a: t*totA/2}); }
+  }
+  fan.style.setProperty('--cw', cw.toFixed(1) + 'px');
+  fan.classList.toggle('grid', grid);
   fan.innerHTML = T.hand.map((h, i) => {
-    const mid = (n-1)/2, a = (i - mid) * (spread/Math.max(1,n-1)) * (n>1?1:0), x = (i - mid) * Math.min(cw*0.62, (W - cw) / Math.max(1, n-1)), y = Math.abs(i - mid) * Math.abs(i - mid) * 2.2;
-    return `<button class="t-hc ${anim?'deal':''} ${T.sel.has(h.k)?'sel':''}" data-hk="${h.k}" style="--x:${x.toFixed(1)}px;--y:${y.toFixed(1)}px;--a:${a.toFixed(2)}deg;--dl:${(i*0.07).toFixed(2)}s;z-index:${i+1}"><img src="${esc(h.c.imgL || h.c.img)}" alt="${esc(h.c.name)}" draggable="false"></button>`;
+    const p = pos[i];
+    return `<button class="t-hc ${anim?'deal':''} ${T.sel.has(h.k)?'sel':''}" data-hk="${h.k}" style="--x:${p.x.toFixed(1)}px;--y:${p.y.toFixed(1)}px;--a:${p.a.toFixed(2)}deg;--dl:${(i*0.07).toFixed(2)}s;z-index:${i+1}"><img src="${esc(h.c.imgL || h.c.img)}" alt="${esc(h.c.name)}" draggable="false"></button>`;
   }).join('');
   fan.querySelectorAll('[data-hk]').forEach(b => b.onclick = () => {
     const h = T.hand.find(x=>x.k===b.dataset.hk); if(!h) return;
     if(T.bottom > 0){ if(T.sel.has(h.k)) T.sel.delete(h.k); else if(T.sel.size < T.bottom) T.sel.add(h.k); renderHand(false); return; }
-    tShowInfo(h.c);
+    const z = $('#tHz'); z.querySelector('img').src = h.c.imgL || h.c.img; z.querySelector('.t-hz-n').textContent = h.c.name + (h.c.printed && h.c.printed!==h.c.name ? ' · ' + h.c.printed : ''); z.hidden = false;
   });
+  $('#tHz').onclick = () => $('#tHz').hidden = true;
   if($('#hBottom')) $('#hBottom').onclick = () => { const out = T.hand.filter(h=>T.sel.has(h.k)); T.hand = T.hand.filter(h=>!T.sel.has(h.k)); out.forEach(h=>T.lib.push(h.c)); T.sel = new Set(); T.bottom = 0; renderHand(false); };
   $('#hDraw').disabled = !T.lib.length || T.bottom > 0;
 }
