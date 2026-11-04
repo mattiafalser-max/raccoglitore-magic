@@ -678,6 +678,7 @@ th{background:var(--solid)}
   </section>
   <!-- BACKUP -->
   <section class="panel" id="p-backup">
+    <p class="hint" id="appVer" style="text-align:right;margin:0 0 6px"></p>
     <div class="box" style="margin-bottom:18px">
       <h2>Importa da ManaBox</h2>
       <p class="hint">Sull’iPhone, in ManaBox: scheda Collezione, menu in alto a destra, esporta in CSV. Poi carica qui il file. Ogni raccoglitore di ManaBox diventa un luogo con lo stesso nome (se non esiste lo creo io).</p>
@@ -937,6 +938,7 @@ $('#fText').addEventListener('input', () => {
   }, 650);
 });
 
+const APPV = '2026-11-04b';
 const COLORD = {W:0,U:1,B:2,R:3,G:4};
 function colorKey(c){
   const t = c.type||'', cs = c.colors||[];
@@ -1689,7 +1691,7 @@ function openDeckImport(){
         <div class="dlg-foot"><button type="button" class="btn" id="pcCancel">Annulla</button><button type="button" class="btn primary" id="pcAdd">Aggiungi il mazzo</button></div></div>`;
       $('#pcCancel').onclick = () => dlg.close();
       $('#pcAdd').onclick = () => {
-        const dk = {id: uid(), name: $('#pcName').value.trim() || d.name, format: preconFormat(d.type), note: `Precostruito: ${d.name}${d.code?' ('+d.code.toUpperCase()+')':''}`};
+        const dk = {id: uid(), name: $('#pcName').value.trim() || d.name, format: preconFormat(d.type), precon: d.fileName, note: `Precostruito: ${d.name}${d.code?' ('+d.code.toUpperCase()+')':''}`};
         const cond = $('#pcCond').value; let cmdId = null;
         ok.forEach(r => {
           const foil = r.foil;
@@ -1791,7 +1793,7 @@ function openDeck(id){
       </div>
     </div>
     <div class="dlg-foot" style="flex-wrap:wrap">
-      ${d?'<button type="button" class="btn danger" id="dkDel" style="margin-right:auto">Elimina</button><button type="button" class="btn" id="dkShow">Vedi carte</button><button type="button" class="btn" id="dkBrowse">Apri il mazzo</button><button type="button" class="btn" id="dkAdd">Aggiungi carte qui</button>':''}
+      ${d?'<button type="button" class="btn danger" id="dkDel" style="margin-right:auto">Elimina…</button><button type="button" class="btn" id="dkDiag">Diagnostica prezzi</button><button type="button" class="btn" id="dkShow">Vedi carte</button><button type="button" class="btn" id="dkBrowse">Apri il mazzo</button><button type="button" class="btn" id="dkAdd">Aggiungi carte qui</button>':''}
       <button type="button" class="btn" id="dkCancel">Annulla</button>
       <button type="submit" class="btn primary">${isNew?'Crea':'Salva'}</button>
     </div></form>`;
@@ -1852,8 +1854,31 @@ function openDeck(id){
   if($('#dkShow')) $('#dkShow').onclick = () => { dlg.close(); fillSelects(); $('#fLoc').value=''; $('#fDeck').value = d.id; showTab('coll'); };
   if($('#dkBrowse')) $('#dkBrowse').onclick = () => { dlg.close(); openTable(d.id); };
   if($('#dkAdd')) $('#dkAdd').onclick = () => { dlg.close(); addHere(d.id); };
-  if($('#dkDel')) $('#dkDel').onclick = () => { if(!confirm(`Eliminare “${d.name}”? Le carte restano in collezione e tornano nel contenitore in cui erano prima di entrare nel mazzo (se non lo so, restano senza luogo).`)) return;
-    S.decks = S.decks.filter(a=>a.id!==d.id); S.cards.forEach(c=>{ if(c.deck===d.id){ c.deck=''; c.loc = c.prevLoc && locById(c.prevLoc) ? c.prevLoc : ''; } }); save(); dlg.close(); renderDeckBoxes(); toast('Mazzo eliminato: le carte tornano dov’erano prima, se lo sapevo'); };
+  if($('#dkDel')) $('#dkDel').onclick = () => {
+    const n = S.cards.filter(c=>c.deck===d.id).reduce((a,c)=>a+c.qty,0);
+    $('#dlgBody').innerHTML = `<div style="padding:18px 20px"><h2 style="font-size:22px;margin-bottom:8px">Eliminare “${esc(d.name)}”?</h2>
+      <p>Il mazzo contiene ${n} carte. Cosa vuoi fare con le carte?</p>
+      <div class="dlg-foot" style="flex-wrap:wrap;justify-content:flex-start">
+        <button class="btn danger" id="delAll">Elimina il mazzo e tutte le sue carte</button>
+        <button class="btn" id="delKeep">Elimina solo il mazzo, tieni le carte</button>
+        <button class="btn" id="delNo">Annulla</button></div>
+      <p class="hint" style="margin-top:10px">Tenendole, ogni carta torna nel contenitore in cui stava prima di entrare nel mazzo; se non lo so, resta senza luogo.</p></div>`;
+    $('#delNo').onclick = () => dlg.close();
+    $('#delAll').onclick = () => { if(!confirm(`Confermi? ${n} carte verranno tolte dalla collezione.`)) return; S.cards = S.cards.filter(c=>c.deck!==d.id); S.decks = S.decks.filter(a=>a.id!==d.id); save(); renderHeader(); dlg.close(); if(T.id===d.id){ $('#tbl').hidden = true; document.body.style.overflow=''; T.id=null; } renderDeckBoxes(); fillSelects(); toast('Mazzo e carte eliminati'); };
+    $('#delKeep').onclick = () => { S.decks = S.decks.filter(a=>a.id!==d.id); S.cards.forEach(c=>{ if(c.deck===d.id){ c.deck=''; c.loc = c.prevLoc && locById(c.prevLoc) ? c.prevLoc : ''; } }); save(); dlg.close(); if(T.id===d.id){ $('#tbl').hidden = true; document.body.style.overflow=''; T.id=null; } renderDeckBoxes(); fillSelects(); toast('Mazzo eliminato, carte tenute'); };
+  };
+  if($('#dkDiag')) $('#dkDiag').onclick = () => {
+    const cs = S.cards.filter(c=>c.deck===d.id);
+    const bad = cs.filter(c => { const i = priceInfo(c); return i.p == null || i.est || i.nf || c.pSib; });
+    const line = c => `${c.qty}x ${c.name} | ${c.set||'?'} #${c.num||'?'} | ${c.foil?'foil':'non foil'} | fin:${(c.finishes||[]).join('/')||'?'} | eur:${c.eur??'-'} eurF:${c.eurFoil??'-'} usd:${c.usd??'-'} usdF:${c.usdFoil??'-'}${c.pSib?' | da altra stampa':''} | agg:${c.pAt?new Date(c.pAt).toLocaleDateString('it-IT'):'mai'}`;
+    const txt = `Mazzo: ${d.name} | carte ${cs.reduce((a,c)=>a+c.qty,0)} | valore ${eur(cs.reduce((a,c)=>a+value(c),0))} | cambio ${fxRate()} | app ${APPV}\n` + (bad.length ? bad.map(line).join('\n') : 'Tutte le carte hanno un prezzo Cardmarket.');
+    $('#dlgBody').innerHTML = `<div style="padding:18px 20px"><h2 style="font-size:22px;margin-bottom:6px">Diagnostica prezzi</h2>
+      <p class="hint">${bad.length} carte senza prezzo Cardmarket diretto. Copia il testo e incollalo nella chat con Claude.</p>
+      <textarea readonly style="width:100%;height:260px;font:12px/1.35 ui-monospace,monospace">${esc(txt)}</textarea>
+      <div class="dlg-foot"><button class="btn" id="dgClose">Chiudi</button><button class="btn primary" id="dgCopy">Copia</button></div></div>`;
+    $('#dgClose').onclick = () => dlg.close();
+    $('#dgCopy').onclick = async () => { try{ await navigator.clipboard.writeText(txt); toast('Copiato'); }catch(e){ const ta = $('#dlgBody textarea'); ta.select(); document.execCommand('copy'); toast('Copiato'); } };
+  };
   f.onsubmit = ev => {
     ev.preventDefault();
     const t = draft(), x = d || {id: uid()};
@@ -2736,7 +2761,7 @@ window.RM = {
   toast,
   onSave: null
 };
-load(); renderHeader(); renderColl(); renderArchive(); refreshFx(false);
+load(); renderHeader(); renderColl(); renderArchive(); refreshFx(false); $('#appVer').textContent = 'Versione app: ' + APPV;
 $('#storageNote').textContent = storageOk ? 'Salvataggio automatico nel browser attivo.' : 'Attenzione: questo browser non permette il salvataggio automatico. Usa i backup per non perdere i dati.';
 if(!storageOk) toast('Il salvataggio automatico non è disponibile in questo browser: usa i backup.', 6000);
 })();
