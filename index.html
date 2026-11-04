@@ -481,6 +481,34 @@ th{background:var(--solid)}
 .cmd-row.on{border-color:var(--brass);background:color-mix(in srgb,var(--brass) 10%,var(--surface-2))}
 .cmd-row img{width:62px;height:45px;object-fit:cover;border-radius:5px;background:#222}
 .cmd-row .muted{font-size:12.5px}
+/* --- materiali aggiuntivi --- */
+.mat-metallo{--tex:linear-gradient(105deg,rgba(255,255,255,0) 18%,rgba(255,255,255,.32) 34%,rgba(255,255,255,0) 48%),repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,rgba(0,0,0,.04) 1px 3px)}
+.mat-carbonio{--tex:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 3px,rgba(0,0,0,.18) 3px 6px),repeating-linear-gradient(-45deg,rgba(255,255,255,.04) 0 3px,rgba(0,0,0,.14) 3px 6px)}
+/* scatole: trama del materiale sopra i colori */
+.d3 .fc.fr,.d3 .fc.bk,.d3 .fc.tp{background:var(--tex,none),radial-gradient(circle at 28% 14%,rgba(255,255,255,.18),rgba(255,255,255,0) 50%),linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.25)),var(--bands) !important}
+.d3 .fc.rt{background:var(--tex,none),linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.3)),linear-gradient(90deg,var(--cr1),var(--cr2)) !important}
+.d3 .fc.lf{background:var(--tex,none),linear-gradient(90deg,var(--cl2),var(--cl1)) !important}
+.d3-body .fc.tp{background:#17131f !important}
+.d3 .dbx-name.bnd-title{font-size:16px;max-width:100%}
+.d3.mini .dbx-name.bnd-title{font-size:11px}
+.d3 .spine-n.bnd-title{font-size:13px}
+.d3.foil-bianco .dbx-name,.d3.foil-bianco .spine-n{color:#fbf6ea;text-shadow:0 1px 2px rgba(0,0,0,.75),0 0 10px rgba(0,0,0,.35)}
+.d3 .dbx-win{box-shadow:inset 0 3px 8px rgba(0,0,0,.75),0 0 0 2px var(--metalc,rgba(0,0,0,.35)),0 1px 0 rgba(255,255,255,.25)}
+/* --- simboli dei colori --- */
+.pip{position:relative}
+.pip svg{width:62%;height:62%;color:var(--pt);display:block;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}
+.pip b{font:700 calc(var(--ps)*.5)/1 Spectral,Georgia,serif;color:var(--pt)}
+.pip.sym-gem{background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.7),rgba(255,255,255,0) 38%),radial-gradient(circle,var(--p1),var(--p2));box-shadow:0 1px 2px rgba(0,0,0,.55),inset 0 0 0 1.5px rgba(255,255,255,.35)}
+.pip.sym-wax{border-radius:47% 53% 51% 49% / 53% 46% 54% 47%;background:radial-gradient(circle at 50% 50%,var(--p1) 0 52%,var(--p2) 53% 60%,var(--p1) 61% 70%,var(--p2) 100%);box-shadow:0 2px 3px rgba(0,0,0,.5),inset 0 1px 1px rgba(255,255,255,.35),inset 0 -2px 3px rgba(0,0,0,.35)}
+.pip.sym-wax svg{color:var(--p2);filter:drop-shadow(0 1px 0 rgba(255,255,255,.35)) drop-shadow(0 -1px 0 rgba(0,0,0,.35))}
+.pip.sym-wax b{color:var(--p2);text-shadow:0 1px 0 rgba(255,255,255,.35)}
+.pip.sym-enamel{background:radial-gradient(circle at 50% 50%,var(--p1) 0 60%,transparent 61%),var(--metal,linear-gradient(180deg,#f6e3a1,#b38a3a));box-shadow:0 1px 3px rgba(0,0,0,.55),inset 0 0 0 1px rgba(0,0,0,.25)}
+.pip.sym-enamel::after{content:"";position:absolute;inset:18%;border-radius:50%;background:linear-gradient(160deg,rgba(255,255,255,.55),rgba(255,255,255,0) 45%);pointer-events:none}
+.pip.sym-enamel svg{width:52%;height:52%;color:var(--metalc,#e3c77f);filter:drop-shadow(0 1px 0 rgba(0,0,0,.45))}
+.pip.sym-enamel b{color:var(--metalc,#e3c77f)}
+.pip.sym-stone{border-radius:0;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);background:conic-gradient(from 22.5deg,var(--p1),var(--p2),var(--p1),color-mix(in srgb,var(--p1) 60%,#fff),var(--p2),var(--p1),var(--p2),color-mix(in srgb,var(--p1) 70%,#fff),var(--p1));box-shadow:none;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.6))}
+.pip.sym-stone::after{content:"";position:absolute;inset:26%;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.6),var(--p1) 70%)}
+.pip.sym-stone svg,.pip.sym-stone b{position:relative;z-index:1;width:46%;height:46%}
 </style>
 </head>
 <body>
@@ -702,7 +730,7 @@ const TIERS = [['value','Di valore'],['bulk','Bulk'],['theme','Tematico (nessun 
 const ORDERS = [['color','Colore, poi nome'],['name','Solo nome'],['type','Tipo, poi nome'],['set','Set e numero'],['value','Valore (più alto)']];
 const locById = id => S.locs.find(l=>l.id===id);
 const COVERS = [['Viola notte','#4b3468','#1d1330'],['Bordeaux','#6b2738','#2a0e17'],['Blu notte','#25466e','#0d1a2e'],['Verde bosco','#2f5a3e','#11241a'],['Cuoio','#7a5530','#2e1d0e'],['Antracite','#3a3b44','#121318'],['Rosso carminio','#8a2a2a','#360f0f'],['Petrolio','#1f5a60','#0b2326'],['Senape','#9a7a2a','#3a2c0c'],['Avorio','#d9ceb4','#8c7f63']];
-const MATS = [['pelle','Pelle'],['tela','Tela'],['opaco','Opaco'],['lucido','Lucido'],['vinile','Vinile goffrato']];
+const MATS = [['pelle','Pelle'],['tela','Tela'],['opaco','Opaco'],['lucido','Lucido'],['vinile','Vinile goffrato'],['metallo','Metallizzato'],['carbonio','Fibra di carbonio']];
 const TFONTS = [['cinzel','Classico inciso','Cinzel'],['cormorant','Elegante','Cormorant Garamond'],['playfair','Raffinato corsivo','Playfair Display'],['uncial','Antico','Uncial Antiqua'],['spectral','Libro','Spectral']];
 const FOILS = [['oro','Lamina oro'],['argento','Lamina argento'],['secco','Impresso a secco'],['bianco','Stampa bianca']];
 function hexMix(hex, f){ const n = parseInt(hex.slice(1),16); let r=n>>16, g=(n>>8)&255, b=n&255; const m = x => Math.max(0, Math.min(255, Math.round(f<0 ? x*(1+f) : x + (255-x)*f))); return '#' + [m(r),m(g),m(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
@@ -1274,24 +1302,48 @@ function deckColors(d){
   cs = WUBRG.filter(x=>cs.includes(x));
   return cs.length ? cs : ['C'];
 }
-function pip(x, size){ const m = MANA[x]; return `<span class="pip" style="--p1:${m[1]};--p2:${m[2]};--pt:${m[3]};${size?'--ps:'+size:''}" title="${m[0]}">${x}</span>`; }
-function bandsBg(cs){
+// icone originali per i colori (non sono i simboli ufficiali)
+const ICONS = {
+  W:'<path d="M12 2.8 19.4 12 12 21.2 4.6 12Z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/>',
+  U:'<path d="M3.5 8.2c2.8-2.6 5.7 2.6 8.5 0s5.7 2.6 8.5 0M3.5 12.6c2.8-2.6 5.7 2.6 8.5 0s5.7 2.6 8.5 0M3.5 17c2.8-2.6 5.7 2.6 8.5 0s5.7 2.6 8.5 0" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>',
+  B:'<path d="M15.8 3.2a9.2 9.2 0 1 0 4.9 15.9A7.3 7.3 0 1 1 15.8 3.2Z" fill="currentColor"/>',
+  R:'<path d="M12 3.2 21 20H3Z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/><path d="M12 10.4 15.3 16.8H8.7Z" fill="currentColor"/>',
+  G:'<path d="M4.6 19.4C4.6 10.3 10.6 4.4 19.6 4.4c0 9.1-6 15-15 15Z" fill="currentColor"/><path d="M5.2 18.8 14.2 9.8" fill="none" stroke="rgba(0,0,0,.38)" stroke-width="1.6" stroke-linecap="round"/>',
+  C:'<path d="M12 2.8 20 7.4v9.2L12 21.2 4 16.6V7.4Z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/>'
+};
+const SYMS = [['gem','Gemme lucide'],['wax','Sigilli di ceralacca'],['enamel','Medaglioni smaltati'],['stone','Pietre sfaccettate']];
+function pip(x, size, sym, icons){
+  const m = MANA[x]; const inner = icons === false ? `<b>${x}</b>` : `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[x]}</svg>`;
+  return `<span class="pip sym-${sym||'gem'}" style="--p1:${m[1]};--p2:${m[2]};--pt:${m[3]};${size?'--ps:'+size:''}" title="${m[0]}">${inner}</span>`;
+}
+function bandsBg(cs, blend){
   const n = cs.length; const stops = [];
+  if(blend && n > 1) return `linear-gradient(90deg, ${cs.map((x,i)=>`${MANA[x][1]} ${(i/(n-1)*100).toFixed(1)}%`).join(', ')})`;
   cs.forEach((x,i) => { const a = i/n*100, b = (i+1)/n*100, m = MANA[x]; const blend = n>1 ? 4 : 0;
     stops.push(`${m[1]} ${Math.max(0,a+ (i?blend:0)).toFixed(1)}%`, `${m[2]} ${Math.min(100,b-(i<n-1?blend:0)).toFixed(1)}%`); });
   return `linear-gradient(90deg, ${stops.join(', ')})`;
 }
+function deckLook(d){
+  const L = d.look || {};
+  const f = TFONTS.find(x=>x[0]===L.font) || TFONTS[0];
+  let solid = null;
+  if(L.cstyle === 'solid'){ if(L.hex && /^#[0-9a-f]{6}$/i.test(L.hex)) solid = [L.hex, hexMix(L.hex, -0.6)]; else { const c = COVERS[L.color ?? 5] || COVERS[5]; solid = [c[1], c[2]]; } }
+  return {cstyle: L.cstyle || 'bands', solid, sym: L.sym || 'gem', icons: L.icons !== false,
+    cls: `mat-${L.mat||'opaco'} foil-${L.foil||'bianco'} tf-${f[0]}`, tf: f[2]};
+}
 function deckBox3D(d, mini){
   const cmd = d._cmdBase || (d.commander && S.cards.find(c=>c.id===d.commander));
   const cs = d._cmdBase && !(d.colors && d.colors.length) ? (WUBRG.filter(x=>(d._cmdBase.ci||d._cmdBase.colors||[]).includes(x)).length ? WUBRG.filter(x=>(d._cmdBase.ci||d._cmdBase.colors||[]).includes(x)) : ['C']) : deckColors(d);
-  const cl = MANA[cs[0]], cr = MANA[cs[cs.length-1]];
+  const lk = deckLook(d);
+  const cl = lk.solid ? ['', lk.solid[0], lk.solid[1]] : MANA[cs[0]], cr = lk.solid ? ['', lk.solid[0], lk.solid[1]] : MANA[cs[cs.length-1]];
+  const bands = lk.solid ? `linear-gradient(160deg, ${lk.solid[0]}, ${lk.solid[1]})` : bandsBg(cs, lk.cstyle === 'blend');
   const win = isCmd(d) ? `<div class="dbx-win">${cmd ? `<img src="${esc(cmd.art || cmd.imgL || cmd.img)}" class="${cmd.art?'art':'full'}" alt="${esc(cmd.name)}" loading="lazy" draggable="false">` : '<span>Scegli il comandante</span>'}</div>` : '';
-  const pips = cs.map(x=>pip(x)).join('');
-  return `<div class="d3 ${mini?'mini':''}" style="--bands:${bandsBg(cs)};--cl1:${cl[1]};--cl2:${cl[2]};--cr1:${cr[1]};--cr2:${cr[2]}">
+  const pips = cs.map(x=>pip(x, '', lk.sym, lk.icons)).join('');
+  return `<div class="d3 ${mini?'mini':''} ${lk.cls}" style="--bands:${bands};--cl1:${cl[1]};--cl2:${cl[2]};--cr1:${cr[1]};--cr2:${cr[2]};--tf:'${lk.tf}'">
     <div class="d3-body">
-      <div class="fc fr"><div class="dbx-body3">${win}<div class="dbx-name">${esc(d.name)}</div>${cmd && isCmd(d) ? `<div class="dbx-cmd">${esc(cmd.name)}</div>` : ''}<div class="dbx-fmt">${esc(d.format || 'Formato non indicato')}</div></div></div>
+      <div class="fc fr"><div class="dbx-body3">${win}<div class="dbx-name bnd-title">${esc(d.name)}</div>${cmd && isCmd(d) ? `<div class="dbx-cmd">${esc(cmd.name)}</div>` : ''}<div class="dbx-fmt">${esc(d.format || 'Formato non indicato')}</div></div></div>
       <div class="fc bk"></div>
-      <div class="fc rt"><div class="spine"><span class="spine-n">${esc(d.name)}</span><span class="spine-p">${pips}</span></div></div>
+      <div class="fc rt"><div class="spine"><span class="spine-n bnd-title">${esc(d.name)}</span><span class="spine-p">${pips}</span></div></div>
       <div class="fc lf"></div>
       <div class="fc tp"><div class="sleeves"></div></div>
       <div class="fc bt"></div>
@@ -1348,10 +1400,24 @@ function openDeck(id){
       </div>
       <div class="f full"><span>Colori del mazzo</span>
         <label class="chk" style="margin:4px 0"><input type="checkbox" name="auto" ${manual?'':'checked'}> Automatici (dal comandante o dalle carte del mazzo)</label>
-        <div class="dk-cols" id="dkCols">${[...WUBRG,'C'].map(x=>`<label class="dk-col"><input type="checkbox" name="col" value="${x}" ${manual && d.colors.includes(x)?'checked':''}>${pip(x,'26px')}</label>`).join('')}</div>
+        <div class="dk-cols" id="dkCols">${[...WUBRG,'C'].map(x=>`<label class="dk-col"><input type="checkbox" name="col" value="${x}" ${manual && d.colors.includes(x)?'checked':''}>${pip(x,'26px', d&&d.look&&d.look.sym, !(d&&d.look&&d.look.icons===false))}</label>`).join('')}</div>
       </div>
       <label class="f full">Note<textarea name="note">${esc(d?d.note||'':'')}</textarea></label>
-      <div class="f full"><span>Anteprima</span><div id="dkPrev" class="dk-prev"></div></div>
+      <div class="f full look"><span class="look-h">Aspetto della scatola</span>
+        <div class="look-row">
+          <div id="dkPrev" class="dk-prev"></div>
+          <div class="look-f">
+            <label class="f">Colori<select name="cstyle">${opts([['bands','Fasce nette dei colori'],['blend','Fasce sfumate'],['solid','Tinta unica']], (d&&d.look&&d.look.cstyle)||'bands')}</select></label>
+            <label class="f" data-solid>Tinta<select name="tcolor">${opts([...COVERS.map((c,i)=>[String(i), c[0]]), ['custom','Personalizzata…']], d&&d.look&&d.look.hex ? 'custom' : String((d&&d.look&&d.look.color) ?? 5))}</select></label>
+            <label class="f" data-hex>Scegli il colore<input type="color" name="thex" value="${esc((d&&d.look&&d.look.hex)||'#3a3b44')}"></label>
+            <label class="f">Materiale<select name="mat">${opts(MATS, (d&&d.look&&d.look.mat)||'opaco')}</select></label>
+            <label class="f">Simboli<select name="sym">${opts(SYMS, (d&&d.look&&d.look.sym)||'gem')}</select></label>
+            <label class="f">Nei simboli<select name="icons">${opts([['1','Icone'],['0','Iniziali (W U B R G C)']], d&&d.look&&d.look.icons===false ? '0' : '1')}</select></label>
+            <label class="f">Carattere del nome<select name="font">${opts(TFONTS.map(x=>[x[0],x[1]]), (d&&d.look&&d.look.font)||'cinzel')}</select></label>
+            <label class="f">Finitura del nome<select name="foil">${opts(FOILS, (d&&d.look&&d.look.foil)||'bianco')}</select></label>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="dlg-foot" style="flex-wrap:wrap">
       ${d?'<button type="button" class="btn danger" id="dkDel" style="margin-right:auto">Elimina</button><button type="button" class="btn" id="dkShow">Vedi carte</button>':''}
@@ -1359,7 +1425,10 @@ function openDeck(id){
       <button type="submit" class="btn primary">${isNew?'Crea':'Salva'}</button>
     </div></form>`;
   const f = $('#deckF'), F = n => f.elements[n];
-  const draft = () => { const t = {id: d ? d.id : '__new', name: F('name').value || 'Nuovo mazzo', format: F('format').value};
+  const readLook = () => { const l = {cstyle:F('cstyle').value, mat:F('mat').value, sym:F('sym').value, icons:F('icons').value==='1', font:F('font').value, foil:F('foil').value};
+    if(l.cstyle==='solid'){ if(F('tcolor').value==='custom') l.hex = F('thex').value; else l.color = +F('tcolor').value; }
+    return l; };
+  const draft = () => { const t = {id: d ? d.id : '__new', name: F('name').value || 'Nuovo mazzo', format: F('format').value, look: readLook()};
     if(chosen && chosen.card) t.commander = chosen.card.id;
     if(chosen && chosen.base) t._cmdBase = chosen.base;
     if(!F('auto').checked){ t.colors = [...f.querySelectorAll('input[name=col]:checked')].map(x=>x.value); }
@@ -1367,10 +1436,12 @@ function openDeck(id){
   const upd = () => {
     f.querySelector('[data-cmd]').style.display = CMD_FORMATS.includes(F('format').value) ? '' : 'none';
     $('#dkCols').classList.toggle('off', F('auto').checked);
+    f.querySelector('[data-solid]').style.display = F('cstyle').value==='solid' ? '' : 'none';
+    f.querySelector('[data-hex]').style.display = F('cstyle').value==='solid' && F('tcolor').value==='custom' ? '' : 'none';
     const t = draft();
     $('#dkPrev').innerHTML = `<div class="d3-stage mini">${deckBox3D(t, true)}</div>`; bindBox3D($('#dkPrev .d3-stage'));
   };
-  ['name','format','auto'].forEach(n => F(n).addEventListener('input', upd));
+  ['name','format','auto','cstyle','tcolor','thex','mat','sym','icons','font','foil'].forEach(n => F(n).addEventListener('input', upd));
   // --- scelta del comandante: dalla collezione, oppure da tutte le carte
   const thumb = c => `<img src="${esc(c.art || c.img || c.imgL)}" alt="" loading="lazy">`;
   const renderSel = () => {
@@ -1417,7 +1488,7 @@ function openDeck(id){
       const c = Object.assign({id:uid(), added:Date.now()}, chosen.base, {qty:1, foil:false, cond:(S.addPrefs&&S.addPrefs.cond)||'NM', lang: chosen.base.srcLang || 'en', loc:'', deck:x.id, note:''}); delete c.srcLang;
       S.cards.push(c); t.commander = c.id; chosen = {card: c};
     } else if(CMD_FORMATS.includes(F('format').value) && chosen && chosen.card && !chosen.card.deck){ chosen.card.deck = x.id; }
-    x.name = F('name').value.trim(); x.format = F('format').value; x.note = F('note').value.trim();
+    x.name = F('name').value.trim(); x.format = F('format').value; x.note = F('note').value.trim(); x.look = readLook();
     if(CMD_FORMATS.includes(x.format) && t.commander) x.commander = t.commander; else delete x.commander;
     if(t.colors && t.colors.length) x.colors = t.colors; else delete x.colors;
     if(isNew) S.decks.push(x);
