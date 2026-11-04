@@ -510,6 +510,46 @@ th{background:var(--solid)}
 .pip.sym-stone::after{content:"";position:absolute;inset:26%;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.6),var(--p1) 70%)}
 .pip.sym-stone svg,.pip.sym-stone b{position:relative;z-index:1;width:46%;height:46%}
 .where-deck{display:inline-block;padding:1px 8px;border-radius:9px;background:color-mix(in srgb,var(--accent) 16%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);font-size:13px}
+/* --- mazzo sul tavolo --- */
+#tbl{position:fixed;inset:0;height:100vh;height:100dvh;z-index:60;display:flex;flex-direction:column;color:#f1ead6;background:radial-gradient(ellipse at 50% 30%,rgba(255,255,255,.07),rgba(0,0,0,.35) 75%),radial-gradient(rgba(0,0,0,.18) 1px,transparent 1.3px) 0 0/3px 3px,linear-gradient(160deg,#1d4a3a,#0f2a22);padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+#tbl[hidden]{display:none}
+.t-top{display:flex;gap:10px 18px;align-items:center;flex-wrap:wrap;padding:14px 20px 8px;background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,0))}
+#tbl .v-title h2{font-family:var(--tf),Spectral,Georgia,serif;font-weight:var(--tfw,700);font-style:var(--tfs,normal);text-transform:var(--tft,none);letter-spacing:var(--tfl,0);font-size:26px;color:#f6efda;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+#tbl #tKind{color:#d9b866;letter-spacing:.14em;text-transform:uppercase;font-size:11.5px;font-weight:600}
+#tbl .k{color:#cfe3d6}
+.t-acts{display:flex;gap:8px;flex-wrap:wrap}
+#tbl .btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:#f3ecd8}
+#tbl .btn.primary{background:#d9b866;border-color:#d9b866;color:#1c1a12}
+#tbl .btn:disabled{opacity:.4}
+.t-body{flex:1;overflow:auto;padding:6px 18px 40px;-webkit-overflow-scrolling:touch}
+.t-sec{margin:8px 0 18px}
+.t-sec h3{font-family:Spectral,Georgia,serif;font-size:18px;color:#f6efda;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.14);text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.t-sec h3 span{font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:#bcd4c5;font-weight:500;margin-left:6px}
+.t-sec.is-cmd .t-card{--cw2:1.25}
+.t-cards{display:flex;flex-wrap:wrap;gap:14px 12px}
+.t-card{position:relative;width:calc(var(--tcw,112px) * var(--cw2,1));aspect-ratio:488/680;padding:0;border:0;background:none;cursor:pointer;transform:rotate(var(--r));transition:transform .2s ease}
+.t-card:hover{transform:rotate(0deg) translateY(-6px) scale(1.04);z-index:5}
+.t-card img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;border-radius:6.5%/4.6%;box-shadow:0 3px 8px rgba(0,0,0,.5);transform:translate(var(--o),calc(var(--o)*-1));pointer-events:none}
+.t-q{position:absolute;right:-4px;bottom:-6px;z-index:3;background:#d9b866;color:#1c1a12;font-weight:700;font-size:12px;padding:1px 7px;border-radius:9px;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+.t-f{position:absolute;left:4px;top:4px;z-index:3;background:var(--brass);color:#fff;font-size:10px;font-weight:600;padding:0 5px;border-radius:6px}
+.t-card.deal{animation:tDeal .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--dl)}
+@keyframes tDeal{from{opacity:0;transform:translate(-30px,40px) rotate(calc(var(--r) - 12deg)) scale(.9)}to{opacity:1;transform:rotate(var(--r))}}
+.t-empty{text-align:center;padding:60px 20px;color:#dfeee4}
+.t-hand{position:absolute;left:0;right:0;bottom:0;height:min(46vh,380px);background:linear-gradient(rgba(5,15,12,0),rgba(5,15,12,.88) 22%);display:flex;flex-direction:column;z-index:4}
+.t-hand[hidden]{display:none}
+.t-hand-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:44px 18px 4px;font-size:14px;color:#e8f2ec}
+.t-hand-acts{display:flex;gap:6px;flex-wrap:wrap}
+.t-bottom{margin-top:4px;color:#f2d98f}
+.t-fan{position:relative;flex:1;overflow:visible}
+.t-hc{position:absolute;left:50%;bottom:-18px;width:var(--cw,130px);aspect-ratio:488/680;margin-left:calc(var(--cw,130px)/-2);padding:0;border:0;background:none;cursor:pointer;transform-origin:50% 120%;transform:translate(var(--x),var(--y)) rotate(var(--a));transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.t-hc img{width:100%;height:100%;object-fit:cover;border-radius:6.5%/4.6%;box-shadow:0 6px 16px rgba(0,0,0,.6);pointer-events:none}
+.t-hc:hover{transform:translate(var(--x),calc(var(--y) - 34px)) rotate(var(--a)) scale(1.06);z-index:50 !important}
+.t-hc.sel{transform:translate(var(--x),calc(var(--y) + 30px)) rotate(var(--a));filter:brightness(.55)}
+.t-hc.deal{animation:hDeal .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--dl)}
+@keyframes hDeal{from{opacity:0;transform:translate(0,-260px) rotate(-18deg) scale(.7)}to{opacity:1;transform:translate(var(--x),var(--y)) rotate(var(--a))}}
+#tbl .t-info{position:absolute;bottom:20px;z-index:8}
+@media (max-width:760px){.t-cards{gap:10px 8px}.t-card{--tcw:84px}.t-top{padding:10px 12px 4px}#tbl .v-title h2{font-size:20px}.t-body{padding:4px 10px 40px}.t-hand-bar{padding-top:36px}}
+@media (prefers-reduced-motion:reduce){.t-card.deal,.t-hc.deal{animation:none}}
 </style>
 </head>
 <body>
@@ -652,6 +692,23 @@ th{background:var(--solid)}
 </main>
 
 <dialog id="dlg"><div id="dlgBody"></div></dialog>
+<div id="tbl" hidden role="dialog" aria-modal="true" aria-label="Mazzo">
+  <div class="t-top">
+    <div class="v-title"><div class="k" id="tKind">Mazzo</div><h2 id="tName"></h2><div class="k" id="tSub"></div></div>
+    <div class="t-acts">
+      <button class="btn primary" id="tHandBtn">Mano di apertura</button>
+      <button class="btn" id="tAdd">+ Aggiungi qui</button>
+      <button class="btn" id="tSet">Impostazioni</button>
+      <button class="btn" id="tClose">Chiudi</button>
+    </div>
+  </div>
+  <div class="t-body" id="tBody"></div>
+  <div class="t-hand" id="tHand" hidden>
+    <div class="t-hand-bar"><div id="tHandInfo"></div><div class="t-hand-acts"><button class="btn small" id="hDraw">Pesca</button><button class="btn small" id="hMull">Mulligan</button><button class="btn small" id="hNew">Nuova mano</button><button class="btn small" id="hClose">Chiudi la mano</button></div></div>
+    <div class="t-fan" id="tFan"></div>
+  </div>
+  <div class="v-info t-info" id="tInfo" hidden></div>
+</div>
 <div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Sfoglia contenitore">
   <div class="v-top">
     <div class="v-title"><div class="k" id="vKind"></div><h2 id="vName"></h2><div class="k" id="vSub"></div></div>
@@ -717,7 +774,7 @@ function fromScry(card){
   return {
     sid: card.id, name: card.name, printed: card.printed_name || '', set: card.set, setName: card.set_name, num: card.collector_number,
     rarity: card.rarity, type: card.type_line || (face && face.type_line) || '', colors,
-    img: imgs.small || '', imgL: imgs.normal || imgs.large || '', art: imgs.art_crop || '', ci: card.color_identity || colors,
+    img: imgs.small || '', imgL: imgs.normal || imgs.large || '', art: imgs.art_crop || '', ci: card.color_identity || colors, cmc: card.cmc != null ? card.cmc : null,
     cm: (card.purchase_uris && card.purchase_uris.cardmarket) || '',
     eur: card.prices && card.prices.eur != null ? parseFloat(card.prices.eur) : null,
     eurFoil: card.prices && card.prices.eur_foil != null ? parseFloat(card.prices.eur_foil) : null,
@@ -1254,7 +1311,7 @@ async function updatePrices(){
       c.eurPrev = c.eur; c.eurFoilPrev = c.eurFoil;
       if(f.eur!==c.eur || f.eurFoil!==c.eurFoil) changed++;
       if(f.sid !== c.sid){ c.sid = f.sid; if(!c.printed && f.printed) c.printed = f.printed; }
-      Object.assign(c, {eur:f.eur, eurFoil:f.eurFoil, cm:f.cm||c.cm, img:f.img||c.img, imgL:f.imgL||c.imgL, art:f.art||c.art||'', ci:f.ci||c.ci, finishes:f.finishes, pAt:Date.now()});
+      Object.assign(c, {eur:f.eur, eurFoil:f.eurFoil, cm:f.cm||c.cm, img:f.img||c.img, imgL:f.imgL||c.imgL, art:f.art||c.art||'', ci:f.ci||c.ci, cmc:f.cmc!=null?f.cmc:c.cmc, finishes:f.finishes, pAt:Date.now()});
       const o = prevPrice(c), p = unitPrice(c);
       if(o!=null && p!=null && o < thr() && p >= thr()){ c.alert = {from:o, to:p, at:Date.now()}; crossed.push(c); }
       else if(c.alert && p!=null && p < thr()) delete c.alert;
@@ -1385,15 +1442,16 @@ function renderDeckBoxes(){
   if(!arr.length){ el.innerHTML = `<div class="box empty" style="grid-column:1/-1"><h3>Nessun mazzo</h3><p>Crea un mazzo per ogni lista che hai montato: vedrai quanto vale e quali carte contiene.</p></div>`; }
   else el.innerHTML = arr.map(d => {
     const st = groupStats('deck', d.id), size = DECKSIZE[d.format];
-    return `<div class="dbx-wrap"><div class="d3-stage" role="button" tabindex="0" data-deck="${d.id}" aria-label="Mazzo ${esc(d.name)}">${deckBox3D(d)}</div><div class="dbx-st">${st.n.toLocaleString('it-IT')}${size?' / '+size:''} carte · <b>${eur(st.v)}</b></div></div>`;
+    return `<div class="dbx-wrap"><div class="d3-stage" role="button" tabindex="0" data-deck="${d.id}" aria-label="Mazzo ${esc(d.name)}">${deckBox3D(d)}</div><div class="dbx-st">${st.n.toLocaleString('it-IT')}${size?' / '+size:''} carte · <b>${eur(st.v)}</b> · <button class="thr" data-deckset="${d.id}">Impostazioni</button></div></div>`;
   }).join('');
   const un = groupStats('deck','');
   $('#deckFree').innerHTML = `Carte non in un mazzo: ${un.n.toLocaleString('it-IT')} · <b>${eur(un.v)}</b> · <button class="thr" id="deckFreeShow">Vedi</button>`;
   $('#deckFreeShow').onclick = () => { fillSelects(); $('#fLoc').value=''; $('#fDeck').value='__none'; showTab('coll'); };
   const openBox = b => { if(b.classList.contains('open')) return; const box = b.querySelector('.d3');
-    if(reduced()){ openDeck(b.dataset.deck); return; }
+    if(reduced()){ openTable(b.dataset.deck); return; }
     b.classList.add('open');
-    setTimeout(() => { openDeck(b.dataset.deck); dlg.addEventListener('close', () => { b.classList.remove('open'); }, {once:true}); }, 560); };
+    setTimeout(() => { openTable(b.dataset.deck, () => b.classList.remove('open')); }, 560); };
+  el.querySelectorAll('[data-deckset]').forEach(b => b.onclick = e => { e.stopPropagation(); openDeck(b.dataset.deckset); });
   el.querySelectorAll('[data-deck]').forEach(b => { bindBox3D(b); b.onclick = () => openBox(b); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openBox(b); } }; });
 }
 $('#newDeck').onclick = () => openDeck(null);
@@ -1435,7 +1493,7 @@ function openDeck(id){
       </div>
     </div>
     <div class="dlg-foot" style="flex-wrap:wrap">
-      ${d?'<button type="button" class="btn danger" id="dkDel" style="margin-right:auto">Elimina</button><button type="button" class="btn" id="dkShow">Vedi carte</button><button type="button" class="btn" id="dkBrowse">Sfoglia</button><button type="button" class="btn" id="dkAdd">Aggiungi carte qui</button>':''}
+      ${d?'<button type="button" class="btn danger" id="dkDel" style="margin-right:auto">Elimina</button><button type="button" class="btn" id="dkShow">Vedi carte</button><button type="button" class="btn" id="dkBrowse">Apri il mazzo</button><button type="button" class="btn" id="dkAdd">Aggiungi carte qui</button>':''}
       <button type="button" class="btn" id="dkCancel">Annulla</button>
       <button type="submit" class="btn primary">${isNew?'Crea':'Salva'}</button>
     </div></form>`;
@@ -1494,7 +1552,7 @@ function openDeck(id){
   upd();
   $('#dkCancel').onclick = () => dlg.close();
   if($('#dkShow')) $('#dkShow').onclick = () => { dlg.close(); fillSelects(); $('#fLoc').value=''; $('#fDeck').value = d.id; showTab('coll'); };
-  if($('#dkBrowse')) $('#dkBrowse').onclick = () => { dlg.close(); openViewer(d.id); };
+  if($('#dkBrowse')) $('#dkBrowse').onclick = () => { dlg.close(); openTable(d.id); };
   if($('#dkAdd')) $('#dkAdd').onclick = () => { dlg.close(); addHere(d.id); };
   if($('#dkDel')) $('#dkDel').onclick = () => { if(!confirm(`Eliminare “${d.name}”? Le carte restano in collezione e tornano nel contenitore in cui erano prima di entrare nel mazzo (se non lo so, restano senza luogo).`)) return;
     S.decks = S.decks.filter(a=>a.id!==d.id); S.cards.forEach(c=>{ if(c.deck===d.id){ c.deck=''; c.loc = c.prevLoc && locById(c.prevLoc) ? c.prevLoc : ''; } }); save(); dlg.close(); renderDeckBoxes(); toast('Mazzo eliminato: le carte tornano dov’erano prima, se lo sapevo'); };
@@ -2154,7 +2212,7 @@ $('#vPrev').onclick = () => vStep(-1);
 $('#vNext').onclick = () => vStep(1);
 $('#vRange').oninput = () => { if(V.busy) return; V.pos = +$('#vRange').value; vRender(); };
 $('#vClose').onclick = () => closeAnimated();
-function addHere(id){ const p = addPrefs(); if(S.decks.some(d=>d.id===id)){ p.deck = id; p.loc = ''; } else { p.loc = id; p.deck = ''; } save(); closeViewer(); showTab('add'); toast('Le nuove carte andranno in ' + (p.deck ? 'mazzo ' + deckName(id) : locName(id))); }
+function addHere(id){ if(!$('#tbl').hidden){ $('#tbl').hidden = true; document.body.style.overflow = ''; T.id = null; } const p = addPrefs(); if(S.decks.some(d=>d.id===id)){ p.deck = id; p.loc = ''; } else { p.loc = id; p.deck = ''; } save(); closeViewer(); showTab('add'); toast('Le nuove carte andranno in ' + (p.deck ? 'mazzo ' + deckName(id) : locName(id))); }
 $('#vAdd').onclick = () => { if(V.id) addHere(V.id); };
 $('#vStage').addEventListener('click', e => { if(e.target === $('#vStage')) $('#vInfo').hidden = true; });
 document.addEventListener('keydown', e => {
@@ -2212,6 +2270,107 @@ const vResize = () => { clearTimeout(vRz); vRz = setTimeout(() => { if(V.id && !
 window.addEventListener('resize', vResize);
 if(window.visualViewport) window.visualViewport.addEventListener('resize', vResize);
 window.addEventListener('orientationchange', () => setTimeout(vResize, 300));
+
+// ---------- mazzo steso sul tavolo ----------
+const T = {id:null, after:null, lib:[], hand:[], mull:0, bottom:0, sel:new Set(), drawn:0};
+const SECTIONS = [['cmd','Comandante'],['Creature','Creature'],['Planeswalker','Planeswalker'],['Battle','Battaglie'],['Instant','Istantanei'],['Sorcery','Stregonerie'],['Artifact','Artefatti'],['Enchantment','Incantesimi'],['Land','Terre'],['other','Altro']];
+function sectionOf(c, d){
+  if(d && d.commander === c.id) return 'cmd';
+  const t = c.type || '';
+  if(/\bLand\b/.test(t) && !/Creature/.test(t)) return 'Land';
+  for(const k of ['Creature','Planeswalker','Battle','Instant','Sorcery','Artifact','Enchantment']) if(t.includes(k)) return k;
+  return 'other';
+}
+const tilt = id => { let h = 0; for(const ch of String(id)) h = (h*33 + ch.charCodeAt(0)) >>> 0; return ((h % 1000) / 1000 - .5) * 3.2; };
+function openTable(id, after){
+  const d = S.decks.find(x=>x.id===id); if(!d) return;
+  T.id = id; T.after = after || null; T.hand = []; $('#tHand').hidden = true; $('#tInfo').hidden = true;
+  const st = groupStats('deck', id), size = DECKSIZE[d.format];
+  const lk = deckLook(d), tb = $('#tbl');
+  tb.className = tb.className.replace(/\b(mat|foil|tf)-\S+/g,'').trim() + ' ' + lk.cls; tb.style.setProperty('--tf', `'${lk.tf}'`);
+  $('#tName').textContent = d.name;
+  $('#tSub').textContent = `${d.format || 'Formato non indicato'} · ${st.n.toLocaleString('it-IT')}${size?' / '+size:''} carte · ${eur(st.v)}`;
+  renderTable(true);
+  tb.hidden = false; document.body.style.overflow = 'hidden';
+}
+function closeTable(){ $('#tbl').hidden = true; document.body.style.overflow = ''; $('#preview').style.display = 'none'; const a = T.after; T.id = null; if(a) a(); renderDeckBoxes(); }
+function renderTable(deal){
+  const d = S.decks.find(x=>x.id===T.id); if(!d) return;
+  const cards = S.cards.filter(c=>c.deck===T.id);
+  const body = $('#tBody');
+  if(!cards.length){ body.innerHTML = `<div class="t-empty"><p>Questo mazzo è ancora vuoto.</p><button class="btn primary" id="tEmptyAdd">Aggiungi carte</button></div>`; $('#tEmptyAdd').onclick = () => { closeTable(); addHere(d.id); }; $('#tHandBtn').disabled = true; return; }
+  $('#tHandBtn').disabled = false;
+  const groups = {}; cards.forEach(c => { const k = sectionOf(c, d); (groups[k] = groups[k] || []).push(c); });
+  let n = 0;
+  body.innerHTML = SECTIONS.filter(([k]) => groups[k]).map(([k, label]) => {
+    const list = groups[k].slice().sort((a,b) => ((a.cmc??99) - (b.cmc??99)) || a.name.localeCompare(b.name));
+    const cnt = list.reduce((a,c)=>a+c.qty,0), val = list.reduce((a,c)=>a+value(c),0);
+    return `<section class="t-sec ${k==='cmd'?'is-cmd':''}"><h3>${esc(label)} <span>${cnt} · ${eur(val)}</span></h3><div class="t-cards">${list.map(c => {
+      const stack = Math.min(c.qty, 4);
+      const layers = Array.from({length: stack}, (_, i) => `<img src="${esc(c.img || c.imgL)}" data-big="${esc(c.imgL)}" alt="${i?'':esc(c.name)}" loading="lazy" draggable="false" style="--o:${(stack-1-i)*6}px">`).join('');
+      return `<button class="t-card ${deal?'deal':''}" data-tc="${esc(c.id)}" style="--r:${tilt(c.id).toFixed(2)}deg;--dl:${Math.min(1.2, (n++)*0.025).toFixed(3)}s" title="${esc(c.name)}">${layers}${c.qty>1?`<span class="t-q">×${c.qty}</span>`:''}${c.foil?'<span class="t-f">Foil</span>':''}</button>`;
+    }).join('')}</div></section>`;
+  }).join('');
+  body.querySelectorAll('[data-tc]').forEach(b => {
+    const im = b.querySelector('img:last-child'); if(im && !touch) bindPreview(im);
+    b.onclick = () => tShowInfo(S.cards.find(c=>c.id===b.dataset.tc));
+  });
+}
+function tShowInfo(c){
+  const box = $('#tInfo'); if(!c) return;
+  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${eur(unitPrice(c))}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><button class="btn small" id="tEdit">Modifica</button><button class="btn small" id="tX">Chiudi</button></div>`;
+  box.hidden = false; bindPreview(box.querySelector('img'));
+  $('#tX').onclick = () => box.hidden = true;
+  $('#tEdit').onclick = () => { box.hidden = true; openEdit(c.id); dlg.addEventListener('close', () => { if(T.id) renderTable(false); }, {once:true}); };
+}
+// --- mano di apertura
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+function newLibrary(){
+  const d = S.decks.find(x=>x.id===T.id); const lib = [];
+  S.cards.filter(c=>c.deck===T.id && !(isCmd(d) && d.commander===c.id)).forEach(c => { for(let k=0;k<c.qty;k++) lib.push(c); });
+  return shuffle(lib);
+}
+function dealHand(resetMull){
+  if(resetMull){ T.mull = 0; }
+  T.lib = newLibrary(); T.hand = T.lib.splice(0, 7).map((c,i)=>({c, k: Date.now()+'-'+i})); T.drawn = 0; T.sel = new Set();
+  const d = S.decks.find(x=>x.id===T.id);
+  const free = isCmd(d) ? 1 : 0;                       // in Commander il primo mulligan è gratuito
+  T.bottom = Math.max(0, T.mull - free);
+  renderHand(true);
+}
+function renderHand(anim){
+  const fan = $('#tFan'), n = T.hand.length; $('#tHand').hidden = false;
+  const lands = T.hand.filter(h => /\bLand\b/.test(h.c.type||'') && !/Creature/.test(h.c.type||'')).length;
+  const need = T.bottom - (7 - T.hand.length + T.drawn > 0 ? 0 : 0);
+  const pending = T.bottom > 0;
+  $('#tHandInfo').innerHTML = `<b>Mano di apertura</b>${T.mull?` · mulligan ${T.mull}`:''} · ${n} carte · ${lands} ${lands===1?'terra':'terre'} · ${T.lib.length} nel grimorio${T.drawn?` · pescate ${T.drawn}`:''}`
+    + (pending ? `<div class="t-bottom">Tocca ${T.bottom} ${T.bottom===1?'carta':'carte'} da mettere in fondo al grimorio (${T.sel.size}/${T.bottom}) <button class="btn small primary" id="hBottom" ${T.sel.size===T.bottom?'':'disabled'}>Conferma</button></div>` : '');
+  const W = fan.clientWidth || 600, cw = Math.min(150, Math.max(78, W / Math.max(5, n) * 1.25));
+  const spread = Math.min(56, 300 / Math.max(1, n));
+  fan.style.setProperty('--cw', cw + 'px');
+  fan.innerHTML = T.hand.map((h, i) => {
+    const mid = (n-1)/2, a = (i - mid) * (spread/Math.max(1,n-1)) * (n>1?1:0), x = (i - mid) * Math.min(cw*0.62, (W - cw) / Math.max(1, n-1)), y = Math.abs(i - mid) * Math.abs(i - mid) * 2.2;
+    return `<button class="t-hc ${anim?'deal':''} ${T.sel.has(h.k)?'sel':''}" data-hk="${h.k}" style="--x:${x.toFixed(1)}px;--y:${y.toFixed(1)}px;--a:${a.toFixed(2)}deg;--dl:${(i*0.07).toFixed(2)}s;z-index:${i+1}"><img src="${esc(h.c.imgL || h.c.img)}" alt="${esc(h.c.name)}" draggable="false"></button>`;
+  }).join('');
+  fan.querySelectorAll('[data-hk]').forEach(b => b.onclick = () => {
+    const h = T.hand.find(x=>x.k===b.dataset.hk); if(!h) return;
+    if(T.bottom > 0){ if(T.sel.has(h.k)) T.sel.delete(h.k); else if(T.sel.size < T.bottom) T.sel.add(h.k); renderHand(false); return; }
+    tShowInfo(h.c);
+  });
+  if($('#hBottom')) $('#hBottom').onclick = () => { const out = T.hand.filter(h=>T.sel.has(h.k)); T.hand = T.hand.filter(h=>!T.sel.has(h.k)); out.forEach(h=>T.lib.push(h.c)); T.sel = new Set(); T.bottom = 0; renderHand(false); };
+  $('#hDraw').disabled = !T.lib.length || T.bottom > 0;
+}
+$('#tHandBtn').onclick = () => { if(!$('#tHand').hidden){ $('#tHand').hidden = true; return; } dealHand(true); };
+$('#hNew').onclick = () => dealHand(true);
+$('#hMull').onclick = () => { T.mull++; dealHand(false); };
+$('#hDraw').onclick = () => { if(!T.lib.length) return; T.hand.push({c: T.lib.shift(), k: Date.now()+'-d'+T.drawn}); T.drawn++; renderHand(false); const last = $('#tFan .t-hc:last-child'); if(last) last.classList.add('deal'); };
+$('#hClose').onclick = () => { $('#tHand').hidden = true; };
+$('#tClose').onclick = closeTable;
+$('#tSet').onclick = () => { const id = T.id; openDeck(id); dlg.addEventListener('close', () => { if(T.id){ const d = S.decks.find(x=>x.id===id); if(d){ $('#tName').textContent = d.name; renderTable(false); } else closeTable(); } }, {once:true}); };
+$('#tAdd').onclick = () => { const id = T.id; $('#tbl').hidden = true; document.body.style.overflow = ''; T.id = null; if(T.after) T.after(); addHere(id); };
+document.addEventListener('keydown', e => { if(!$('#tbl').hidden && !$('#dlg').open && e.key === 'Escape'){ if(!$('#tHand').hidden) $('#tHand').hidden = true; else closeTable(); } });
+window.addEventListener('resize', () => { if(T.id && !$('#tHand').hidden) renderHand(false); });
 
 // ---------- storico del valore ----------
 function openHistory(){
