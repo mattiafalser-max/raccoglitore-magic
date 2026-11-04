@@ -565,6 +565,13 @@ th{background:var(--solid)}
 .pc-row span{font-size:12.5px;color:var(--ink-2)}
 .pc-sum{border:1px solid var(--line);border-left:4px solid var(--brass);border-radius:10px;padding:12px 14px;margin:8px 0}
 .pc-alt{margin:12px 0 8px}.pc-alt summary{cursor:pointer;color:var(--ink-2);font-size:14px}
+.pdiag{font-size:11.5px;opacity:.75;margin-top:3px}
+.dbx-body3{justify-content:flex-start !important;padding-top:14px !important}
+.dbx-body3 .dbx-win{flex:0 0 auto;width:80% !important}
+.d3 .dbx-name.bnd-title{font-size:var(--nf,16px) !important;line-height:1.12;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-width:96%}
+.d3.mini .dbx-name.bnd-title{font-size:calc(var(--nf,16px) * .7) !important}
+.d3 .dbx-cmd{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;max-width:96%}
+.d3:not(:has(.dbx-win)) .dbx-body3{justify-content:center !important;padding-top:10px !important}
 </style>
 </head>
 <body>
@@ -1354,11 +1361,14 @@ async function updatePrices(){
       c.eurPrev = c.eur; c.eurFoilPrev = c.eurFoil;
       if(f.eur!==c.eur || f.eurFoil!==c.eurFoil) changed++;
       if(f.sid !== c.sid){ c.sid = f.sid; if(!c.printed && f.printed) c.printed = f.printed; }
-      Object.assign(c, {eur:f.eur, eurFoil:f.eurFoil, usd:f.usd, usdFoil:f.usdFoil, cm:f.cm||c.cm, img:f.img||c.img, imgL:f.imgL||c.imgL, art:f.art||c.art||'', ci:f.ci||c.ci, cmc:f.cmc!=null?f.cmc:c.cmc, finishes:f.finishes, pAt:Date.now()});
+      Object.assign(c, {eur:f.eur, eurFoil:f.eurFoil, usd:f.usd, usdFoil:f.usdFoil, cm:f.cm||c.cm, img:f.img||c.img, imgL:f.imgL||c.imgL, art:f.art||c.art||'', ci:f.ci||c.ci, cmc:f.cmc!=null?f.cmc:c.cmc, finishes:f.finishes, set:f.set||c.set, num:f.num||c.num, pAt:Date.now()});
+      delete c.pSib;
+      if(c.finishes && c.finishes.length && !c.finishes.includes('nonfoil') && !c.foil) c.foil = true;   // stampa che esiste solo foil
       const o = prevPrice(c), p = unitPrice(c);
       if(o!=null && p!=null && o < thr() && p >= thr()){ c.alert = {from:o, to:p, at:Date.now()}; crossed.push(c); }
       else if(c.alert && p!=null && p < thr()) delete c.alert;
     });
+    await siblingFoilPrices(S.cards);
     S.lastPrices = Date.now();
     const today = new Date().toDateString();
     S.history = (S.history||[]).filter(h => new Date(h.t).toDateString() !== today);
@@ -1446,6 +1456,7 @@ function deckLook(d){
   return {cstyle: L.cstyle || 'bands', solid, sym: L.sym || 'gem', icons: L.icons !== false,
     cls: `mat-${L.mat||'opaco'} foil-${L.foil||'bianco'} tf-${f[0]}`, tf: f[2]};
 }
+function nameSize(n, cmd){ const L = (n||'').length; const base = cmd ? [16,14,12.5,11,9.5] : [19,17,15,13,11]; return (L<=12?base[0]:L<=18?base[1]:L<=26?base[2]:L<=36?base[3]:base[4]) + 'px'; }
 function deckBox3D(d, mini){
   const cmd = d._cmdBase || (d.commander && S.cards.find(c=>c.id===d.commander));
   const cs = d._cmdBase && !(d.colors && d.colors.length) ? (WUBRG.filter(x=>(d._cmdBase.ci||d._cmdBase.colors||[]).includes(x)).length ? WUBRG.filter(x=>(d._cmdBase.ci||d._cmdBase.colors||[]).includes(x)) : ['C']) : deckColors(d);
@@ -1456,7 +1467,7 @@ function deckBox3D(d, mini){
   const pips = cs.map(x=>pip(x, '', lk.sym, lk.icons)).join('');
   return `<div class="d3 ${mini?'mini':''} ${lk.cls}" style="--bands:${bands};--cl1:${cl[1]};--cl2:${cl[2]};--cr1:${cr[1]};--cr2:${cr[2]};--tf:'${lk.tf}'">
     <div class="d3-body">
-      <div class="fc fr"><div class="dbx-body3">${win}<div class="dbx-name bnd-title">${esc(d.name)}</div>${cmd && isCmd(d) ? `<div class="dbx-cmd">${esc(cmd.name)}</div>` : ''}<div class="dbx-fmt">${esc(d.format || 'Formato non indicato')}</div></div></div>
+      <div class="fc fr"><div class="dbx-body3">${win}<div class="dbx-name bnd-title" style="--nf:${nameSize(d.name, isCmd(d))}">${esc(d.name)}</div>${cmd && isCmd(d) ? `<div class="dbx-cmd">${esc(cmd.name)}</div>` : ''}<div class="dbx-fmt">${esc(d.format || 'Formato non indicato')}</div></div></div>
       <div class="fc bk"></div>
       <div class="fc rt"><div class="spine"><span class="spine-n bnd-title">${esc(d.name)}</span><span class="spine-p">${pips}</span></div></div>
       <div class="fc lf"></div>
@@ -1498,6 +1509,26 @@ function renderDeckBoxes(){
   el.querySelectorAll('[data-deck]').forEach(b => { bindBox3D(b); b.onclick = () => openBox(b); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openBox(b); } }; });
 }
 $('#newDeck').onclick = () => openDeck(null);
+async function siblingFoilPrices(cards){
+  // per ogni carta foil senza prezzo foil, cerca nelle altre stampe della stessa carta nello stesso set
+  const need = cards.filter(c => c.foil && c.eurFoil == null && c.usdFoil == null && c.set && c.name);
+  const keys = [...new Set(need.map(c => c.set + '|' + c.name))];
+  const res = {};
+  for(const k of keys){
+    const [set, name] = [k.slice(0, k.indexOf('|')), k.slice(k.indexOf('|')+1)];
+    try{
+      const {status, data} = await api('/cards/search?unique=prints&include_extras=true&include_variations=true&q=' + encodeURIComponent(`!"${name}" set:${set}`));
+      if(status === 200){
+        const pr = (data.data||[]).map(c => c.prices || {});
+        const ef = pr.map(p => p.eur_foil).filter(x => x != null).map(parseFloat), uf = pr.map(p => p.usd_foil ?? p.usd_etched).filter(x => x != null).map(parseFloat);
+        res[k] = {eurFoil: ef.length ? Math.max(...ef) : null, usdFoil: uf.length ? Math.max(...uf) : null};
+      }
+    }catch(e){}
+    await sleep(110);
+  }
+  need.forEach(c => { const r = res[c.set + '|' + c.name]; if(r){ if(r.eurFoil != null) c.eurFoil = r.eurFoil; else if(r.usdFoil != null) c.usdFoil = r.usdFoil; c.pSib = true; } });
+  return need.length;
+}
 async function starPrintings(raws){
   // raws: carte Scryfall foil che però non hanno la finitura foil: cerca la versione ★ (es. surge foil delle Collector's Edition)
   const need = raws.filter(r => r && !(r.finishes||[]).some(f=>f!=='nonfoil') && !/★/.test(r.collector_number));
@@ -1549,7 +1580,10 @@ async function resolvePrecon(deck){
   }
   entries.forEach(e => { e.raw = e.raw || (e.c.identifiers && raws[e.c.identifiers.scryfallId]); });
   const stars = await starPrintings(entries.filter(e => e.c.isFoil).map(e => e.raw));
-  return entries.map(e => { let raw = e.raw; if(raw && e.c.isFoil && stars[raw.id]) raw = stars[raw.id]; return {qty: e.c.count || 1, foil: !!e.c.isFoil, cmd: e.cmd, name: e.c.name, base: raw ? fromScry(raw) : null}; });
+  const rows = entries.map(e => { let raw = e.raw; if(raw && e.c.isFoil && stars[raw.id]) raw = stars[raw.id]; const base = raw ? fromScry(raw) : null; const foilOnly = base && base.finishes && base.finishes.length && !base.finishes.includes('nonfoil'); return {qty: e.c.count || 1, foil: !!e.c.isFoil || !!foilOnly, cmd: e.cmd, name: e.c.name, base}; });
+  const tmp = rows.filter(r => r.base).map(r => Object.assign(r.base, {foil: r.foil}));
+  await siblingFoilPrices(tmp); tmp.forEach(b => delete b.foil);
+  return rows;
 }
 
 // ---------- importa una lista di mazzo ----------
@@ -2436,7 +2470,7 @@ function placeCard(el, i){
 
 function vShowInfo(c){
   const box = $('#vInfo');
-  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}${flag(c)}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${priceTxt(c)}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></div>
+  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}${flag(c)}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${priceTxt(c)}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div><div class="pdiag">#${esc(c.num)}${c.foil?' · foil':''} · Scryfall: ${c.eur!=null?'€'+c.eur:'€ –'} / foil ${c.eurFoil!=null?'€'+c.eurFoil:'€ –'} · ${c.usd!=null?'$'+c.usd:'$ –'} / foil ${c.usdFoil!=null?'$'+c.usdFoil:'$ –'}${c.pSib?' · prezzo da altra stampa':''}</div></div>
     <div style="display:flex;flex-direction:column;gap:6px"><button class="btn small" id="vEdit">Modifica</button><button class="btn small" id="vX">Chiudi</button></div>`;
   box.hidden = false;
   bindPreview(box.querySelector('img'));
@@ -2582,7 +2616,7 @@ function renderTable(deal){
 }
 function tShowInfo(c){
   const box = $('#tInfo'); if(!c) return;
-  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${priceTxt(c)}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></div>
+  box.innerHTML = `<img src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt=""><div><b>${esc(c.name)}</b>${c.printed&&c.printed!==c.name?` <span class="muted">· ${esc(c.printed)}</span>`:''}<div class="cset">${esc(c.setName)} #${esc(c.num)} · ${esc(c.cond)} · ${esc((LANGS.find(l=>l[0]===c.lang)||[0,c.lang])[1])}${c.foil?' · foil':''}${c.qty>1?` · ${c.qty} copie`:''}</div><div><b>${priceTxt(c)}</b>${c.cm?` · <a href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div><div class="pdiag">#${esc(c.num)}${c.foil?' · foil':''} · Scryfall: ${c.eur!=null?'€'+c.eur:'€ –'} / foil ${c.eurFoil!=null?'€'+c.eurFoil:'€ –'} · ${c.usd!=null?'$'+c.usd:'$ –'} / foil ${c.usdFoil!=null?'$'+c.usdFoil:'$ –'}${c.pSib?' · prezzo da altra stampa':''}</div></div>
     <div style="display:flex;flex-direction:column;gap:6px"><button class="btn small" id="tEdit">Modifica</button><button class="btn small" id="tX">Chiudi</button></div>`;
   box.hidden = false; bindPreview(box.querySelector('img'));
   $('#tX').onclick = () => box.hidden = true;
