@@ -629,6 +629,18 @@ th{background:var(--solid)}
 .g-zoom{position:absolute;inset:0;z-index:75;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;cursor:zoom-out}
 .g-zoom[hidden]{display:none}.g-zoom img{max-height:86%;max-width:92%;border-radius:4.8%/3.5%;box-shadow:0 14px 40px rgba(0,0,0,.7)}
 @media (max-width:760px), (max-height:520px){#game{--gw:64px}.g-top{padding:6px 10px 2px}.g-acts .btn{padding:5px 9px;font-size:13px}.g-stat{font-size:12.5px}.g-mi{width:84px}}
+#game .g-hand{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;overscroll-behavior-x:contain;scrollbar-width:thin}
+#game .g-hand .g-c{touch-action:pan-x;scroll-snap-align:start}
+#game .g-bf .g-c,#game .g-side .g-c{touch-action:none}
+#game .g-zoom img{pointer-events:none}
+@media (max-width:760px), (max-height:520px){
+  #game .g-hand{gap:0;padding:12px 16px 14px 12px;min-height:calc(var(--gh) * 1.4 + 26px)}
+  #game{--gh:78px}
+  #game .g-hand .g-c{width:var(--gh)}
+  #game .g-hand .g-c + .g-c{margin-left:calc(var(--gh) * -.42)}
+  #game .g-hand .g-c:hover{transform:none}
+  #game .g-hand .g-c:active{transform:translateY(-10px);z-index:5}
+}
 </style>
 </head>
 <body>
@@ -2857,6 +2869,7 @@ function gRender(){
   $('#gCz .g-slot').innerHTML = G.cz.map(x=>gCardHtml(x,'cz')).join('');
   $('#gTax').textContent = G.cz.length ? (G.casts ? `tassa +${G.casts*2}` : 'pronto') : 'in gioco';
   $('#gUndo').disabled = !G.undo.length;
+  if(!G.tipShown){ G.tipShown = true; toast('Tieni premuta una carta per ingrandirla', 3500); }
 }
 // --- menu contestuale
 function gMenu(items, x, y){
@@ -2941,16 +2954,24 @@ function gSearch(){
   const gm = $('#game'); let d = null;
   gm.addEventListener('pointerdown', e => {
     if(e.button > 0) return; const el = e.target.closest('.g-c'); if(!el || el.closest('.g-mbox')) return;
-    d = {k: el.dataset.k, x0: e.clientX, y0: e.clientY, el, ghost: null};
+    d = {k: el.dataset.k, x0: e.clientX, y0: e.clientY, el, ghost: null, inHand: !!el.closest('.g-hand'), held: false};
+    clearTimeout(G && G.holdT);
+    if(G) G.holdT = setTimeout(() => { if(!d || d.ghost) return; const f = gFind(d.k); if(!f || f.x.token) return; d.held = true; $('#gMenu').hidden = true; gZoomShow(f.x); }, 380);
   });
+  const cancel = () => { if(!d) return; clearTimeout(G && G.holdT); if(d.ghost){ d.ghost.remove(); d.el.style.opacity = ''; } if(d.held) $('#gZoom').hidden = true; d = null; };
+  window.addEventListener('pointercancel', cancel);
   window.addEventListener('pointermove', e => {
     if(!d) return; const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
+    if(d.held) return;
+    if(!d.ghost && Math.hypot(dx, dy) > 9){ clearTimeout(G.holdT); }
+    if(!d.ghost && d.inHand && Math.abs(dx) > Math.abs(dy) && Math.hypot(dx, dy) > 9){ d = null; return; }   // nella mano lo scorrimento orizzontale fa scorrere
     if(!d.ghost && Math.hypot(dx, dy) > 9){ const r = d.el.getBoundingClientRect(); d.ghost = d.el.cloneNode(true); d.ghost.classList.add('g-ghost'); d.ghost.style.width = r.width + 'px'; d.ghost.style.height = r.height + 'px'; d.ox = d.x0 - r.left; d.oy = d.y0 - r.top; document.body.appendChild(d.ghost); d.el.style.opacity = .3; }
     if(d.ghost){ d.ghost.style.left = (e.clientX - d.ox) + 'px'; d.ghost.style.top = (e.clientY - d.oy) + 'px';
       $$('#game [data-zone]').forEach(z => z.classList.remove('g-over')); const t = document.elementFromPoint && document.elementFromPoint(e.clientX, e.clientY); const z = t && t.closest && t.closest('[data-zone]'); if(z) z.classList.add('g-over'); }
   });
   window.addEventListener('pointerup', e => {
-    if(!d) return; const cur = d; d = null;
+    if(!d) return; const cur = d; d = null; clearTimeout(G && G.holdT);
+    if(cur.held){ $('#gZoom').hidden = true; return; }
     if(cur.ghost){
       cur.ghost.remove(); cur.el.style.opacity = ''; $$('#game [data-zone]').forEach(z => z.classList.remove('g-over'));
       const t = document.elementFromPoint && document.elementFromPoint(e.clientX, e.clientY); const z = t && t.closest && t.closest('[data-zone]');
