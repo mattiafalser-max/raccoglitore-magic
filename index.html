@@ -410,6 +410,70 @@ th{background:var(--solid)}
 .pcard{position:relative}
 .pc-more{position:absolute;top:6px;right:6px;z-index:2;font-size:12px;font-weight:600;padding:2px 8px;border-radius:9px;background:rgba(10,14,20,.72);color:#fff;border:0;cursor:pointer}
 #viewer #vAdd{white-space:nowrap}
+/* --- mazzi: scatole --- */
+.dbx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:22px 18px;align-items:start}
+.dbx-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.dbx{position:relative;width:100%;max-width:178px;aspect-ratio:66/94;cursor:pointer;border-radius:10px;background:radial-gradient(circle at 30% 18%,rgba(255,255,255,.22),rgba(255,255,255,0) 50%),linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.28)),var(--bands);box-shadow:0 14px 28px rgba(0,0,0,.35),0 2px 4px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,255,255,.14),inset -6px 0 10px -6px rgba(0,0,0,.45),inset 6px 0 10px -6px rgba(255,255,255,.18);transition:transform .25s ease,box-shadow .25s ease;overflow:hidden}
+.dbx:hover,.dbx:focus-visible{transform:translateY(-4px);box-shadow:0 20px 36px rgba(0,0,0,.42),inset 0 0 0 1px rgba(255,255,255,.18)}
+.dbx-lid{position:absolute;left:0;right:0;top:0;height:21%;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(0,0,0,.22)),var(--bands);box-shadow:0 3px 6px rgba(0,0,0,.35),inset 0 -1px 0 rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;border-radius:10px 10px 4px 4px}
+.dbx-lid::after{content:"";position:absolute;left:38%;right:38%;bottom:-5px;height:9px;border-radius:0 0 9px 9px;background:rgba(0,0,0,.28)}
+.dbx-pips{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;padding:0 8px;position:relative;z-index:1}
+.pip{--ps:22px;display:inline-flex;align-items:center;justify-content:center;width:var(--ps);height:var(--ps);border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.7),rgba(255,255,255,0) 38%),radial-gradient(circle,var(--p1),var(--p2));color:var(--pt);font:700 calc(var(--ps)*.5)/1 Spectral,Georgia,serif;box-shadow:0 1px 2px rgba(0,0,0,.55),inset 0 0 0 1.5px rgba(255,255,255,.35);text-shadow:0 1px 1px rgba(0,0,0,.35)}
+.dbx-body{position:absolute;left:0;right:0;top:21%;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 10px 14px;text-align:center}
+.dbx-win{width:78%;aspect-ratio:626/457;border-radius:8px;overflow:hidden;background:rgba(0,0,0,.45);box-shadow:inset 0 3px 8px rgba(0,0,0,.75),0 1px 0 rgba(255,255,255,.25),0 0 0 2px rgba(0,0,0,.35);margin-bottom:9px;display:flex;align-items:center;justify-content:center;position:relative}
+.dbx-win::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(255,255,255,0) 35%);pointer-events:none}
+.dbx-win img{width:100%;height:100%;object-fit:cover}
+.dbx-win img.full{object-position:50% 16%;transform:scale(1.55);transform-origin:50% 22%}
+.dbx-win span{font-size:11px;color:rgba(255,255,255,.75);padding:6px}
+.dbx-name{font-family:Cinzel,Spectral,Georgia,serif;font-weight:700;font-size:15px;line-height:1.15;color:#fbf6ea;text-shadow:0 1px 2px rgba(0,0,0,.75),0 0 10px rgba(0,0,0,.35);overflow-wrap:anywhere}
+.dbx-cmd{font-size:11.5px;color:rgba(255,255,255,.86);margin-top:3px;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.dbx-fmt{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.78);margin-top:5px;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.dbx-st{font-size:13px;color:var(--ink-2);text-align:center}
+.dbx.mini{max-width:130px;cursor:default;pointer-events:none}
+.dbx.mini .dbx-name{font-size:12px}
+.dk-prev{display:flex;justify-content:center;padding:6px 0}
+.dk-cols{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}.dk-cols.off{opacity:.45}
+.dk-col{display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+/* --- deck box tridimensionale --- */
+.d3-stage{--w:146px;--h:206px;--d:62px;--hl:44px;width:calc(var(--w) + 70px);height:calc(var(--h) + 70px);display:flex;align-items:center;justify-content:center;perspective:900px;perspective-origin:50% 35%;cursor:pointer;outline:none;touch-action:pan-y}
+.d3-stage.mini{--w:104px;--h:146px;--d:44px;--hl:31px;width:170px;height:200px;cursor:grab}
+.d3-stage:focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:12px}
+.d3{position:relative;width:var(--w);height:var(--h);transform-style:preserve-3d;transform:rotateX(var(--rx,-14deg)) rotateY(var(--ry,-30deg));transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.d3-stage:hover .d3{transition:transform .12s linear}
+.d3::after{content:"";position:absolute;left:8%;right:-8%;bottom:calc(var(--d)/-2);height:var(--d);background:radial-gradient(ellipse at center,rgba(0,0,0,.45),rgba(0,0,0,0) 70%);transform:rotateX(90deg) translateZ(calc(var(--h)/-1 - 2px));transform-origin:50% 100%;filter:blur(6px);pointer-events:none}
+.d3-body{position:absolute;left:0;top:var(--hl);width:var(--w);height:calc(var(--h) - var(--hl));transform-style:preserve-3d;--gh:calc(var(--h) - var(--hl))}
+.d3-lid{position:absolute;left:0;top:0;width:var(--w);height:var(--hl);transform-style:preserve-3d;--gh:var(--hl);transform-origin:50% 0 calc(var(--d)/-2);transition:transform .55s cubic-bezier(.3,.7,.25,1.15)}
+.d3-stage.open .d3-lid{transform:rotateX(112deg)}
+.d3-stage.open .d3{--rx:-24deg}
+.fc{position:absolute;left:0;top:0;box-sizing:border-box;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.fc.fr,.fc.bk{width:var(--w);height:var(--gh)}
+.fc.fr{transform:translateZ(calc(var(--d)/2))}
+.fc.bk{transform:rotateY(180deg) translateZ(calc(var(--d)/2))}
+.fc.rt,.fc.lf{width:var(--d);height:var(--gh);left:calc((var(--w) - var(--d))/2)}
+.fc.rt{transform:rotateY(90deg) translateZ(calc(var(--w)/2))}
+.fc.lf{transform:rotateY(-90deg) translateZ(calc(var(--w)/2))}
+.fc.tp,.fc.bt{width:var(--w);height:var(--d);top:calc((var(--gh) - var(--d))/2)}
+.fc.tp{transform:rotateX(90deg) translateZ(calc(var(--gh)/2))}
+.fc.bt{transform:rotateX(-90deg) translateZ(calc(var(--gh)/2))}
+.d3 .fc.fr,.d3 .fc.bk,.d3 .fc.tp{background:radial-gradient(circle at 28% 14%,rgba(255,255,255,.22),rgba(255,255,255,0) 50%),linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.25)),var(--bands)}
+.d3 .fc.bk{filter:brightness(.6)}
+.d3 .fc.rt{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.3)),linear-gradient(90deg,var(--cr1),var(--cr2));filter:brightness(.74)}
+.d3 .fc.lf{background:linear-gradient(90deg,var(--cl2),var(--cl1));filter:brightness(.62)}
+.d3 .fc.bt{background:#141118}
+.d3-body .fc.tp{background:#17131f}
+.d3-lid .fc.tp{filter:brightness(1.12)}
+.d3-lid .fc.fr{box-shadow:inset 0 -2px 0 rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center}
+.d3-lid .fc.bt.in{background:linear-gradient(#2a2433,#16121c)}
+.d3 .fc.fr,.d3 .fc.rt,.d3 .fc.lf,.d3 .fc.tp{box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.dbx-body3{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 10px 14px;text-align:center}
+.d3.mini .dbx-name{font-size:11px}.d3.mini .dbx-fmt,.d3.mini .dbx-cmd{display:none}.d3.mini .pip{--ps:15px}.d3.mini .dbx-win{margin-bottom:5px}
+.spine{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 0}
+.spine-n{writing-mode:vertical-rl;transform:rotate(180deg);font-family:Cinzel,Spectral,Georgia,serif;font-weight:700;font-size:13px;color:#fbf6ea;text-shadow:0 1px 2px rgba(0,0,0,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:72%}
+.spine-p{display:flex;flex-direction:column;gap:3px}.spine-p .pip{--ps:16px}
+.d3.mini .spine-n{font-size:9px}.d3.mini .spine-p .pip{--ps:11px}
+.sleeves{position:absolute;inset:5px 6px;border-radius:3px;background:repeating-linear-gradient(90deg,#2b2340 0 2px,#3a3056 2px 3px),linear-gradient(#3a3056,#241d36);box-shadow:inset 0 2px 6px rgba(0,0,0,.6)}
+.dbx-wrap{gap:2px}
+@media (prefers-reduced-motion:reduce){.d3,.d3-lid{transition:none}}
 </style>
 </head>
 <body>
@@ -497,18 +561,12 @@ th{background:var(--solid)}
 
   <!-- MAZZI -->
   <section class="panel" id="p-decks">
-    <div class="cols">
-      <div class="box">
-        <h2>Nuovo mazzo</h2>
-        <form id="deckForm">
-          <label class="f">Nome<input type="text" name="name" required placeholder="es. Elfi Commander"></label>
-          <label class="f">Formato<input type="text" name="format" placeholder="Commander, Modern, Pauper…"></label>
-          <label class="f">Note<textarea name="note"></textarea></label>
-          <button class="btn primary" type="submit">Crea mazzo</button>
-        </form>
-      </div>
-      <div class="items" id="deckList"></div>
+    <div class="arch-head">
+      <div><h2 style="font-size:24px">Mazzi</h2><p class="hint">Ogni mazzo è la sua scatola. Toccala per modificare formato, comandante, colori e note, o per vedere le carte.</p></div>
+      <button class="btn primary" id="newDeck">Nuovo mazzo</button>
     </div>
+    <div class="dbx-grid" id="deckList"></div>
+    <div id="deckFree" class="hint" style="margin-top:14px"></div>
   </section>
 
   <!-- LUOGHI -->
@@ -624,7 +682,7 @@ function fromScry(card){
   return {
     sid: card.id, name: card.name, printed: card.printed_name || '', set: card.set, setName: card.set_name, num: card.collector_number,
     rarity: card.rarity, type: card.type_line || (face && face.type_line) || '', colors,
-    img: imgs.small || '', imgL: imgs.normal || imgs.large || '',
+    img: imgs.small || '', imgL: imgs.normal || imgs.large || '', art: imgs.art_crop || '', ci: card.color_identity || colors,
     cm: (card.purchase_uris && card.purchase_uris.cardmarket) || '',
     eur: card.prices && card.prices.eur != null ? parseFloat(card.prices.eur) : null,
     eurFoil: card.prices && card.prices.eur_foil != null ? parseFloat(card.prices.eur_foil) : null,
@@ -1146,7 +1204,7 @@ async function updatePrices(){
       c.eurPrev = c.eur; c.eurFoilPrev = c.eurFoil;
       if(f.eur!==c.eur || f.eurFoil!==c.eurFoil) changed++;
       if(f.sid !== c.sid){ c.sid = f.sid; if(!c.printed && f.printed) c.printed = f.printed; }
-      Object.assign(c, {eur:f.eur, eurFoil:f.eurFoil, cm:f.cm||c.cm, img:f.img||c.img, imgL:f.imgL||c.imgL, finishes:f.finishes, pAt:Date.now()});
+      Object.assign(c, {eur:f.eur, eurFoil:f.eurFoil, cm:f.cm||c.cm, img:f.img||c.img, imgL:f.imgL||c.imgL, art:f.art||c.art||'', ci:f.ci||c.ci, finishes:f.finishes, pAt:Date.now()});
       const o = prevPrice(c), p = unitPrice(c);
       if(o!=null && p!=null && o < thr() && p >= thr()){ c.alert = {from:o, to:p, at:Date.now()}; crossed.push(c); }
       else if(c.alert && p!=null && p < thr()) delete c.alert;
@@ -1191,7 +1249,137 @@ function renderList(kind){
     S.cards.forEach(c=>{ if(c[key]===x.id) c[key]=''; }); save(); renderList(kind);
   });
 }
-const renderDecks = () => renderList('deck'), renderLocs = () => renderArchive();
+const renderDecks = () => renderDeckBoxes(), renderLocs = () => renderArchive();
+
+// ---------- mazzi: scatole ----------
+const FORMATS = ['Commander','Brawl','Oathbreaker','Pauper Commander','Standard','Pioneer','Modern','Legacy','Vintage','Pauper','Historic','Limited / Draft','Casual','Altro'];
+const CMD_FORMATS = ['Commander','Brawl','Oathbreaker','Pauper Commander'];
+const isCmd = d => CMD_FORMATS.includes(d.format);
+const DECKSIZE = {'Commander':100,'Pauper Commander':100,'Brawl':60,'Oathbreaker':60};
+const MANA = {W:['Bianco','#efe8cf','#b9ad86','#3a3220'],U:['Blu','#3a78c2','#173f74','#fff'],B:['Nero','#4a4352','#1d1922','#efe6f5'],R:['Rosso','#d1533a','#7a2216','#fff'],G:['Verde','#3a8f58','#174a2b','#fff'],C:['Incolore','#b9bec6','#6b717b','#1f232a']};
+const WUBRG = ['W','U','B','R','G'];
+function deckColors(d){
+  if(d.colors && d.colors.length) return d.colors;
+  const cmd = d.commander && S.cards.find(c=>c.id===d.commander);
+  let cs;
+  if(cmd) cs = (cmd.ci && cmd.ci.length ? cmd.ci : cmd.colors) || [];
+  else { const set = new Set(); S.cards.filter(c=>c.deck===d.id && !/\bLand\b/.test(c.type||'')).forEach(c => (c.ci||c.colors||[]).forEach(x=>set.add(x))); cs = [...set]; }
+  cs = WUBRG.filter(x=>cs.includes(x));
+  return cs.length ? cs : ['C'];
+}
+function pip(x, size){ const m = MANA[x]; return `<span class="pip" style="--p1:${m[1]};--p2:${m[2]};--pt:${m[3]};${size?'--ps:'+size:''}" title="${m[0]}">${x}</span>`; }
+function bandsBg(cs){
+  const n = cs.length; const stops = [];
+  cs.forEach((x,i) => { const a = i/n*100, b = (i+1)/n*100, m = MANA[x]; const blend = n>1 ? 4 : 0;
+    stops.push(`${m[1]} ${Math.max(0,a+ (i?blend:0)).toFixed(1)}%`, `${m[2]} ${Math.min(100,b-(i<n-1?blend:0)).toFixed(1)}%`); });
+  return `linear-gradient(90deg, ${stops.join(', ')})`;
+}
+function deckBox3D(d, mini){
+  const cs = deckColors(d), cmd = d.commander && S.cards.find(c=>c.id===d.commander);
+  const cl = MANA[cs[0]], cr = MANA[cs[cs.length-1]];
+  const win = isCmd(d) ? `<div class="dbx-win">${cmd ? `<img src="${esc(cmd.art || cmd.imgL || cmd.img)}" class="${cmd.art?'art':'full'}" alt="${esc(cmd.name)}" loading="lazy" draggable="false">` : '<span>Scegli il comandante</span>'}</div>` : '';
+  const pips = cs.map(x=>pip(x)).join('');
+  return `<div class="d3 ${mini?'mini':''}" style="--bands:${bandsBg(cs)};--cl1:${cl[1]};--cl2:${cl[2]};--cr1:${cr[1]};--cr2:${cr[2]}">
+    <div class="d3-body">
+      <div class="fc fr"><div class="dbx-body3">${win}<div class="dbx-name">${esc(d.name)}</div>${cmd && isCmd(d) ? `<div class="dbx-cmd">${esc(cmd.name)}</div>` : ''}<div class="dbx-fmt">${esc(d.format || 'Formato non indicato')}</div></div></div>
+      <div class="fc bk"></div>
+      <div class="fc rt"><div class="spine"><span class="spine-n">${esc(d.name)}</span><span class="spine-p">${pips}</span></div></div>
+      <div class="fc lf"></div>
+      <div class="fc tp"><div class="sleeves"></div></div>
+      <div class="fc bt"></div>
+    </div>
+    <div class="d3-lid">
+      <div class="fc fr"><div class="dbx-pips">${pips}</div></div>
+      <div class="fc bk"></div><div class="fc rt"></div><div class="fc lf"></div>
+      <div class="fc tp"></div><div class="fc bt in"></div>
+    </div>
+  </div>`;
+}
+function bindBox3D(wrap){
+  const box = wrap.querySelector('.d3'); if(!box) return;
+  const base = {x:-14, y:-30};
+  const setRot = (x, y) => box.style.setProperty('--rx', x + 'deg') || box.style.setProperty('--ry', y + 'deg');
+  const move = e => { const r = wrap.getBoundingClientRect(); const px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+    box.style.setProperty('--rx', (base.x - py*16).toFixed(1) + 'deg'); box.style.setProperty('--ry', (base.y + px*46).toFixed(1) + 'deg'); };
+  wrap.addEventListener('pointermove', e => { if(e.pointerType === 'mouse' || e.buttons) move(e); });
+  wrap.addEventListener('pointerleave', () => { box.style.removeProperty('--rx'); box.style.removeProperty('--ry'); });
+  wrap.addEventListener('pointerup', e => { if(e.pointerType !== 'mouse'){ box.style.removeProperty('--rx'); box.style.removeProperty('--ry'); } });
+}
+function renderDeckBoxes(){
+  const el = $('#deckList'); const arr = S.decks.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  if(!arr.length){ el.innerHTML = `<div class="box empty" style="grid-column:1/-1"><h3>Nessun mazzo</h3><p>Crea un mazzo per ogni lista che hai montato: vedrai quanto vale e quali carte contiene.</p></div>`; }
+  else el.innerHTML = arr.map(d => {
+    const st = groupStats('deck', d.id), size = DECKSIZE[d.format];
+    return `<div class="dbx-wrap"><div class="d3-stage" role="button" tabindex="0" data-deck="${d.id}" aria-label="Mazzo ${esc(d.name)}">${deckBox3D(d)}</div><div class="dbx-st">${st.n.toLocaleString('it-IT')}${size?' / '+size:''} carte · <b>${eur(st.v)}</b></div></div>`;
+  }).join('');
+  const un = groupStats('deck','');
+  $('#deckFree').innerHTML = `Carte non in un mazzo: ${un.n.toLocaleString('it-IT')} · <b>${eur(un.v)}</b> · <button class="thr" id="deckFreeShow">Vedi</button>`;
+  $('#deckFreeShow').onclick = () => { fillSelects(); $('#fLoc').value=''; $('#fDeck').value='__none'; showTab('coll'); };
+  const openBox = b => { if(b.classList.contains('open')) return; const box = b.querySelector('.d3');
+    if(reduced()){ openDeck(b.dataset.deck); return; }
+    b.classList.add('open');
+    setTimeout(() => { openDeck(b.dataset.deck); dlg.addEventListener('close', () => { b.classList.remove('open'); }, {once:true}); }, 560); };
+  el.querySelectorAll('[data-deck]').forEach(b => { bindBox3D(b); b.onclick = () => openBox(b); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openBox(b); } }; });
+}
+$('#newDeck').onclick = () => openDeck(null);
+function openDeck(id){
+  const d = id ? S.decks.find(x=>x.id===id) : null, isNew = !d;
+  const legends = S.cards.filter(c => /Legendary/.test(c.type||'') && /(Creature|Planeswalker)/.test(c.type||''));
+  const inDeck = d ? legends.filter(c=>c.deck===d.id) : [];
+  const names = [...new Set([...inDeck, ...legends].map(c=>c.name))];
+  const cmd = d && d.commander && S.cards.find(c=>c.id===d.commander);
+  const manual = d && d.colors && d.colors.length;
+  $('#dlgBody').innerHTML = `<form class="cform" id="deckF" style="padding:18px 20px">
+    <h2 style="font-size:22px;margin-bottom:8px">${isNew?'Nuovo mazzo':esc(d.name)}</h2>
+    <div class="fgrid">
+      <label class="f">Nome<input type="text" name="name" required value="${esc(d?d.name:'')}" placeholder="es. Atraxa contatori"></label>
+      <label class="f">Formato<select name="format">${opts([['','Scegli…'], ...FORMATS.map(x=>[x,x])], d ? d.format||'' : 'Commander')}</select></label>
+      <label class="f full" data-cmd>Comandante<input type="text" name="cmd" list="cmdList" value="${esc(cmd?cmd.name:'')}" placeholder="Scrivi o scegli una creatura leggendaria della collezione"><datalist id="cmdList">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist></label>
+      <div class="f full"><span>Colori del mazzo</span>
+        <label class="chk" style="margin:4px 0"><input type="checkbox" name="auto" ${manual?'':'checked'}> Automatici (dal comandante o dalle carte del mazzo)</label>
+        <div class="dk-cols" id="dkCols">${[...WUBRG,'C'].map(x=>`<label class="dk-col"><input type="checkbox" name="col" value="${x}" ${manual && d.colors.includes(x)?'checked':''}>${pip(x,'26px')}</label>`).join('')}</div>
+      </div>
+      <label class="f full">Note<textarea name="note">${esc(d?d.note||'':'')}</textarea></label>
+      <div class="f full"><span>Anteprima</span><div id="dkPrev" class="dk-prev"></div></div>
+    </div>
+    <div class="dlg-foot" style="flex-wrap:wrap">
+      ${d?'<button type="button" class="btn danger" id="dkDel" style="margin-right:auto">Elimina</button><button type="button" class="btn" id="dkShow">Vedi carte</button>':''}
+      <button type="button" class="btn" id="dkCancel">Annulla</button>
+      <button type="submit" class="btn primary">${isNew?'Crea':'Salva'}</button>
+    </div></form>`;
+  const f = $('#deckF'), F = n => f.elements[n];
+  const pickCmd = () => { const n = F('cmd').value.trim().toLowerCase(); if(!n) return null;
+    const pool = S.cards.filter(c => c.name.toLowerCase()===n || (c.printed||'').toLowerCase()===n);
+    return pool.find(c => d && c.deck===d.id) || pool[0] || null; };
+  const draft = () => { const t = {id: d ? d.id : '__new', name: F('name').value || 'Nuovo mazzo', format: F('format').value};
+    const c = pickCmd(); if(c) t.commander = c.id;
+    if(!F('auto').checked){ t.colors = [...f.querySelectorAll('input[name=col]:checked')].map(x=>x.value); }
+    return t; };
+  const upd = () => {
+    f.querySelector('[data-cmd]').style.display = CMD_FORMATS.includes(F('format').value) ? '' : 'none';
+    $('#dkCols').classList.toggle('off', F('auto').checked);
+    const t = draft(), cs = deckColors(t), c = t.commander && S.cards.find(x=>x.id===t.commander);
+    $('#dkPrev').innerHTML = `<div class="d3-stage mini">${deckBox3D(t, true)}</div>`; bindBox3D($('#dkPrev .d3-stage'));
+  };
+  ['name','format','cmd','auto'].forEach(n => F(n).addEventListener('input', upd));
+  f.querySelectorAll('input[name=col]').forEach(x => x.addEventListener('input', () => { F('auto').checked = false; upd(); }));
+  upd();
+  $('#dkCancel').onclick = () => dlg.close();
+  if($('#dkShow')) $('#dkShow').onclick = () => { dlg.close(); fillSelects(); $('#fLoc').value=''; $('#fDeck').value = d.id; showTab('coll'); };
+  if($('#dkDel')) $('#dkDel').onclick = () => { if(!confirm(`Eliminare “${d.name}”? Le carte restano in collezione, fuori da qualsiasi mazzo.`)) return;
+    S.decks = S.decks.filter(a=>a.id!==d.id); S.cards.forEach(c=>{ if(c.deck===d.id) c.deck=''; }); save(); dlg.close(); renderDeckBoxes(); toast('Mazzo eliminato'); };
+  f.onsubmit = ev => {
+    ev.preventDefault();
+    if(F('cmd').value.trim() && CMD_FORMATS.includes(F('format').value) && !pickCmd()){ toast('Non trovo quel comandante nella collezione: aggiungilo prima da “Aggiungi carte”.', 5000); return; }
+    const t = draft(), x = d || {id: uid()};
+    x.name = F('name').value.trim(); x.format = F('format').value; x.note = F('note').value.trim();
+    if(CMD_FORMATS.includes(x.format) && t.commander) x.commander = t.commander; else delete x.commander;
+    if(t.colors && t.colors.length) x.colors = t.colors; else delete x.colors;
+    if(isNew) S.decks.push(x);
+    save(); dlg.close(); renderDeckBoxes(); fillSelects(); toast(isNew ? 'Mazzo creato' : 'Mazzo aggiornato');
+  };
+  dlg.showModal();
+}
 
 // ---------- archivio ----------
 function contStats(id){ const L = locById(id); const ids = L && L.kind==='chest' ? S.locs.filter(d=>d.parent===id).map(d=>d.id) : [id];
@@ -1327,7 +1515,7 @@ function openCont(id){
   };
   dlg.showModal();
 }
-$('#deckForm').onsubmit = e => { e.preventDefault(); const f=e.target; S.decks.push({id:uid(), name:f.name.value.trim(), format:f.format.value.trim(), note:f.note.value.trim()}); f.reset(); save(); renderDecks(); toast('Mazzo creato'); };
+
 
 // ---------- backup ----------
 function download(name, text, type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); }
