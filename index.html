@@ -509,6 +509,7 @@ th{background:var(--solid)}
 .pip.sym-stone{border-radius:0;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);background:conic-gradient(from 22.5deg,var(--p1),var(--p2),var(--p1),color-mix(in srgb,var(--p1) 60%,#fff),var(--p2),var(--p1),var(--p2),color-mix(in srgb,var(--p1) 70%,#fff),var(--p1));box-shadow:none;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.6))}
 .pip.sym-stone::after{content:"";position:absolute;inset:26%;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.6),var(--p1) 70%)}
 .pip.sym-stone svg,.pip.sym-stone b{position:relative;z-index:1;width:46%;height:46%}
+.where-deck{display:inline-block;padding:1px 8px;border-radius:9px;background:color-mix(in srgb,var(--accent) 16%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);font-size:13px}
 </style>
 </head>
 <body>
@@ -578,7 +579,6 @@ th{background:var(--solid)}
     <h2 style="font-size:24px;margin-bottom:6px">Aggiungi carte</h2>
     <div class="addto" id="addToBar">
       <label class="f">Sto inserendo in<select id="addTo"></select></label>
-      <label class="f">Mazzo<select id="addDeck"></select></label>
       <label class="f">Condizione<select id="addCond"></select></label>
       <label class="chk addq"><input type="checkbox" id="addQuick"> Aggiunta rapida: un tocco sull’edizione e la carta è inserita</label>
       <div class="addlast" id="addLast" hidden></div>
@@ -753,8 +753,23 @@ function slots(){
 }
 function tierOf(c){ const l = locById(c.loc); if(!l) return ''; if(l.tier) return l.tier; const p = l.parent && locById(l.parent); return p ? (p.tier||'') : ''; }
 function misplaced(c){ const t = tierOf(c), p = unitPrice(c); if(p==null) return ''; if(t==='bulk' && p>=thr()) return 'up'; if(t==='value' && p<thr()) return 'down'; return ''; }
+// una carta sta fisicamente in un solo posto: un contenitore oppure un mazzo
+function whereName(c){ return c.deck ? 'Mazzo ' + deckName(c.deck) : locName(c.loc); }
+function whereKey(c){ return c.deck ? 'D:' + c.deck : (c.loc ? 'L:' + c.loc : ''); }
+function setWhere(c, key){
+  if(!key){ c.loc = ''; c.deck = ''; return; }
+  const [t, id] = [key.slice(0,1), key.slice(2)];
+  if(t === 'D'){ if(c.deck !== id && c.loc) c.prevLoc = c.loc; c.deck = id; c.loc = ''; }
+  else { c.loc = id; c.deck = ''; }
+}
+function whereOptions(sel, none){
+  const g1 = slots().map(l=>[ 'L:'+l.id, locName(l.id) ]), g2 = S.decks.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(d=>['D:'+d.id, d.name]);
+  const o = ([v,n]) => `<option value="${esc(v)}" ${v===sel?'selected':''}>${esc(n)}</option>`;
+  return `<option value="" ${!sel?'selected':''}>${esc(none||'Nessun luogo')}</option>` + (g1.length?`<optgroup label="Contenitori">${g1.map(o).join('')}</optgroup>`:'') + (g2.length?`<optgroup label="Mazzi">${g2.map(o).join('')}</optgroup>`:'');
+}
 function migrate(){
   S.locs = S.locs || []; S.history = S.history || [];
+  (S.cards||[]).forEach(c => { if(c.deck && c.loc){ c.prevLoc = c.loc; c.loc = ''; } });
   S.locs.forEach(l => { if(!l.kind) l.kind = l.parent ? 'drawer' : 'other'; if(l.tier===undefined) l.tier=''; if(!l.order) l.order='color'; if(l.dest===undefined) l.dest = l.note || ''; });
 }
 
@@ -786,11 +801,11 @@ function fillSelects(){
   const lcF = []; S.locs.filter(l=>!l.parent).sort((a,b)=>a.name.localeCompare(b.name)).forEach(l => { lcF.push([l.id, l.kind==='chest' ? l.name + ' (tutti i cassetti)' : l.name]); if(l.kind==='chest') S.locs.filter(d=>d.parent===l.id).sort((a,b)=>(a.pos||0)-(b.pos||0)).forEach(d=>lcF.push([d.id, '\u00a0\u00a0' + d.name])); });
   const keepD = $('#fDeck').value, keepL = $('#fLoc').value;
   $('#fDeck').innerHTML = '<option value="">Tutti i mazzi</option><option value="__none">Non in un mazzo</option>' + dk.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
-  $('#fLoc').innerHTML = '<option value="">Tutti i luoghi</option><option value="__none">Senza luogo</option>' + lcF.map(([id,n])=>`<option value="${id}">${esc(n)}</option>`).join('');
+  $('#fLoc').innerHTML = '<option value="">Tutti i luoghi</option><option value="__none">Senza luogo</option>' + (lcF.length?'<optgroup label="Contenitori">' + lcF.map(([id,n])=>`<option value="${id}">${esc(n)}</option>`).join('') + '</optgroup>':'') + (S.decks.length?'<optgroup label="Mazzi">' + S.decks.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(d=>`<option value="D:${d.id}">${esc(d.name)}</option>`).join('') + '</optgroup>':'');
   $('#fDeck').value = [...$('#fDeck').options].some(o=>o.value===keepD) ? keepD : '';
   $('#fLoc').value = [...$('#fLoc').options].some(o=>o.value===keepL) ? keepL : '';
   $('#bulkLoc').innerHTML = '<option value="">Luogo…</option><option value="__none">Nessun luogo</option>' + lc.map(l=>`<option value="${l.id}">${esc(locName(l.id))}</option>`).join('');
-  $('#bulkDeck').innerHTML = '<option value="">Mazzo…</option><option value="__none">Togli dal mazzo</option>' + dk.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
+  $('#bulkDeck').innerHTML = '<option value="">Mazzo…</option><option value="__none">Togli dal mazzo (torna dov’era)</option>' + dk.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
 }
 
 // ---------- collection ----------
@@ -835,8 +850,9 @@ function filtered(){
   let list = S.cards.filter(c => {
     if(q && !(`${c.name} ${c.printed} ${c.type} ${c.setName} ${c.set} ${c.note||''}`.toLowerCase().includes(q)) && !(ui.it && ui.it.q===q && ui.it.names.has(c.name))) return false;
     if(fd==='__none' && c.deck) return false; if(fd && fd!=='__none' && c.deck!==fd) return false;
-    if(fl==='__none' && c.loc) return false;
-    if(fl && fl!=='__none'){ const L = locById(fl); if(L && L.kind==='chest'){ const cl = locById(c.loc); if(!cl || cl.parent!==fl) return false; } else if(c.loc!==fl) return false; }
+    if(fl==='__none' && (c.loc || c.deck)) return false;
+    if(fl && fl.startsWith('D:')){ if(c.deck !== fl.slice(2)) return false; }
+    else if(fl && fl!=='__none'){ const L = locById(fl); if(L && L.kind==='chest'){ const cl = locById(c.loc); if(!cl || cl.parent!==fl) return false; } else if(c.loc!==fl) return false; }
     if(ui.onlyMis && !misplaced(c)) return false;
     if(fr && c.rarity!==fr) return false;
     if($('#fFlag').checked && !c.alert) return false;
@@ -896,7 +912,7 @@ function showAlerts(list){
       <img class="thumb" src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt="">
       <div><div class="cname" data-big="${esc(c.imgL)}">${esc(c.name)}</div><div class="cset">${esc(c.setName)} #${esc(c.num)}${c.foil?' · foil':''} · ${c.qty}×</div></div>
       <div class="pr"><span class="muted">${eur(c.alert.from)}</span> → <b>${eur(c.alert.to)}</b></div>
-      <div class="mv"><span class="muted">Ora in: ${esc(locName(c.loc)) || 'nessun luogo'}</span>${slots().length?`<select data-mv="${c.id}">${locOpts}</select>`:''}</div>
+      <div class="mv"><span class="muted">Ora in: ${esc(whereName(c)) || 'nessun luogo'}</span>${slots().length?`<select data-mv="${c.id}">${locOpts}</select>`:''}</div>
     </div>`).join('')}</div>
     <div class="row" style="justify-content:flex-end;gap:8px">
       <button class="btn" id="aShow">Vedi in collezione</button>
@@ -906,7 +922,7 @@ function showAlerts(list){
   dlg.querySelectorAll('[data-big]').forEach(bindPreview);
   dlg.querySelectorAll('[data-mv]').forEach(sel => sel.onchange = () => {
     const c = S.cards.find(x=>String(x.id)===sel.dataset.mv); if(!c||!sel.value) return;
-    c.loc = sel.value; delete c.alert; save();
+    c.loc = sel.value; c.deck = ''; delete c.alert; save();
     sel.closest('.arow').querySelector('.mv .muted').textContent = 'Spostata in: ' + locName(c.loc);
     sel.remove(); renderThr(); renderColl(); toast('Carta spostata');
   });
@@ -970,15 +986,15 @@ function renderColl(){
   } else {
     out.innerHTML = `<div class="tablewrap"><table><thead><tr>
       <th><input type="checkbox" id="selAll" aria-label="Seleziona tutto"></th><th></th><th>Carta</th><th class="num">Q.tà</th><th>Versione</th>
-      <th>Luogo</th><th>Mazzo</th><th class="num">Prezzo</th><th class="num">Valore</th><th></th></tr></thead><tbody>` +
+      <th>Dove si trova</th><th></th><th class="num">Prezzo</th><th class="num">Valore</th><th></th></tr></thead><tbody>` +
       list.map(c => `<tr>
         <td><input type="checkbox" data-sel="${c.id}" ${ui.sel.has(c.id)?'checked':''} aria-label="Seleziona ${esc(c.name)}"></td>
         <td><img class="thumb" src="${esc(c.img)}" data-big="${esc(c.imgL)}" alt="" loading="lazy"></td>
-        <td><div class="cname" data-big="${esc(c.imgL)}">${esc(c.name)}${flag(c)}</div><div class="mmeta">${c.qty}×${c.foil?' foil':''} · ${esc(c.cond)} · ${esc(locName(c.loc))||'senza luogo'}${c.deck?' · '+esc(deckName(c.deck)):''}</div><div class="cset">${esc(c.setName)} #${esc(c.num)}${c.printed && c.printed!==c.name?' · '+esc(c.printed):''}</div></td>
+        <td><div class="cname" data-big="${esc(c.imgL)}">${esc(c.name)}${flag(c)}</div><div class="mmeta">${c.qty}×${c.foil?' foil':''} · ${esc(c.cond)} · ${esc(whereName(c))||'senza luogo'}</div><div class="cset">${esc(c.setName)} #${esc(c.num)}${c.printed && c.printed!==c.name?' · '+esc(c.printed):''}</div></td>
         <td class="num">${c.qty}</td>
         <td>${c.foil?'<span class="tag foil">Foil</span> ':''}<span class="tag">${esc(c.cond)}</span> <span class="tag">${esc((c.lang||'').toUpperCase())}</span></td>
-        <td>${esc(locName(c.loc)) || '<span class="muted">—</span>'}</td>
-        <td>${esc(deckName(c.deck)) || '<span class="muted">—</span>'}</td>
+        <td>${c.deck ? `<span class="where-deck">Mazzo ${esc(deckName(c.deck))}</span>` : (esc(locName(c.loc)) || '<span class="muted">—</span>')}</td>
+        <td></td>
         <td class="num price">${eur(unitPrice(c))} ${trend(c)}</td>
         <td class="num price"><b>${eur(value(c))}</b></td>
         <td><div class="row" style="flex-wrap:nowrap;gap:6px"><button class="btn small" data-edit="${c.id}">Modifica</button>${c.cm?`<a class="btn small" href="${esc(c.cm)}" target="_blank" rel="noopener">Cardmarket</a>`:''}</div></td>
@@ -1013,8 +1029,8 @@ function updateBulk(){
   $('#bulk').classList.toggle('on', ui.sel.size>0 && ui.view==='table');
   $('#bulkN').textContent = ui.sel.size + (ui.sel.size===1?' riga selezionata':' righe selezionate');
 }
-$('#bulkLocGo').onclick = () => { const v=$('#bulkLoc').value; if(!v) return; S.cards.forEach(c=>{ if(ui.sel.has(c.id)) c.loc = v==='__none'?'':v; }); save(); toast('Carte spostate'); renderColl(); };
-$('#bulkDeckGo').onclick = () => { const v=$('#bulkDeck').value; if(!v) return; S.cards.forEach(c=>{ if(ui.sel.has(c.id)) c.deck = v==='__none'?'':v; }); save(); toast(v==='__none'?'Carte tolte dal mazzo':'Carte assegnate al mazzo'); renderColl(); };
+$('#bulkLocGo').onclick = () => { const v=$('#bulkLoc').value; if(!v) return; S.cards.forEach(c=>{ if(ui.sel.has(c.id)){ c.loc = v==='__none'?'':v; if(v!=='__none') c.deck = ''; } }); save(); toast('Carte spostate'); renderColl(); };
+$('#bulkDeckGo').onclick = () => { const v=$('#bulkDeck').value; if(!v) return; S.cards.forEach(c=>{ if(ui.sel.has(c.id)){ if(v==='__none'){ if(c.deck){ c.deck = ''; c.loc = c.prevLoc && locById(c.prevLoc) ? c.prevLoc : ''; } } else setWhere(c, 'D:'+v); } }); save(); toast(v==='__none'?'Carte tolte dal mazzo':'Carte assegnate al mazzo'); renderColl(); };
 $('#bulkDel').onclick = () => { if(!confirm(`Eliminare ${ui.sel.size} righe dalla collezione?`)) return; S.cards = S.cards.filter(c=>!ui.sel.has(c.id)); ui.sel.clear(); save(); renderHeader(); renderColl(); toast('Righe eliminate'); };
 $('#bulkClear').onclick = () => { ui.sel.clear(); renderColl(); };
 
@@ -1024,7 +1040,7 @@ function opts(arr, cur){ return arr.map(([v,l])=>`<option value="${v}" ${v===cur
 function cardForm(base, entry){
   const canFoil = (base.finishes||[]).some(f=>f!=='nonfoil'), canNon = (base.finishes||['nonfoil']).includes('nonfoil');
   const ap = S.addPrefs || {};
-  const e = entry || {qty:1, foil: !canNon && canFoil, cond: ap.cond || 'NM', lang: base.srcLang || 'en', loc: ap.loc || '', deck: ap.deck || '', note:''};
+  const e = entry || {qty:1, foil: !canNon && canFoil, cond: ap.cond || 'NM', lang: base.srcLang || 'en', loc: ap.deck ? '' : (ap.loc || ''), deck: ap.deck || '', note:''};
   const locO = [['','Nessun luogo'], ...slots().map(l=>[l.id,locName(l.id)])];
   const deckO = [['','Nessun mazzo'], ...S.decks.map(d=>[d.id,d.name])];
   return `<form method="dialog" class="dlg" id="cardF">
@@ -1038,8 +1054,7 @@ function cardForm(base, entry){
         <label class="f">Condizione<select name="cond">${opts(CONDS.map(([v,l])=>[v,v+' – '+l]), e.cond)}</select></label>
         <label class="f">Lingua<select name="lang">${opts(LANGS, e.lang)}</select></label>
         <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" name="foil" ${e.foil?'checked':''} ${!canFoil&&!e.foil?'disabled':''}> Foil${!canFoil?' (non esiste)':''}</label>
-        <label class="f">Dove la tengo<select name="loc">${opts(locO, e.loc)}</select></label>
-        <label class="f">In quale mazzo<select name="deck">${opts(deckO, e.deck)}</select></label>
+        <label class="f full">Dove si trova<select name="where">${whereOptions(whereKey(e))}</select></label>
         <label class="f full">Note<input type="text" name="note" value="${esc(e.note||'')}" placeholder="es. firmata, alterata, pagina 4…"></label>
       </div>
       <div class="dlg-foot">
@@ -1051,21 +1066,21 @@ function cardForm(base, entry){
 }
 function readForm(f){
   const E = n => f.elements[n];
-  return { qty: Math.max(1, parseInt(E('qty').value)||1), cond: E('cond').value, lang: E('lang').value, foil: E('foil').checked, loc: E('loc').value, deck: E('deck').value, note: E('note').value.trim() };
+  const w = {}; setWhere(w, E('where').value);
+  return { qty: Math.max(1, parseInt(E('qty').value)||1), cond: E('cond').value, lang: E('lang').value, foil: E('foil').checked, loc: w.loc||'', deck: w.deck||'', note: E('note').value.trim() };
 }
 function addPrefs(){ return S.addPrefs || (S.addPrefs = {loc:'', deck:'', cond:'NM', quick:false}); }
 function fillAddBar(){
   const p = addPrefs();
   if(p.loc && !locById(p.loc)) p.loc = '';
   if(p.deck && !S.decks.some(d=>d.id===p.deck)) p.deck = '';
-  $('#addTo').innerHTML = '<option value="">Nessun luogo (lo scelgo per ogni carta)</option>' + slots().map(l=>`<option value="${l.id}">${esc(locName(l.id))}</option>`).join('');
-  $('#addDeck').innerHTML = '<option value="">Nessun mazzo</option>' + S.decks.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
+  $('#addTo').innerHTML = whereOptions(p.deck ? 'D:'+p.deck : (p.loc ? 'L:'+p.loc : ''), 'Nessun luogo (lo scelgo per ogni carta)');
   $('#addCond').innerHTML = CONDS.map(c=>`<option value="${c[0]}">${esc(c[0])} · ${esc(c[1])}</option>`).join('');
-  $('#addTo').value = p.loc; $('#addDeck').value = p.deck; $('#addCond').value = p.cond || 'NM'; $('#addQuick').checked = !!p.quick;
+  $('#addCond').value = p.cond || 'NM'; $('#addQuick').checked = !!p.quick;
 }
-['#addTo','#addDeck','#addCond','#addQuick'].forEach(x => $(x).addEventListener('change', () => {
-  const p = addPrefs(); p.loc = $('#addTo').value; p.deck = $('#addDeck').value; p.cond = $('#addCond').value; p.quick = $('#addQuick').checked; save();
-  toast(p.loc ? 'Le nuove carte andranno in ' + locName(p.loc) : 'Nessun luogo predefinito');
+['#addTo','#addCond','#addQuick'].forEach(x => $(x).addEventListener('change', () => {
+  const p = addPrefs(), w = {}; setWhere(w, $('#addTo').value); p.loc = w.loc||''; p.deck = w.deck||''; p.cond = $('#addCond').value; p.quick = $('#addQuick').checked; save();
+  if(x === '#addTo') toast(p.deck ? 'Le nuove carte andranno nel mazzo ' + deckName(p.deck) : p.loc ? 'Le nuove carte andranno in ' + locName(p.loc) : 'Nessun luogo predefinito');
 }));
 let lastAdd = null, sessionN = 0;
 function showLast(){
@@ -1091,7 +1106,7 @@ function commitAdd(base, v){
 function quickAdd(base){
   const p = addPrefs();
   const canFoil = (base.finishes||[]).some(f=>f!=='nonfoil'), canNon = (base.finishes||['nonfoil']).includes('nonfoil');
-  commitAdd(base, {qty:1, foil: !canNon && canFoil, cond: p.cond || 'NM', lang: base.srcLang || 'en', loc: p.loc || '', deck: p.deck || '', note:''});
+  commitAdd(base, {qty:1, foil: !canNon && canFoil, cond: p.cond || 'NM', lang: base.srcLang || 'en', loc: p.deck ? '' : (p.loc || ''), deck: p.deck || '', note:''});
 }
 function openAdd(base){
   $('#dlgBody').innerHTML = cardForm(base, null); dlg.showModal();
@@ -1110,7 +1125,7 @@ function openEdit(id){
   const f = $('#cardF');
   $('#dCancel').onclick = () => dlg.close();
   $('#dDel').onclick = () => { if(!confirm(`Eliminare ${c.name} dalla collezione?`)) return; S.cards = S.cards.filter(x=>x.id!==id); save(); renderHeader(); dlg.close(); renderColl(); refreshLists(); toast('Carta eliminata'); };
-  f.onsubmit = ev => { ev.preventDefault(); Object.assign(c, readForm(f)); save(); renderHeader(); dlg.close(); renderColl(); refreshLists(); toast('Modifiche salvate'); };
+  f.onsubmit = ev => { ev.preventDefault(); const v = readForm(f); if(v.deck && c.loc && c.deck !== v.deck) c.prevLoc = c.loc; Object.assign(c, v); save(); renderHeader(); dlg.close(); renderColl(); refreshLists(); toast('Modifiche salvate'); };
 }
 dlg.addEventListener('click', e => { if(e.target===dlg) dlg.close(); });
 function refreshLists(){ if($('#p-decks').classList.contains('on')) renderDecks(); if($('#p-locs').classList.contains('on')) renderLocs(); }
@@ -1420,7 +1435,7 @@ function openDeck(id){
       </div>
     </div>
     <div class="dlg-foot" style="flex-wrap:wrap">
-      ${d?'<button type="button" class="btn danger" id="dkDel" style="margin-right:auto">Elimina</button><button type="button" class="btn" id="dkShow">Vedi carte</button>':''}
+      ${d?'<button type="button" class="btn danger" id="dkDel" style="margin-right:auto">Elimina</button><button type="button" class="btn" id="dkShow">Vedi carte</button><button type="button" class="btn" id="dkBrowse">Sfoglia</button><button type="button" class="btn" id="dkAdd">Aggiungi carte qui</button>':''}
       <button type="button" class="btn" id="dkCancel">Annulla</button>
       <button type="submit" class="btn primary">${isNew?'Crea':'Salva'}</button>
     </div></form>`;
@@ -1479,15 +1494,17 @@ function openDeck(id){
   upd();
   $('#dkCancel').onclick = () => dlg.close();
   if($('#dkShow')) $('#dkShow').onclick = () => { dlg.close(); fillSelects(); $('#fLoc').value=''; $('#fDeck').value = d.id; showTab('coll'); };
-  if($('#dkDel')) $('#dkDel').onclick = () => { if(!confirm(`Eliminare “${d.name}”? Le carte restano in collezione, fuori da qualsiasi mazzo.`)) return;
-    S.decks = S.decks.filter(a=>a.id!==d.id); S.cards.forEach(c=>{ if(c.deck===d.id) c.deck=''; }); save(); dlg.close(); renderDeckBoxes(); toast('Mazzo eliminato'); };
+  if($('#dkBrowse')) $('#dkBrowse').onclick = () => { dlg.close(); openViewer(d.id); };
+  if($('#dkAdd')) $('#dkAdd').onclick = () => { dlg.close(); addHere(d.id); };
+  if($('#dkDel')) $('#dkDel').onclick = () => { if(!confirm(`Eliminare “${d.name}”? Le carte restano in collezione e tornano nel contenitore in cui erano prima di entrare nel mazzo (se non lo so, restano senza luogo).`)) return;
+    S.decks = S.decks.filter(a=>a.id!==d.id); S.cards.forEach(c=>{ if(c.deck===d.id){ c.deck=''; c.loc = c.prevLoc && locById(c.prevLoc) ? c.prevLoc : ''; } }); save(); dlg.close(); renderDeckBoxes(); toast('Mazzo eliminato: le carte tornano dov’erano prima, se lo sapevo'); };
   f.onsubmit = ev => {
     ev.preventDefault();
     const t = draft(), x = d || {id: uid()};
     if(CMD_FORMATS.includes(F('format').value) && chosen && chosen.base){
       const c = Object.assign({id:uid(), added:Date.now()}, chosen.base, {qty:1, foil:false, cond:(S.addPrefs&&S.addPrefs.cond)||'NM', lang: chosen.base.srcLang || 'en', loc:'', deck:x.id, note:''}); delete c.srcLang;
       S.cards.push(c); t.commander = c.id; chosen = {card: c};
-    } else if(CMD_FORMATS.includes(F('format').value) && chosen && chosen.card && !chosen.card.deck){ chosen.card.deck = x.id; }
+    } else if(CMD_FORMATS.includes(F('format').value) && chosen && chosen.card && chosen.card.deck !== x.id){ setWhere(chosen.card, 'D:' + x.id); }
     x.name = F('name').value.trim(); x.format = F('format').value; x.note = F('note').value.trim(); x.look = readLook();
     if(CMD_FORMATS.includes(x.format) && t.commander) x.commander = t.commander; else delete x.commander;
     if(t.colors && t.colors.length) x.colors = t.colors; else delete x.colors;
@@ -1531,7 +1548,7 @@ function renderArchive(){
     }
     return `<div class="cont" role="button" tabindex="0" data-view="${l.id}" aria-label="Sfoglia ${esc(l.name)}"><button class="btn small tile-gear" data-open="${l.id}">Imposta</button><div class="k">${esc(KINDS[l.kind]||'Altro')}${tierBadge(l)}</div><h3>${esc(l.name)}</h3><div class="dest">${esc(l.dest||'')}</div><div class="st">${st.n.toLocaleString('it-IT')} carte · <b>${eur(st.v)}</b>${mis}</div><div class="k" style="margin-top:4px">Ordine: ${esc(orderLbl(l.order))}</div><div class="k" style="margin-top:8px"><b>Tocca per sfogliare</b></div></div>`;
   }).join('');
-  const un = groupStats('loc','');
+  const unC = S.cards.filter(c=>!c.loc && !c.deck), un = {n: unC.reduce((a,c)=>a+c.qty,0), v: unC.reduce((a,c)=>a+value(c),0)};
   if(un.n) el.insertAdjacentHTML('beforeend', `<button class="cont" data-show-none="1"><div class="k">Da sistemare</div><h3>Carte senza luogo</h3><div class="st">${un.n.toLocaleString('it-IT')} carte · <b>${eur(un.v)}</b></div><div class="k" style="margin-top:4px">Clicca per vederle e assegnarle</div></button>`);
   el.querySelectorAll('[data-open]').forEach(b => b.onclick = e => { e.stopPropagation(); openCont(b.dataset.open); });
   el.querySelectorAll('[data-bind]').forEach(b => { b.onclick = () => openViewer(b.dataset.bind, b); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openViewer(b.dataset.bind, b); } }; });
@@ -1783,6 +1800,8 @@ async function mbImport(){
 const V = {id:null, kind:'', items:[], pos:0, busy:false, hits:[], hitI:-1, dw:null};
 const reduced = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 function vItems(id){
+  const D = S.decks.find(d=>d.id===id);
+  if(D){ const list = sortCards(S.cards.filter(c=>c.deck===id), 'type'); const out = []; list.forEach(c => { for(let k=0;k<c.qty;k++) out.push(c); }); if(D.commander){ const i = out.findIndex(c=>c.id===D.commander); if(i>0) out.unshift(out.splice(i,1)[0]); } return out; }
   const L = locById(id); const ids = L && L.kind==='chest' ? S.locs.filter(d=>d.parent===id).map(d=>d.id) : [id];
   const list = sortCards(S.cards.filter(c=>ids.includes(c.loc)), (L && L.order) || 'color');
   const out = []; list.forEach(c => { for(let k=0;k<c.qty;k++) out.push(c); });
@@ -1794,11 +1813,12 @@ function vSteps(){ return isBinder() ? Math.ceil((vPages()+1)/2) : Math.max(1, V
 const leftOf = s => s*2 - 1;
 const pageLbl = p => p < 0 ? 'Interno copertina' : 'Pagina ' + (p+1);
 function openViewer(id, fromEl){
-  const L = locById(id); if(!L) return;
+  const D = S.decks.find(d=>d.id===id);
+  const L = locById(id) || (D ? {id, kind:'deckbox', name:D.name, order:'type', dest: D.format||''} : null); if(!L) return;
   V.gen = (V.gen||0) + 1;
   V.id = id; V.kind = L.kind==='binder' ? 'binder' : 'drawer'; V.items = vItems(id); V.pos = 0; V.hits = []; V.hitI = -1; V.busy = false; V.single = false; V.side = 0; V.loupe = false;
   $('#vKind').textContent = L.kind==='drawer' ? 'Cassetto' : (KINDS[L.kind]||'Contenitore');
-  $('#vName').textContent = locName(id);
+  $('#vName').textContent = D ? D.name : locName(id); if(D) $('#vKind').textContent = 'Mazzo';
   const v = V.items.reduce((a,c)=>a+(unitPrice(c)||0),0);
   $('#vSub').textContent = `${V.items.length.toLocaleString('it-IT')} carte · ${eur(v)} · ${orderLbl(L.order)}${L.dest?' · '+L.dest:''}`;
   $('#vQ').value = ''; $('#vHits').textContent = ''; $('#vHp').hidden = $('#vHn').hidden = true; $('#vInfo').hidden = true;
@@ -2134,7 +2154,7 @@ $('#vPrev').onclick = () => vStep(-1);
 $('#vNext').onclick = () => vStep(1);
 $('#vRange').oninput = () => { if(V.busy) return; V.pos = +$('#vRange').value; vRender(); };
 $('#vClose').onclick = () => closeAnimated();
-function addHere(id){ const p = addPrefs(); p.loc = id; save(); closeViewer(); showTab('add'); toast('Le nuove carte andranno in ' + locName(id)); }
+function addHere(id){ const p = addPrefs(); if(S.decks.some(d=>d.id===id)){ p.deck = id; p.loc = ''; } else { p.loc = id; p.deck = ''; } save(); closeViewer(); showTab('add'); toast('Le nuove carte andranno in ' + (p.deck ? 'mazzo ' + deckName(id) : locName(id))); }
 $('#vAdd').onclick = () => { if(V.id) addHere(V.id); };
 $('#vStage').addEventListener('click', e => { if(e.target === $('#vStage')) $('#vInfo').hidden = true; });
 document.addEventListener('keydown', e => {
