@@ -572,6 +572,63 @@ th{background:var(--solid)}
 .d3.mini .dbx-name.bnd-title{font-size:calc(var(--nf,16px) * .7) !important}
 .d3 .dbx-cmd{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;max-width:96%}
 .d3:not(:has(.dbx-win)) .dbx-body3{justify-content:center !important;padding-top:10px !important}
+/* --- partita di prova --- */
+#game{position:fixed;inset:0;height:100vh;height:100dvh;z-index:62;display:flex;flex-direction:column;color:#f1ead6;background:radial-gradient(ellipse at 50% 40%,rgba(255,255,255,.06),rgba(0,0,0,.4) 80%),radial-gradient(rgba(0,0,0,.18) 1px,transparent 1.3px) 0 0/3px 3px,linear-gradient(160deg,#1d4a3a,#0f2a22);padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;--gw:96px}
+#game[hidden]{display:none}
+.g-top{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:10px 14px 6px;background:linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,0))}
+.g-stat{display:flex;gap:6px 16px;align-items:center;flex-wrap:wrap;font-size:14px;color:#dbeadf}
+.g-stat b{color:#fff}
+.g-life{display:inline-flex;align-items:center;gap:6px}.g-life b{font-size:20px;min-width:30px;text-align:center;cursor:pointer}
+.g-mini{width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:16px;line-height:1;cursor:pointer}
+.g-acts{display:flex;gap:6px;flex-wrap:wrap}
+#game .btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:#f3ecd8}
+#game .btn.primary{background:#d9b866;border-color:#d9b866;color:#1c1a12}
+#game .btn:disabled{opacity:.4}
+.g-main{flex:1;display:flex;gap:10px;min-height:0;padding:4px 10px}
+.g-side{flex:0 0 auto;display:flex;flex-direction:column;gap:8px;overflow:auto;padding-right:2px}
+.g-pile{width:calc(var(--gw) * .9);border:1px dashed rgba(255,255,255,.25);border-radius:9px;padding:5px;text-align:center;cursor:pointer;background:rgba(0,0,0,.15)}
+.g-pile[hidden]{display:none}
+.g-pl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#cfe3d6;margin-bottom:4px}
+.g-pc{font-size:12px;color:#dbeadf;margin-top:3px}
+.g-slot{width:100%;aspect-ratio:488/680;border-radius:6px;background:rgba(255,255,255,.05);position:relative}
+.g-slot .g-c{width:100%;height:100%;margin:0}
+.g-back{background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 4px,rgba(0,0,0,.12) 4px 8px),linear-gradient(160deg,#4b3468,#1d1330);box-shadow:inset 0 0 0 3px rgba(241,220,156,.35),0 3px 8px rgba(0,0,0,.45)}
+.g-bf{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:8px;background:rgba(0,0,0,.08);overflow:auto}
+.g-row{display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start;min-height:calc(var(--gw) * 1.4);padding:4px}
+.g-row:first-child{flex:1}
+.g-landrow{border-top:1px solid rgba(255,255,255,.12);padding-top:10px}
+.g-hint{color:rgba(255,255,255,.4);font-size:13px;align-self:center;padding:6px}
+.g-hand{flex:0 0 auto;display:flex;gap:8px;overflow-x:auto;padding:10px 12px 12px;min-height:calc(var(--gw) * 1.4 + 22px);background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.35))}
+.g-c{position:relative;flex:0 0 auto;width:var(--gw);aspect-ratio:488/680;border-radius:6px;cursor:grab;transition:transform .18s ease;touch-action:none}
+.g-c img{width:100%;height:100%;object-fit:cover;border-radius:5.5%/4%;box-shadow:0 3px 8px rgba(0,0,0,.5);pointer-events:none;display:block}
+.g-c.tap{transform:rotate(90deg);margin:0 calc(var(--gw) * .2)}
+.g-hand .g-c:hover{transform:translateY(-8px)}
+.g-b{position:absolute;z-index:2;font-weight:700;font-size:12px;padding:1px 6px;border-radius:9px;box-shadow:0 1px 3px rgba(0,0,0,.6)}
+.g-b.p1{left:50%;bottom:8%;transform:translateX(-50%);background:#2e7d4f;color:#fff}
+.g-b.ct{right:4px;top:4px;background:#d9b866;color:#1c1a12}
+.g-tok{width:100%;height:100%;border-radius:6px;background:linear-gradient(160deg,#e9e3d3,#bdb39b);color:#2a2236;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:6px;box-shadow:0 3px 8px rgba(0,0,0,.5),inset 0 0 0 3px #7a6d50;font-family:Spectral,Georgia,serif}
+.g-tok b{font-size:13px}.g-tok span{font-weight:700;font-size:15px;background:#fff8e6;border-radius:6px;padding:1px 6px}
+.g-ghost{position:fixed;z-index:80;pointer-events:none;opacity:.9;transform:rotate(-4deg) scale(1.06);margin:0}
+[data-zone].g-over{outline:2px dashed #d9b866;outline-offset:-2px;border-radius:10px}
+.g-menu{position:fixed;z-index:85;min-width:190px;background:rgba(22,30,26,.97);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:5px;box-shadow:0 12px 30px rgba(0,0,0,.55);display:flex;flex-direction:column}
+.g-menu[hidden]{display:none}
+.g-menu button{background:none;border:0;color:#f1ead6;text-align:left;padding:8px 10px;border-radius:6px;font:inherit;font-size:14px;cursor:pointer}
+.g-menu button:hover:not(:disabled){background:rgba(255,255,255,.1)}.g-menu button:disabled{opacity:.35}
+.g-menu hr{border:0;border-top:1px solid rgba(255,255,255,.12);margin:4px 2px}
+.g-modal{position:absolute;inset:0;z-index:70;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.g-modal[hidden]{display:none}
+.g-mbox{background:#18241f;border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:14px 16px;max-width:min(920px,96vw);max-height:90%;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.g-mbox h3{font-family:Spectral,Georgia,serif;font-size:19px;color:#f6efda}
+.g-mbox input{font-size:15px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff}
+.g-mh{font-size:13px;color:#cfe3d6}
+.g-mlist{display:flex;flex-wrap:wrap;gap:10px;overflow:auto;padding:4px}
+.g-mi{width:110px;cursor:pointer;display:flex;flex-direction:column;gap:5px}
+.g-mi img,.g-mi .g-tok{width:100%;aspect-ratio:488/680;border-radius:5.5%/4%;object-fit:cover;box-shadow:0 3px 8px rgba(0,0,0,.5)}
+.g-mt{display:flex;gap:4px;justify-content:center}
+.g-mf{display:flex;justify-content:flex-end;gap:8px}
+.g-zoom{position:absolute;inset:0;z-index:75;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;cursor:zoom-out}
+.g-zoom[hidden]{display:none}.g-zoom img{max-height:86%;max-width:92%;border-radius:4.8%/3.5%;box-shadow:0 14px 40px rgba(0,0,0,.7)}
+@media (max-width:760px), (max-height:520px){#game{--gw:64px}.g-top{padding:6px 10px 2px}.g-acts .btn{padding:5px 9px;font-size:13px}.g-stat{font-size:12.5px}.g-mi{width:84px}}
 </style>
 </head>
 <body>
@@ -720,6 +777,7 @@ th{background:var(--solid)}
     <div class="v-title"><div class="k" id="tKind">Mazzo</div><h2 id="tName"></h2><div class="k" id="tSub"></div></div>
     <div class="t-acts">
       <button class="btn primary" id="tHandBtn">Mano di apertura</button>
+      <button class="btn primary" id="tPlay">Gioca</button>
       <button class="btn" id="tAdd">+ Aggiungi qui</button>
       <button class="btn" id="tSet">Impostazioni</button>
       <button class="btn" id="tClose">Chiudi</button>
@@ -727,11 +785,41 @@ th{background:var(--solid)}
   </div>
   <div class="t-body" id="tBody"></div>
   <div class="t-hand" id="tHand" hidden>
-    <div class="t-hand-bar"><div id="tHandInfo"></div><div class="t-hand-acts"><button class="btn small" id="hDraw">Pesca</button><button class="btn small" id="hMull">Mulligan</button><button class="btn small" id="hNew">Nuova mano</button><button class="btn small" id="hClose">Chiudi la mano</button></div></div>
+    <div class="t-hand-bar"><div id="tHandInfo"></div><div class="t-hand-acts"><button class="btn small" id="hDraw">Pesca</button><button class="btn small" id="hMull">Mulligan</button><button class="btn small primary" id="hKeep">Tieni e gioca</button><button class="btn small" id="hNew">Nuova mano</button><button class="btn small" id="hClose">Chiudi la mano</button></div></div>
     <div class="t-fan" id="tFan"></div>
     <div class="t-hz" id="tHz" hidden><img alt=""><div class="t-hz-n"></div></div>
   </div>
   <div class="v-info t-info" id="tInfo" hidden></div>
+</div>
+<div id="game" hidden role="dialog" aria-modal="true" aria-label="Partita di prova">
+  <div class="g-top">
+    <div class="g-stat"><span>Turno <b id="gTurn">1</b></span>
+      <span class="g-life">Vita <button class="g-mini" data-life="-1">−</button><b id="gLife">40</b><button class="g-mini" data-life="1">+</button></span>
+      <span id="gLands"></span></div>
+    <div class="g-acts">
+      <button class="btn primary" id="gTurnBtn">Nuovo turno</button>
+      <button class="btn" id="gDraw">Pesca</button>
+      <button class="btn" id="gToken">Pedina</button>
+      <button class="btn" id="gUndo">Annulla</button>
+      <button class="btn" id="gExit">Esci</button>
+    </div>
+  </div>
+  <div class="g-main">
+    <div class="g-side">
+      <div class="g-pile" id="gCz" data-zone="cz" hidden><div class="g-pl">Comando</div><div class="g-slot"></div><div class="g-pc" id="gTax"></div></div>
+      <div class="g-pile" id="gLib" data-zone="lib"><div class="g-pl">Grimorio</div><div class="g-slot g-back"></div><div class="g-pc" id="gLibN"></div></div>
+      <div class="g-pile" id="gGy" data-zone="gy"><div class="g-pl">Cimitero</div><div class="g-slot"></div><div class="g-pc" id="gGyN"></div></div>
+      <div class="g-pile" id="gEx" data-zone="ex"><div class="g-pl">Esilio</div><div class="g-slot"></div><div class="g-pc" id="gExN"></div></div>
+    </div>
+    <div class="g-bf" data-zone="bf">
+      <div class="g-row" id="gPerm" data-zone="bf"></div>
+      <div class="g-row g-landrow" id="gLandRow" data-zone="bf"></div>
+    </div>
+  </div>
+  <div class="g-hand" id="gHand" data-zone="hand"></div>
+  <div class="g-menu" id="gMenu" hidden></div>
+  <div class="g-modal" id="gModal" hidden></div>
+  <div class="g-zoom" id="gZoom" hidden><img alt=""></div>
 </div>
 <div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Sfoglia contenitore">
   <div class="v-top">
@@ -2712,6 +2800,185 @@ $('#tSet').onclick = () => { const id = T.id; openDeck(id); dlg.addEventListener
 $('#tAdd').onclick = () => { const id = T.id; $('#tbl').hidden = true; document.body.style.overflow = ''; T.id = null; if(T.after) T.after(); addHere(id); };
 document.addEventListener('keydown', e => { if(!$('#tbl').hidden && !$('#dlg').open && e.key === 'Escape'){ if(!$('#tHand').hidden) $('#tHand').hidden = true; else closeTable(); } });
 window.addEventListener('resize', () => { if(T.id && !$('#tHand').hidden) renderHand(false); });
+
+// ---------- partita di prova (goldfish) ----------
+let G = null;
+const gCardOf = x => x.token ? null : S.cards.find(c=>c.id===x.id);
+const gIsLand = x => { const c = gCardOf(x); return !!c && /\bLand\b/.test(c.type||'') && !/Creature/.test(c.type||''); };
+const gZones = ['lib','hand','bf','gy','ex','cz'];
+function gInst(c){ return {k:'g'+(G.seq++), id:c.id, tapped:false, p1:0, ctr:0}; }
+function gFind(k){ for(const z of gZones){ const i = G[z].findIndex(x=>x.k===k); if(i>=0) return {z, i, x:G[z][i]}; } return null; }
+function gSnap(){ G.undo.push(JSON.stringify({lib:G.lib,hand:G.hand,bf:G.bf,gy:G.gy,ex:G.ex,cz:G.cz,turn:G.turn,life:G.life,casts:G.casts,lands:G.lands,seq:G.seq})); if(G.undo.length > 80) G.undo.shift(); }
+function gUndo(){ const u = G.undo.pop(); if(!u) { toast('Niente da annullare'); return; } Object.assign(G, JSON.parse(u)); gRender(); }
+function gMove(k, to, pos){
+  const f = gFind(k); if(!f || (f.z === to && to !== 'lib')) return;
+  gSnap(); G[f.z].splice(f.i, 1); const x = f.x;
+  if(x.token && to !== 'bf'){ gRender(); toast('La pedina esce dal gioco'); return; }
+  if(f.z === 'bf'){ x.tapped = false; x.p1 = 0; x.ctr = 0; }
+  if(to === 'bf' && f.z === 'hand' && gIsLand(x)) G.lands[G.turn] = (G.lands[G.turn]||0) + 1;
+  if(to === 'bf' && f.z === 'cz') G.casts++;
+  if(to === 'lib' && pos === 'bottom') G.lib.push(x); else if(to === 'lib') G.lib.unshift(x); else G[to].push(x);
+  gRender();
+}
+function gDraw(n){ n = n || 1; if(!G.lib.length){ toast('Il grimorio è vuoto'); return; } gSnap(); for(let i=0;i<n && G.lib.length;i++) G.hand.push(G.lib.shift()); gRender(); }
+function startGame(fromHand){
+  const d = S.decks.find(x=>x.id===T.id); if(!d) return;
+  G = {deck:d.id, lib:[], hand:[], bf:[], gy:[], ex:[], cz:[], turn:1, life: isCmd(d) ? 40 : 20, casts:0, lands:{}, seq:0, undo:[]};
+  if(fromHand && T.hand.length && T.bottom === 0){ G.hand = T.hand.map(h=>gInst(h.c)); G.lib = T.lib.map(c=>gInst(c)); }
+  else { G.lib = newLibrary().map(c=>gInst(c)); G.hand = G.lib.splice(0, 7); }
+  if(isCmd(d) && d.commander){ const c = S.cards.find(x=>x.id===d.commander); if(c) G.cz.push(gInst(c)); }
+  $('#tHand').hidden = true;
+  const gm = $('#game'); gm.className = $('#tbl').className; gm.hidden = false;
+  gRender();
+}
+function gFace(x, big){
+  if(x.token) return `<div class="g-tok"><b>${esc(x.token.name)}</b>${x.token.pt?`<span>${esc(x.token.pt)}</span>`:''}</div>`;
+  const c = gCardOf(x); if(!c) return '';
+  return `<img src="${esc(big ? (c.imgL||c.img) : (c.img||c.imgL))}" alt="${esc(c.name)}" draggable="false">`;
+}
+function gCardHtml(x, zone){
+  const ctr = (x.p1 ? `<span class="g-b p1">${x.p1>0?'+':''}${x.p1}/${x.p1>0?'+':''}${x.p1}</span>` : '') + (x.ctr ? `<span class="g-b ct">${x.ctr}</span>` : '');
+  return `<div class="g-c ${x.tapped?'tap':''} ${x.token?'is-tok':''}" data-k="${x.k}" data-from="${zone}">${gFace(x)}${ctr}</div>`;
+}
+function gRender(){
+  if(!G) return;
+  $('#gTurn').textContent = G.turn; $('#gLife').textContent = G.life;
+  const landsIn = G.bf.filter(gIsLand).length, untapped = G.bf.filter(x=>gIsLand(x) && !x.tapped).length;
+  const per = Array.from({length:G.turn}, (_,i)=>G.lands[i+1]||0);
+  $('#gLands').innerHTML = `Terre in gioco <b>${landsIn}</b> (${untapped} stappate) · per turno: ${per.join(' · ')}`;
+  $('#gPerm').innerHTML = G.bf.filter(x=>!gIsLand(x)).map(x=>gCardHtml(x,'bf')).join('') || '<span class="g-hint">Campo di battaglia: trascina qui le carte o toccale e scegli “Gioca”</span>';
+  $('#gLandRow').innerHTML = G.bf.filter(gIsLand).map(x=>gCardHtml(x,'bf')).join('') || '<span class="g-hint">Terre</span>';
+  $('#gHand').innerHTML = G.hand.map(x=>gCardHtml(x,'hand')).join('') || '<span class="g-hint">Mano vuota</span>';
+  $('#gLibN').textContent = G.lib.length + ' carte';
+  const top = (z, el) => { const x = G[z][G[z].length-1]; el.querySelector('.g-slot').innerHTML = x ? gCardHtml(x, z) : ''; };
+  top('gy', $('#gGy')); top('ex', $('#gEx'));
+  $('#gGyN').textContent = G.gy.length ? G.gy.length + ' carte' : 'vuoto'; $('#gExN').textContent = G.ex.length ? G.ex.length + ' carte' : 'vuoto';
+  $('#gCz').hidden = !(S.decks.find(d=>d.id===G.deck) && isCmd(S.decks.find(d=>d.id===G.deck)));
+  $('#gCz .g-slot').innerHTML = G.cz.map(x=>gCardHtml(x,'cz')).join('');
+  $('#gTax').textContent = G.cz.length ? (G.casts ? `tassa +${G.casts*2}` : 'pronto') : 'in gioco';
+  $('#gUndo').disabled = !G.undo.length;
+}
+// --- menu contestuale
+function gMenu(items, x, y){
+  const m = $('#gMenu');
+  m.innerHTML = items.map((it,i) => it === '-' ? '<hr>' : `<button data-mi="${i}" ${it.dis?'disabled':''}>${esc(it.t)}</button>`).join('');
+  m.hidden = false;
+  const W = window.innerWidth, H = window.innerHeight, r = m.getBoundingClientRect();
+  m.style.left = Math.max(6, Math.min(W - (r.width||200) - 6, x)) + 'px'; m.style.top = Math.max(6, Math.min(H - (r.height||300) - 6, y)) + 'px';
+  m.querySelectorAll('[data-mi]').forEach(b => b.onclick = e => { e.stopPropagation(); m.hidden = true; items[+b.dataset.mi].f(); });
+}
+const gZoomShow = x => { if(x.token) return; const c = gCardOf(x); const z = $('#gZoom'); z.querySelector('img').src = c.imgL || c.img; z.hidden = false; };
+function gCardMenu(k, px, py){
+  const f = gFind(k); if(!f) return; const x = f.x, cmd = S.decks.find(d=>d.id===G.deck), isCmdr = cmd && cmd.commander === x.id && !x.token;
+  const it = [];
+  if(f.z === 'hand'){ it.push({t:'Gioca sul campo', f:()=>gMove(k,'bf')}); }
+  if(f.z === 'bf'){
+    it.push({t: x.tapped ? 'Stappa' : 'Tappa', f:()=>{ gSnap(); x.tapped = !x.tapped; gRender(); }});
+    it.push({t:'Segnalino +1/+1', f:()=>{ gSnap(); x.p1++; gRender(); }}, {t:'Togli un +1/+1', dis:!x.p1, f:()=>{ gSnap(); x.p1--; gRender(); }});
+    it.push({t:'Altro segnalino +1', f:()=>{ gSnap(); x.ctr++; gRender(); }}, {t:'Togli segnalino', dis:!x.ctr, f:()=>{ gSnap(); x.ctr--; gRender(); }});
+    it.push('-');
+  }
+  if(f.z === 'cz'){ it.push({t: G.casts ? `Lancia (tassa +${G.casts*2})` : 'Lancia il comandante', f:()=>gMove(k,'bf')}); }
+  if(f.z !== 'hand' && f.z !== 'cz') it.push({t:'In mano', f:()=>gMove(k,'hand')});
+  if(f.z !== 'bf' && f.z !== 'hand' && f.z !== 'cz') it.push({t:'Sul campo', f:()=>gMove(k,'bf')});
+  if(isCmdr && f.z !== 'cz') it.push({t:'Nella zona di comando', f:()=>gMove(k,'cz')});
+  if(f.z !== 'gy' && f.z !== 'cz') it.push({t:'Al cimitero', f:()=>gMove(k,'gy')});
+  if(f.z !== 'ex' && f.z !== 'cz') it.push({t:'In esilio', f:()=>gMove(k,'ex')});
+  if(f.z !== 'cz' && !x.token){ it.push({t:'In cima al grimorio', f:()=>gMove(k,'lib','top')}, {t:'In fondo al grimorio', f:()=>gMove(k,'lib','bottom')}); }
+  if(!x.token) it.push('-', {t:'Vedi la carta', f:()=>gZoomShow(x)});
+  gMenu(it, px, py);
+}
+function gAskN(title, def, then){ const v = prompt(title, String(def)); if(v == null) return; const n = parseInt(v); if(n > 0) then(n); }
+function gLibMenu(px, py){
+  gMenu([
+    {t:'Pesca una carta', f:()=>gDraw(1)},
+    {t:'Pesca più carte…', f:()=>gAskN('Quante carte peschi?', 2, n=>gDraw(n))},
+    {t:'Profetizza…', f:()=>gAskN('Quante carte guardi?', 2, n=>gScry(n))},
+    {t:'Macina…', f:()=>gAskN('Quante carte metti nel cimitero dalla cima?', 1, n=>{ gSnap(); for(let i=0;i<n && G.lib.length;i++) G.gy.push(G.lib.shift()); gRender(); })},
+    {t:'Rivela la prima carta', dis:!G.lib.length, f:()=>gZoomShow(G.lib[0])},
+    {t:'Cerca una carta…', f:()=>gSearch()},
+    {t:'Mescola', f:()=>{ gSnap(); shuffle(G.lib); gRender(); toast('Grimorio mescolato'); }}
+  ], px, py);
+}
+function gModal(html){ const m = $('#gModal'); m.innerHTML = `<div class="g-mbox">${html}</div>`; m.hidden = false; return m; }
+function gScry(n){
+  const top = G.lib.slice(0, n); if(!top.length) return;
+  const pick = {}; top.forEach(x => pick[x.k] = 'top');
+  const draw = () => {
+    const m = gModal(`<h3>Profetizza ${top.length}</h3><p class="g-mh">Scegli per ogni carta se lasciarla in cima o metterla in fondo. Quelle in cima restano nell’ordine mostrato.</p>
+      <div class="g-mlist">${top.map(x=>`<div class="g-mi">${gFace(x)}<div class="g-mt"><button class="btn small ${pick[x.k]==='top'?'primary':''}" data-sc="${x.k}" data-v="top">Cima</button><button class="btn small ${pick[x.k]==='bottom'?'primary':''}" data-sc="${x.k}" data-v="bottom">Fondo</button></div></div>`).join('')}</div>
+      <div class="g-mf"><button class="btn" id="gmX">Annulla</button><button class="btn primary" id="gmOk">Conferma</button></div>`);
+    m.querySelectorAll('[data-sc]').forEach(b => b.onclick = () => { pick[b.dataset.sc] = b.dataset.v; draw(); });
+    $('#gmX').onclick = () => m.hidden = true;
+    $('#gmOk').onclick = () => { gSnap(); G.lib.splice(0, top.length); const t = top.filter(x=>pick[x.k]==='top'), b = top.filter(x=>pick[x.k]==='bottom'); G.lib = [...t, ...G.lib, ...b]; m.hidden = true; gRender(); };
+  };
+  draw();
+}
+function gZoneList(z, title){
+  const list = G[z].slice().reverse();
+  const m = gModal(`<h3>${esc(title)} · ${list.length}</h3><div class="g-mlist">${list.map(x=>`<div class="g-mi" data-zk="${x.k}">${gFace(x)}</div>`).join('') || '<p class="g-mh">Vuoto.</p>'}</div><div class="g-mf"><button class="btn" id="gmX">Chiudi</button></div>`);
+  $('#gmX').onclick = () => m.hidden = true;
+  m.querySelectorAll('[data-zk]').forEach(el => el.onclick = e => { m.hidden = true; gCardMenu(el.dataset.zk, e.clientX, e.clientY); });
+}
+function gSearch(){
+  const draw = q => {
+    const list = G.lib.filter(x => { const c = gCardOf(x); return c && (!q || `${c.name} ${c.printed||''} ${c.type||''}`.toLowerCase().includes(q)); });
+    const seen = new Set(), uniq = list.filter(x => { const c = gCardOf(x); return !seen.has(c.id) && seen.add(c.id); }).sort((a,b)=>gCardOf(a).name.localeCompare(gCardOf(b).name));
+    $('#gSeaList').innerHTML = uniq.map(x=>`<div class="g-mi" data-sk="${x.k}">${gFace(x)}</div>`).join('') || '<p class="g-mh">Nessuna carta.</p>';
+    $('#gSeaList').querySelectorAll('[data-sk]').forEach(el => el.onclick = e => {
+      const k = el.dataset.sk;
+      gMenu([{t:'Metti in mano e mescola', f:()=>{ gMove(k,'hand'); shuffle(G.lib); $('#gModal').hidden = true; gRender(); }},
+             {t:'Metti sul campo e mescola', f:()=>{ gMove(k,'bf'); shuffle(G.lib); $('#gModal').hidden = true; gRender(); }},
+             {t:'Metti in cima', f:()=>{ gMove(k,'lib','top'); $('#gModal').hidden = true; }}], e.clientX, e.clientY);
+    });
+  };
+  const m = gModal(`<h3>Cerca nel grimorio</h3><input type="search" id="gSeaQ" placeholder="Nome o tipo (es. Forest, Creature)"><div class="g-mlist" id="gSeaList"></div><div class="g-mf"><button class="btn" id="gmX">Chiudi</button></div>`);
+  $('#gmX').onclick = () => m.hidden = true;
+  $('#gSeaQ').oninput = () => draw($('#gSeaQ').value.trim().toLowerCase()); draw('');
+}
+// --- trascinamento e tocchi
+(() => {
+  const gm = $('#game'); let d = null;
+  gm.addEventListener('pointerdown', e => {
+    if(e.button > 0) return; const el = e.target.closest('.g-c'); if(!el || el.closest('.g-mbox')) return;
+    d = {k: el.dataset.k, x0: e.clientX, y0: e.clientY, el, ghost: null};
+  });
+  window.addEventListener('pointermove', e => {
+    if(!d) return; const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
+    if(!d.ghost && Math.hypot(dx, dy) > 9){ const r = d.el.getBoundingClientRect(); d.ghost = d.el.cloneNode(true); d.ghost.classList.add('g-ghost'); d.ghost.style.width = r.width + 'px'; d.ghost.style.height = r.height + 'px'; d.ox = d.x0 - r.left; d.oy = d.y0 - r.top; document.body.appendChild(d.ghost); d.el.style.opacity = .3; }
+    if(d.ghost){ d.ghost.style.left = (e.clientX - d.ox) + 'px'; d.ghost.style.top = (e.clientY - d.oy) + 'px';
+      $$('#game [data-zone]').forEach(z => z.classList.remove('g-over')); const t = document.elementFromPoint && document.elementFromPoint(e.clientX, e.clientY); const z = t && t.closest && t.closest('[data-zone]'); if(z) z.classList.add('g-over'); }
+  });
+  window.addEventListener('pointerup', e => {
+    if(!d) return; const cur = d; d = null;
+    if(cur.ghost){
+      cur.ghost.remove(); cur.el.style.opacity = ''; $$('#game [data-zone]').forEach(z => z.classList.remove('g-over'));
+      const t = document.elementFromPoint && document.elementFromPoint(e.clientX, e.clientY); const z = t && t.closest && t.closest('[data-zone]');
+      if(z) gMove(cur.k, z.dataset.zone, 'top');
+      return;
+    }
+    const now = performance.now(), f = gFind(cur.k);
+    if(f && f.z === 'bf' && G.lastTap && G.lastTap.k === cur.k && now - G.lastTap.t < 320){ clearTimeout(G.menuT); G.lastTap = null; $('#gMenu').hidden = true; gSnap(); f.x.tapped = !f.x.tapped; gRender(); return; }
+    G.lastTap = {k: cur.k, t: now};
+    clearTimeout(G.menuT); const px = e.clientX, py = e.clientY;
+    G.menuT = setTimeout(() => gCardMenu(cur.k, px, py), f && f.z === 'bf' ? 260 : 0);
+  });
+})();
+$('#gLib').addEventListener('click', e => { if(e.target.closest('.g-c')) return; gLibMenu(e.clientX, e.clientY); });
+$('#gGy').addEventListener('click', e => { if(e.target.closest('.g-c') && G.gy.length === 0) return; gZoneList('gy', 'Cimitero'); });
+$('#gEx').addEventListener('click', e => { gZoneList('ex', 'Esilio'); });
+$('#game').addEventListener('click', e => { if(!e.target.closest('.g-menu') && !e.target.closest('.g-c') && !e.target.closest('.g-pile')) $('#gMenu').hidden = true; });
+$('#gZoom').onclick = () => $('#gZoom').hidden = true;
+$('#game').querySelectorAll('[data-life]').forEach(b => b.onclick = () => { gSnap(); G.life += +b.dataset.life; gRender(); });
+$('#gLife').onclick = () => { const v = prompt('Punti vita', String(G.life)); if(v != null && !isNaN(parseInt(v))){ gSnap(); G.life = parseInt(v); gRender(); } };
+$('#gTurnBtn').onclick = () => { gSnap(); G.turn++; G.bf.forEach(x => x.tapped = false); if(G.lib.length) G.hand.push(G.lib.shift()); gRender(); toast('Turno ' + G.turn); };
+$('#gDraw').onclick = () => gDraw(1);
+$('#gUndo').onclick = gUndo;
+$('#gToken').onclick = () => { const n = prompt('Nome della pedina (es. Soldato, Tesoro, Tiranide)', 'Pedina'); if(n == null) return; const pt = prompt('Forza/Costituzione (lascia vuoto se non è una creatura)', '1/1'); gSnap(); G.bf.push({k:'g'+(G.seq++), token:{name:n.trim()||'Pedina', pt:(pt||'').trim()}, tapped:false, p1:0, ctr:0}); gRender(); };
+$('#gExit').onclick = () => { if(!confirm('Uscire dalla partita di prova?')) return; $('#game').hidden = true; G = null; };
+$('#tPlay').onclick = () => startGame(false);
+$('#hKeep').onclick = () => { if(T.bottom > 0){ toast('Prima scegli le carte da mettere in fondo'); return; } startGame(true); };
+document.addEventListener('keydown', e => { if(!G || $('#game').hidden || $('#dlg').open) return; if(e.key==='Escape'){ $('#gMenu').hidden = true; $('#gModal').hidden = true; $('#gZoom').hidden = true; } if((e.metaKey||e.ctrlKey) && e.key==='z'){ e.preventDefault(); gUndo(); } });
 
 // ---------- storico del valore ----------
 function openHistory(){
