@@ -557,6 +557,14 @@ th{background:var(--solid)}
 #tbl .t-info{position:absolute;bottom:20px;z-index:8}
 @media (max-width:760px){.t-cards{gap:10px 8px}.t-card{--tcw:84px}.t-top{padding:10px 12px 4px}#tbl .v-title h2{font-size:20px}.t-body{padding:4px 10px 40px}.t-hand-bar{padding-top:36px}}
 @media (prefers-reduced-motion:reduce){.t-card.deal,.t-hc.deal{animation:none}}
+.pc-pick{margin:8px 0}
+.pc-pick input{width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px}
+.pc-list{display:flex;flex-direction:column;gap:5px;max-height:300px;overflow:auto;margin-top:8px}
+.pc-row{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;color:inherit;font:inherit}
+.pc-row:hover{border-color:var(--brass)}
+.pc-row span{font-size:12.5px;color:var(--ink-2)}
+.pc-sum{border:1px solid var(--line);border-left:4px solid var(--brass);border-radius:10px;padding:12px 14px;margin:8px 0}
+.pc-alt{margin:12px 0 8px}.pc-alt summary{cursor:pointer;color:var(--ink-2);font-size:14px}
 </style>
 </head>
 <body>
@@ -645,7 +653,7 @@ th{background:var(--solid)}
   <section class="panel" id="p-decks">
     <div class="arch-head">
       <div><h2 style="font-size:24px">Mazzi</h2><p class="hint">Ogni mazzo è la sua scatola. Toccala per modificare formato, comandante, colori e note, o per vedere le carte.</p></div>
-      <button class="btn primary" id="newDeck">Nuovo mazzo</button>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" id="impDeck">Aggiungi un mazzo precostruito</button><button class="btn primary" id="newDeck">Nuovo mazzo</button></div>
     </div>
     <div class="dbx-grid" id="deckList"></div>
     <div id="deckFree" class="hint" style="margin-top:14px"></div>
@@ -1463,6 +1471,207 @@ function renderDeckBoxes(){
   el.querySelectorAll('[data-deck]').forEach(b => { bindBox3D(b); b.onclick = () => openBox(b); b.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openBox(b); } }; });
 }
 $('#newDeck').onclick = () => openDeck(null);
+// ---------- mazzi precostruiti (elenco ufficiale da MTGJSON, carte esatte da Scryfall) ----------
+const MTGJ = 'https://mtgjson.com/api/v5/';
+let PRECONS = null;
+async function loadPrecons(){
+  if(PRECONS) return PRECONS;
+  const r = await fetch(MTGJ + 'DeckList.json'); if(!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json();
+  PRECONS = (j.data || []).filter(d => d.fileName).sort((a,b) => (b.releaseDate||'').localeCompare(a.releaseDate||''));
+  return PRECONS;
+}
+async function loadPreconFile(fileName){
+  const r = await fetch(MTGJ + 'decks/' + encodeURIComponent(fileName) + '.json'); if(!r.ok) throw new Error('HTTP ' + r.status);
+  return (await r.json()).data;
+}
+function preconFormat(type){ const t = (type||'').toLowerCase(); if(t.includes('brawl')) return 'Brawl'; if(t.includes('commander')) return 'Commander'; if(t.includes('pauper')) return 'Pauper'; return 'Casual'; }
+async function resolvePrecon(deck){
+  const entries = [];
+  (deck.commander||[]).forEach(c => entries.push({c, cmd:true}));
+  (deck.mainBoard||[]).forEach(c => entries.push({c, cmd:false}));
+  const ids = [...new Set(entries.map(e => e.c.identifiers && e.c.identifiers.scryfallId).filter(Boolean))];
+  const raws = {};
+  for(let i=0;i<ids.length;i+=75){
+    const {data} = await api('/cards/collection', {method:'POST', body: JSON.stringify({identifiers: ids.slice(i,i+75).map(id=>({id}))})});
+    (data.data||[]).forEach(c => raws[c.id] = c); await sleep(120);
+  }
+  const missing = entries.filter(e => !(e.c.identifiers && raws[e.c.identifiers.scryfallId]));
+  if(missing.length){
+    const idf = missing.map(e => e.c.setCode && e.c.number ? {set: e.c.setCode.toLowerCase(), collector_number: String(e.c.number)} : {name: e.c.name});
+    for(let i=0;i<idf.length;i+=75){
+      const {data} = await api('/cards/collection', {method:'POST', body: JSON.stringify({identifiers: idf.slice(i,i+75)})});
+      (data.data||[]).forEach(c => { raws[c.id] = c; missing.forEach(e => { if(!e.raw && ((e.c.setCode && c.set===e.c.setCode.toLowerCase() && c.collector_number===String(e.c.number)) || c.name===e.c.name)) e.raw = c; }); });
+      await sleep(120);
+    }
+  }
+  return entries.map(e => { const raw = e.raw || (e.c.identifiers && raws[e.c.identifiers.scryfallId]); return {qty: e.c.count || 1, foil: !!e.c.isFoil, cmd: e.cmd, name: e.c.name, base: raw ? fromScry(raw) : null}; });
+}
+
+// ---------- importa una lista di mazzo ----------
+function parseDeckList(text){
+  const out = []; let section = '', skip = false;
+  text.replace(/\r/g,'').split('\n').forEach(raw => {
+    let line = raw.trim(); if(!line) return;
+    if(/^(\/\/|#)/.test(line)) { const h = line.replace(/^(\/\/|#)\s*/,'').toLowerCase(); section = h; skip = /token|sideboard|maybe/.test(h); return; }
+    const hdr = line.match(/^([A-Za-zÀ-ÿ' ]+?)\s*(\(\d+\))?:?$/);
+    if(hdr && !/^\d/.test(line)){ const h = hdr[1].toLowerCase().trim(); section = h; skip = /token|pedin|sideboard|maybe|considering/.test(h); return; }
+    if(skip) return;
+    const m = line.match(/^(\d+)\s*[xX]?\s+(.+)$/); let qty = 1, rest = line;
+    if(m){ qty = parseInt(m[1]); rest = m[2]; }
+    let cmdr = /\*CMDR\*/i.test(rest) || /^(commander|comandante)/.test(section), foil = /\*F\*|\*E\*/i.test(rest);
+    rest = rest.replace(/\*CMDR\*|\*F\*|\*E\*/gi,'').trim();
+    let set = '', num = '';
+    let sm = rest.match(/^(.*?)\s+[\(\[]([A-Za-z0-9]{2,6})[\)\]]\s*([0-9A-Za-z★\-]+)?\s*$/);
+    if(sm && !/\s-\s/.test(sm[2])){ rest = sm[1]; set = sm[2].toLowerCase(); num = sm[3] || ''; }
+    rest = rest.replace(/\s*\((?:[^)]*foil[^)]*|\d+[^)]*)\)\s*$/i, '').trim();   // es. "(249 - Surge Foil)"
+    if(/surge foil|foil/i.test(line)) foil = true;
+    if(!rest || /^(deck|mazzo|main|mainboard)$/i.test(rest)) return;
+    out.push({qty: Math.max(1, qty||1), name: rest, set, num, foil, cmdr});
+  });
+  return out;
+}
+async function resolveDeckList(list, pref, collector){
+  const ids = list.map(x => x.set && x.num ? {set:x.set, collector_number:x.num} : (x.set || pref) ? {name:x.name, set:x.set || pref} : {name:x.name});
+  const found = new Array(list.length).fill(null);
+  const run = async (idxs, mk) => {
+    for(let i=0;i<idxs.length;i+=75){
+      const chunk = idxs.slice(i,i+75);
+      const {data} = await api('/cards/collection', {method:'POST', body: JSON.stringify({identifiers: chunk.map(mk)})});
+      const got = data.data || [];
+      chunk.forEach(k => {
+        const x = list[k], id = mk(k);
+        const hit = got.find(c => id.collector_number ? (c.set===id.set && c.collector_number===id.collector_number) : ((c.name.toLowerCase()===id.name.toLowerCase() || c.name.toLowerCase().split(' // ')[0]===id.name.toLowerCase()) && (!id.set || c.set===id.set)));
+        if(hit) found[k] = hit;
+      });
+      await sleep(120);
+    }
+  };
+  await run(list.map((_,i)=>i), k => ids[k]);
+  const miss = list.map((_,i)=>i).filter(k => !found[k]);
+  if(miss.length) await run(miss, k => ({name: list[k].name}));         // senza edizione
+  if(collector){                                                            // versione da collezione (★) se esiste
+    const cand = list.map((_,i)=>i).filter(k => found[k] && !/★/.test(found[k].collector_number));
+    try{ await run(cand, k => ({set: found[k].set, collector_number: found[k].collector_number + '★'})); }catch(e){}
+    // run() sovrascrive solo se trova la versione ★: le altre restano quelle già trovate
+  }
+  return found;
+}
+function openDeckImport(){
+  $('#dlgBody').innerHTML = `<div style="padding:18px 20px 0">
+    <h2 style="font-size:22px;margin-bottom:4px">Aggiungi un mazzo precostruito</h2>
+    <p class="hint">Scrivi il nome del mazzo e sceglilo dall’elenco: l’app lo crea con esattamente le carte del prodotto, nelle stesse edizioni e con le stesse finiture (foil comprese).</p>
+    <div class="pc-pick"><input type="search" id="pcQ" placeholder="es. Tyranid Swarm" autocomplete="off" enterkeyhint="search"><div class="pc-list" id="pcList"><p class="hint">Carico l’elenco dei mazzi…</p></div></div>
+    <div id="pcOut"></div>
+    <details class="pc-alt"><summary>Non lo trovi? Incolla la lista a mano</summary></details>
+  </div>
+  <form class="cform" id="impF" style="padding:0 20px 18px" hidden>
+    <p class="hint">Incolla la lista del mazzo in formato testo, una carta per riga (per esempio “1 Sol Ring” oppure “1 Sol Ring (40K) 249”). Va bene l’esportazione testuale di Moxfield, Archidekt, MTG Arena o della lista ufficiale. Righe di titolo come “Creature (36)” vengono ignorate, i token pure.</p>
+    <label class="f full">Lista<textarea name="list" rows="9" placeholder="1 Sol Ring&#10;1 Arcane Signet&#10;..."></textarea></label>
+    <div class="fgrid">
+      <label class="f">Nome del mazzo<input type="text" name="name" required placeholder="es. Tyranid Swarm"></label>
+      <label class="f">Formato<select name="format">${opts(FORMATS.map(x=>[x,x]), 'Commander')}</select></label>
+      <label class="f">Edizione preferita (codice set)<input type="text" name="set" placeholder="es. 40K" maxlength="6" autocapitalize="characters"></label>
+      <label class="f">Condizione<select name="cond">${opts(CONDS.map(c=>[c[0], c[0]+' · '+c[1]]), 'NM')}</select></label>
+      <label class="f">Lingua delle carte<select name="lang">${opts(LANGS, 'en')}</select></label>
+      <label class="chk f full"><input type="checkbox" name="allfoil"> Tutte foil</label>
+      <label class="chk f full"><input type="checkbox" name="collector"> Collector’s Edition: usa la versione da collezione della carta, dove esiste</label>
+    </div>
+    <div id="impOut" style="margin-top:10px"></div>
+    <div class="dlg-foot"><button type="button" class="btn" id="impCancel">Annulla</button><button type="submit" class="btn primary" id="impGo">Leggi la lista</button></div></form>`;
+  // --- precostruiti
+  const alt = $('#dlgBody .pc-alt'); alt.addEventListener('toggle', () => { $('#impF').hidden = !alt.open; });
+  let pcSel = null, pcRows = null;
+  const showList = () => {
+    const q = $('#pcQ').value.trim().toLowerCase(); if(!PRECONS) return;
+    const words = q.split(/\s+/).filter(Boolean);
+    let arr = PRECONS.filter(d => words.every(w => `${d.name} ${d.code}`.toLowerCase().includes(w)));
+    if(!q) arr = arr.filter(d => /commander/i.test(d.type||''));
+    arr = arr.slice(0, 40);
+    $('#pcList').innerHTML = arr.length ? arr.map((d,i)=>`<button type="button" class="pc-row" data-pc="${esc(d.fileName)}"><b>${esc(d.name)}</b><span>${esc(d.type||'')} · ${esc((d.code||'').toUpperCase())}${d.releaseDate?' · '+esc(d.releaseDate.slice(0,4)):''}</span></button>`).join('') : '<p class="hint">Nessun mazzo con questo nome.</p>';
+    $('#pcList').querySelectorAll('[data-pc]').forEach(b => b.onclick = () => pickPrecon(PRECONS.find(d=>d.fileName===b.dataset.pc)));
+  };
+  const pickPrecon = async d => {
+    pcSel = d; pcRows = null; $('#pcList').innerHTML = ''; $('#pcQ').value = d.name;
+    $('#pcOut').innerHTML = `<p class="hint">Recupero le carte di “${esc(d.name)}”…</p>`;
+    try{
+      const deck = await loadPreconFile(d.fileName);
+      const rows = await resolvePrecon(deck); pcRows = rows;
+      const ok = rows.filter(r=>r.base), bad = rows.filter(r=>!r.base);
+      const n = ok.reduce((a,r)=>a+r.qty,0), foils = ok.filter(r=>r.foil).reduce((a,r)=>a+r.qty,0);
+      const val = ok.reduce((a,r)=>a + r.qty * ((r.foil ? r.base.eurFoil : r.base.eur) ?? r.base.eur ?? 0), 0);
+      const cmd = ok.find(r=>r.cmd);
+      $('#pcOut').innerHTML = `<div class="pc-sum"><div><b>${esc(d.name)}</b><div class="muted">${esc(d.type||'')} · ${esc((d.code||'').toUpperCase())}${d.releaseDate?' · '+esc(d.releaseDate):''}</div></div>
+        <p>${n} carte${foils?` (${foils === n ? 'tutte foil' : foils + ' foil'})`:''} · valore stimato <b>${eur(val)}</b>${cmd?` · comandante <b>${esc(cmd.base.name)}</b>`:''}</p>
+        ${bad.length?`<p class="warn">Non trovate su Scryfall: ${bad.map(r=>esc(r.name)).join(', ')}.</p>`:''}
+        <div class="fgrid"><label class="f">Nome del mazzo<input type="text" id="pcName" value="${esc(d.name)}"></label><label class="f">Condizione<select id="pcCond">${opts(CONDS.map(c=>[c[0], c[0]+' · '+c[1]]), 'NM')}</select></label></div>
+        <div class="dlg-foot"><button type="button" class="btn" id="pcCancel">Annulla</button><button type="button" class="btn primary" id="pcAdd">Aggiungi il mazzo</button></div></div>`;
+      $('#pcCancel').onclick = () => dlg.close();
+      $('#pcAdd').onclick = () => {
+        const dk = {id: uid(), name: $('#pcName').value.trim() || d.name, format: preconFormat(d.type), note: `Precostruito: ${d.name}${d.code?' ('+d.code.toUpperCase()+')':''}`};
+        const cond = $('#pcCond').value; let cmdId = null;
+        ok.forEach(r => {
+          const canFoil = (r.base.finishes||[]).some(x=>x!=='nonfoil'), foil = r.foil && canFoil;
+          const same = !r.cmd && S.cards.find(c => c.deck===dk.id && c.sid===r.base.sid && c.foil===foil && c.cond===cond);
+          if(same) same.qty += r.qty;
+          else { const c = Object.assign({id: uid(), added: Date.now()}, r.base, {qty: r.qty, foil, cond, lang:'en', loc:'', deck: dk.id, note:''}); delete c.srcLang; S.cards.push(c); if(r.cmd && !cmdId) cmdId = c.id; }
+        });
+        if(cmdId && CMD_FORMATS.includes(dk.format)) dk.commander = cmdId;
+        S.decks.push(dk); save(); renderHeader(); dlg.close(); renderDeckBoxes(); fillSelects();
+        toast(`Mazzo “${dk.name}” aggiunto con ${n} carte`);
+      };
+    }catch(e){ $('#pcOut').innerHTML = `<p class="warn">Non riesco a recuperare le carte del mazzo (${esc(e.message||'errore di rete')}). Riprova tra poco, oppure usa “Incolla la lista a mano”.</p>`; }
+  };
+  let pcT = null; $('#pcQ').addEventListener('input', () => { clearTimeout(pcT); pcT = setTimeout(showList, 120); pcSel = null; });
+  $('#pcQ').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); const b = $('#pcList [data-pc]'); if(b) b.click(); } });
+  loadPrecons().then(() => { showList(); setTimeout(() => $('#pcQ').focus({preventScroll:true}), 50); }).catch(e => { $('#pcList').innerHTML = `<p class="warn">Non riesco a caricare l’elenco dei mazzi precostruiti (${esc(e.message||'errore di rete')}). Puoi comunque incollare la lista a mano qui sotto.</p>`; });
+
+  const f = $('#impF'), F = n => f.elements[n];
+  F('collector').addEventListener('change', () => { if(F('collector').checked) F('allfoil').checked = true; });
+  $('#impCancel').onclick = () => dlg.close();
+  let ready = null;
+  f.onsubmit = async ev => {
+    ev.preventDefault();
+    if(ready){ doImport(); return; }
+    const list = parseDeckList(F('list').value);
+    if(!list.length){ $('#impOut').innerHTML = '<p class="warn">Non ho trovato carte nella lista.</p>'; return; }
+    const tot = list.reduce((a,x)=>a+x.qty,0);
+    $('#impOut').innerHTML = `<p class="hint">Cerco ${tot} carte (${list.length} righe)…</p>`; $('#impGo').disabled = true;
+    try{
+      const raw = await resolveDeckList(list, F('set').value.trim().toLowerCase(), F('collector').checked);
+      const map = await englishMap(raw.filter(Boolean));
+      const rows = list.map((x,i) => ({x, base: raw[i] ? map[raw[i].id] : null}));
+      const ok = rows.filter(r=>r.base), bad = rows.filter(r=>!r.base);
+      const cmd = ok.find(r=>r.x.cmdr) || (CMD_FORMATS.includes(F('format').value) ? ok.find(r => /Legendary/.test(r.base.type||'') && /Creature|Planeswalker/.test(r.base.type||'')) : null);
+      const foilAll = F('allfoil').checked;
+      const val = ok.reduce((a,r)=>a + r.x.qty * (((foilAll||r.x.foil) ? r.base.eurFoil : r.base.eur) ?? r.base.eur ?? 0), 0);
+      ready = {rows: ok, cmd};
+      $('#impOut').innerHTML = `<p><b>${ok.reduce((a,r)=>a+r.x.qty,0)}</b> carte trovate${bad.length?`, <b>${bad.length}</b> righe non trovate`:''} · valore stimato <b>${eur(val)}</b></p>
+        ${cmd ? `<p class="hint">Comandante: <b>${esc(cmd.base.name)}</b>${cmd.x.cmdr?'':' (riconosciuto come prima creatura leggendaria della lista: se è un altro, lo cambi dopo nelle impostazioni del mazzo)'}</p>` : ''}
+        ${bad.length ? `<p class="warn">Non trovate: ${bad.map(r=>esc(r.x.name)).join(', ')}. Controlla l’ortografia nella lista e rileggi, oppure aggiungile dopo a mano.</p>` : ''}`;
+      $('#impGo').textContent = `Importa ${ok.reduce((a,r)=>a+r.x.qty,0)} carte`; $('#impGo').disabled = false;
+      ['list','set','collector','allfoil','format'].forEach(n => F(n).addEventListener('input', () => { ready = null; $('#impGo').textContent = 'Leggi la lista'; }, {once:true}));
+    }catch(e){ showNet(e); $('#impGo').disabled = false; }
+  };
+  const doImport = () => {
+    const d = {id: uid(), name: F('name').value.trim() || 'Mazzo importato', format: F('format').value, note: ''};
+    const foilAll = F('allfoil').checked, cond = F('cond').value, lang = F('lang').value;
+    let cmdId = null;
+    ready.rows.forEach(r => {
+      const canFoil = (r.base.finishes||[]).some(x=>x!=='nonfoil');
+      const foil = (foilAll || r.x.foil) && canFoil;
+      const same = S.cards.find(c => c.deck===d.id && c.sid===r.base.sid && c.foil===foil && c.cond===cond && c.lang===lang);
+      if(same && !(ready.cmd && ready.cmd===r)) same.qty += r.x.qty;
+      else { const c = Object.assign({id: uid(), added: Date.now()}, r.base, {qty: r.x.qty, foil, cond, lang, loc:'', deck: d.id, note:''}); delete c.srcLang; S.cards.push(c); if(ready.cmd === r) cmdId = c.id; }
+    });
+    if(cmdId && CMD_FORMATS.includes(d.format)) d.commander = cmdId;
+    S.decks.push(d); save(); renderHeader(); dlg.close(); renderDeckBoxes(); fillSelects();
+    toast(`Mazzo “${d.name}” importato`);
+  };
+  dlg.showModal();
+}
+$('#impDeck').onclick = openDeckImport;
+
 function openDeck(id){
   const d = id ? S.decks.find(x=>x.id===id) : null, isNew = !d;
   const isLegend = c => /Legendary/.test(c.type||'') && /(Creature|Planeswalker|Background)/.test(c.type||'');
