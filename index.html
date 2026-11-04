@@ -641,6 +641,8 @@ th{background:var(--solid)}
   #game .g-hand .g-c:hover{transform:none}
   #game .g-hand .g-c:active{transform:translateY(-10px);z-index:5}
 }
+.g-mt3{flex-direction:column;gap:4px}.g-mt3 .btn{width:100%;padding:4px 6px;font-size:12.5px}
+.g-mi img{cursor:zoom-in}
 </style>
 </head>
 <body>
@@ -2931,18 +2933,21 @@ function gZoneList(z, title){
   const list = G[z].slice().reverse();
   const m = gModal(`<h3>${esc(title)} · ${list.length}</h3><div class="g-mlist">${list.map(x=>`<div class="g-mi" data-zk="${x.k}">${gFace(x)}</div>`).join('') || '<p class="g-mh">Vuoto.</p>'}</div><div class="g-mf"><button class="btn" id="gmX">Chiudi</button></div>`);
   $('#gmX').onclick = () => m.hidden = true;
-  m.querySelectorAll('[data-zk]').forEach(el => el.onclick = e => { m.hidden = true; gCardMenu(el.dataset.zk, e.clientX, e.clientY); });
+  m.querySelectorAll('[data-zk]').forEach(el => el.onclick = e => { e.stopPropagation(); m.hidden = true; gCardMenu(el.dataset.zk, e.clientX, e.clientY); });
 }
 function gSearch(){
   const draw = q => {
     const list = G.lib.filter(x => { const c = gCardOf(x); return c && (!q || `${c.name} ${c.printed||''} ${c.type||''}`.toLowerCase().includes(q)); });
     const seen = new Set(), uniq = list.filter(x => { const c = gCardOf(x); return !seen.has(c.id) && seen.add(c.id); }).sort((a,b)=>gCardOf(a).name.localeCompare(gCardOf(b).name));
-    $('#gSeaList').innerHTML = uniq.map(x=>`<div class="g-mi" data-sk="${x.k}">${gFace(x)}</div>`).join('') || '<p class="g-mh">Nessuna carta.</p>';
-    $('#gSeaList').querySelectorAll('[data-sk]').forEach(el => el.onclick = e => {
+    $('#gSeaList').innerHTML = uniq.map(x=>`<div class="g-mi" data-sk="${x.k}">${gFace(x)}<div class="g-mt g-mt3"><button class="btn small primary" data-sa="hand">In mano</button><button class="btn small" data-sa="bf">Sul campo</button><button class="btn small" data-sa="top">In cima</button></div></div>`).join('') || '<p class="g-mh">Nessuna carta.</p>';
+    $('#gSeaList').querySelectorAll('[data-sk]').forEach(el => {
       const k = el.dataset.sk;
-      gMenu([{t:'Metti in mano e mescola', f:()=>{ gMove(k,'hand'); shuffle(G.lib); $('#gModal').hidden = true; gRender(); }},
-             {t:'Metti sul campo e mescola', f:()=>{ gMove(k,'bf'); shuffle(G.lib); $('#gModal').hidden = true; gRender(); }},
-             {t:'Metti in cima', f:()=>{ gMove(k,'lib','top'); $('#gModal').hidden = true; }}], e.clientX, e.clientY);
+      el.querySelector('img, .g-tok').onclick = e => { e.stopPropagation(); gZoomShow(gFind(k).x); };
+      el.querySelectorAll('[data-sa]').forEach(b => b.onclick = e => {
+        e.stopPropagation(); const a = b.dataset.sa; $('#gModal').hidden = true;
+        if(a === 'top'){ gMove(k, 'lib', 'top'); toast('Messa in cima al grimorio'); return; }
+        gMove(k, a); shuffle(G.lib); gRender(); toast(a === 'hand' ? 'Aggiunta alla mano, grimorio mescolato' : 'Messa sul campo, grimorio mescolato');
+      });
     });
   };
   const m = gModal(`<h3>Cerca nel grimorio</h3><input type="search" id="gSeaQ" placeholder="Nome o tipo (es. Forest, Creature)"><div class="g-mlist" id="gSeaList"></div><div class="g-mf"><button class="btn" id="gmX">Chiudi</button></div>`);
@@ -2988,7 +2993,7 @@ function gSearch(){
 $('#gLib').addEventListener('click', e => { if(e.target.closest('.g-c')) return; gLibMenu(e.clientX, e.clientY); });
 $('#gGy').addEventListener('click', e => { if(e.target.closest('.g-c') && G.gy.length === 0) return; gZoneList('gy', 'Cimitero'); });
 $('#gEx').addEventListener('click', e => { gZoneList('ex', 'Esilio'); });
-$('#game').addEventListener('click', e => { if(!e.target.closest('.g-menu') && !e.target.closest('.g-c') && !e.target.closest('.g-pile')) $('#gMenu').hidden = true; });
+$('#game').addEventListener('click', e => { if(!e.target.closest('.g-menu') && !e.target.closest('.g-c') && !e.target.closest('.g-pile') && !e.target.closest('.g-mi')) $('#gMenu').hidden = true; });
 $('#gZoom').onclick = () => $('#gZoom').hidden = true;
 $('#game').querySelectorAll('[data-life]').forEach(b => b.onclick = () => { gSnap(); G.life += +b.dataset.life; gRender(); });
 $('#gLife').onclick = () => { const v = prompt('Punti vita', String(G.life)); if(v != null && !isNaN(parseInt(v))){ gSnap(); G.life = parseInt(v); gRender(); } };
